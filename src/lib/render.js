@@ -54,7 +54,10 @@ clock() {}
 
 cameraLight() {}
 
-orbitControls() {}
+orbitControls(){
+    this. controls = new OrbitControls(this.camera_, this.renderer.domElement);
+  }
+
 
 FPSControls() {}
 

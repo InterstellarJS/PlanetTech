@@ -1,70 +1,105 @@
-# Getting Started with Create React App
+# PlanetTechJS
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+PlanetTechJS is a JavaScript library for generating procedural planets and terrains. It provides a simple and flexible way to create realistic and visually appealing 3D planets with customizable features such as terrain height, textures, and atmospheric effects.
 
-## Available Scripts
 
-In the project directory, you can run:
+![Example Planet](./example-planet.png)
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Procedural planet generation: Create unique and realistic planets using procedural algorithms.
+- Terrain generation: Generate detailed and customizable terrains with different types of landscapes such as mountains, valleys, and plains.
+- Texture mapping: Apply textures to the terrain to enhance visual realism and add visual variety.
+- Atmospheric effects: Simulate atmospheric effects such as clouds, haze, and lighting to create a more immersive environment.
+- User interaction: Allow users to interact with the generated planet by zooming, rotating, and exploring different regions.
 
-### `npm test`
+## Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+You can install PlanetTechJS via npm:
 
-### `npm run build`
+\`\`\`bash
+npm install planet-tech-js
+\`\`\`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Alternatively, you can include the library directly in your HTML file:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+\`\`\`html
+<script src="path/to/planet-tech-js.min.js"></script>
+\`\`\`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Getting Started
 
-### `npm run eject`
+To generate a procedural planet using PlanetTechJS, follow these steps:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. Create a container element in your HTML file where the planet will be displayed:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+\`\`\`html
+<div id="planet-container"></div>
+\`\`\`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+2. Initialize the PlanetTechJS library and generate a planet:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+\`\`\`javascript
+// Assuming you have imported the library or included the script
 
-## Learn More
+// Get the container element
+const container = document.getElementById('planet-container');
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+// Initialize the planet generator
+const generator = new PlanetTechJS.PlanetGenerator();
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+// Generate a planet inside the container
+generator.generatePlanet(container);
+\`\`\`
 
-### Code Splitting
+3. Customize the generated planet by adjusting various parameters:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+\`\`\`javascript
+// Change the planet size
+generator.setSize(400); // In pixels
 
-### Analyzing the Bundle Size
+// Adjust the terrain height
+generator.setTerrainHeight(0.7); // Value between 0 and 1
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+// Apply a custom texture
+const textureUrl = 'path/to/texture.jpg';
+generator.setTexture(textureUrl);
 
-### Making a Progressive Web App
+// Enable atmospheric effects
+generator.enableAtmosphere();
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+// Generate the updated planet
+generator.generatePlanet(container);
+\`\`\`
 
-### Advanced Configuration
+4. Explore additional options and methods provided by the library in the [documentation](#documentation) section.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Documentation
 
-### Deployment
+For more details on how to use PlanetTechJS and explore its various features and customization options, refer to the [documentation](https://link-to-documentation).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Examples
 
-### `npm run build` fails to minify
+To see PlanetTechJS in action, check out the examples provided in the [examples](https://link-to-examples) directory. These examples demonstrate different configurations and use cases to help you get started quickly.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Contributing
+
+Contributions are welcome! If you find a bug or have a feature suggestion, please create an issue on the [GitHub repository](https://link-to-repository). If you want to contribute code, please follow the [contribution guidelines](https://link-to-contribution-guidelines).
+
+## License
+
+PlanetTechJS is licensed under the [MIT License](https://opensource.org/licenses/MIT). See the [LICENSE](https://link-to-license) file for more information.
+
+## Credits
+
+PlanetTechJS was created by [Your Name]. The library is based on the concept of procedural generation and draws inspiration from various sources. See the [credits](https://link-to-credits) section for acknowledgments.
+
+## Support
+
+If you encounter any issues or have any questions, feel free to reach out to the developer at [support@example.com](mailto:support@example.com).
+
+---
+
+Thank you for choosing PlanetTechJS! We hope you enjoy creating amazing procedural planets and terrains with ease.
+`

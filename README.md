@@ -1,9 +1,8 @@
 # PlanetTechJS
 
-PlanetTechJS is a JavaScript library for generating procedural planets and terrains. It provides a simple and flexible way to create realistic and visually appealing 3D planets with customizable features such as terrain height, textures, and atmospheric effects.
-
-
 ![Example Planet](./public/example-planet.png)
+
+PlanetTechJS is a JavaScript library for generating procedural planets and terrains. It provides a simple and flexible way to create realistic and visually appealing 3D planets with customizable features such as terrain height, textures, and atmospheric effects.
 
 
 ## Features

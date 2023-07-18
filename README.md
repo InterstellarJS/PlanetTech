@@ -24,15 +24,16 @@ let create a basic quadtree sphere without any textures or displacment. Just col
 
 import Sphere from './core/sphere/sphere'
 
- const params = {
-    width: 100
-    height: 100
-    widthSegment: 50
-    heightSegment: 50
-    quadTreeDimensions: 1
-    levels: 1
-    radius: 100
+  const params = {
+    width: 100,
+    height: 100,
+    widthSegment: 50,
+    heightSegment: 50,
+    quadTreeDimensions: 1,
+    levels: 10,
+    radius: 100,
  }
+
 
  let s = new Sphere(
     params.width,
@@ -55,3 +56,8 @@ import Sphere from './core/sphere/sphere'
 Now let crank the levels up all the way to 10 (a reasonable number without my machine freezing up). 
 So you're creating a sphere with 10x10x6 dimensions at a resoultion of 50. you can play with the paramters for whatever fits your needs the only limitation is your machine.
 ![quad Sphere](./public/readmeImg/img3.png)
+
+
+To get a better understanding on the `levels` permater lets take a look at a single quad (single dimension).
+Setting `params.levels = 6` gives a single dimension the ability to go six levels deep.
+![quad Sphere](./public/readmeImg/img4.jpg)

@@ -37,8 +37,29 @@ initQuad(tex) {
 }
 
 initPlanet() {
-  this.s = new Sphere(100,100,50,50,10)
-  this.s.build(1,100)
+  const params = {
+    width: 100,
+    height: 100,
+    widthSegment: 50,
+    heightSegment: 50,
+    quadTreeDimensions: 1,
+    levels: 1,
+    radius: 100,
+ }
+
+ this. s = new Sphere(
+    params.width,
+    params.height,
+    params.widthSegment,
+    params.heightSegment,
+    params.quadTreeDimensions
+    )
+
+  this.s.build(
+    params.levels,
+    params.radius,
+  )
+
   this.allp = [
     ...this.s.front.instances,
     ...this.s.back.instances,

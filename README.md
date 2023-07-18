@@ -1,5 +1,5 @@
 # WorldTechJS
-![Example Planet](./public/readmeImg/example-planet.png)![Example Planet](./public/readmeImg/img1.png)
+![Example Planet](./public/readmeImg/example-planet.png)![Example Planet](./public/readmeImg/img5.png)
 
 
 WorldTechJS is a JavaScript library for generating procedural planets and terrains. It provides a simple and flexible way to create realistic and visually appealing 3D planets with customizable features such as terrain height, textures, and atmospheric effects.
@@ -18,7 +18,7 @@ WorldTechJS is a JavaScript library for generating procedural planets and terrai
 
 
 ## Examples
-Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on.
+Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.
 ```javascript
 
 import Sphere from './core/sphere/sphere'
@@ -56,5 +56,5 @@ Now let's crank up the `levels` all the way to 10 (a reasonable number without m
 ![quad Sphere](./public/readmeImg/img3.png)
 
 
-To get a better understanding of the `levels` parameter, let's take a look at a single quad (single dimension). Setting `params.levels = 6` gives a single dimension the ability to go six levels deep.
+To get a better understanding of the `levels` parameter, let's take a look at a single quad (single dimension), Without the projection and a simple height map texture. Setting `params.levels = 6` gives a single dimension the ability to go six levels deep. As you can see each child in each level with a random color. 
 ![quad Sphere](./public/readmeImg/img4.jpg)

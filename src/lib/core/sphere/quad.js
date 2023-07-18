@@ -5,6 +5,8 @@ import {norm}       from './utils'
 import {light} from  './../shaders/glslFunctions'
 
 
+console.log(NODE)
+
 var snoiseCount = 0 
 var fbmCount = 0
 var displacementNormalCount= 0 
@@ -54,11 +56,11 @@ var patternCount = 0
         var nyj = norm(wp.y,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
         var offSets = NODE.vec2(nxj-halfScale,nyj-halfScale)
         var newUV   = NODE.uv().mul(testscaling).add(offSets)
-        //var scale = 4.0
+        //var scale = 1.0
         //newUV = newUV.mul(scale).add(0.5 * (1.0-scale)).add(NODE.vec2(0.0,0.0))
         var cnt = this.quadTreeconfig.config.cnt.clone()
         p.worldToLocal(cnt)
-        var textureNode = NODE.texture(texture_[0],newUV)
+        var textureNode = NODE.cubeTexture(texture_[0],NODE.positionWorld.sub(cnt))
         //var textureNodeN = NODE.texture(texture_[1],newUV)
 
         textureNode._TexId = `${i}_${this.count}` 

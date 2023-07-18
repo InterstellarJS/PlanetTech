@@ -41,9 +41,9 @@ initPlanet() {
   const params = {
     width: 100,
     height: 100,
-    widthSegment: 50,
-    heightSegment: 50,
-    quadTreeDimensions: 3,
+    widthSegment: 250,
+    heightSegment: 250,
+    quadTreeDimensions: 1,
     levels: 2,
     radius: 100,
     displacmentScale:5,
@@ -72,13 +72,23 @@ initPlanet() {
   const loader6 = new THREE.TextureLoader().load('./worldTextures/bottom_image.png');
 
 
+  var urls = [ 
+    './worldTextures/right_image.png',
+    './worldTextures/left_image.png',
+    './worldTextures/top_image.png',
+    './worldTextures/bottom_image.png',
+    './worldTextures/front_image.png',
+    './worldTextures/back_image.png',
+            ]
+var textureCube = new THREE.CubeTextureLoader().load( urls );
+
   
-  this.s.front.addTexture  ([loader1], params.displacmentScale)
-  this.s.back.addTexture   ([loader2], params.displacmentScale)
-  this.s.right.addTexture  ([loader3], params.displacmentScale)
-  this.s.left.addTexture   ([loader4], params.displacmentScale)
-  this.s.top.addTexture    ([loader5], params.displacmentScale)
-  this.s.bottom.addTexture ([loader6], params.displacmentScale)
+  this.s.front.addTexture  ([textureCube], params.displacmentScale)
+  this.s.back.addTexture   ([textureCube], params.displacmentScale)
+  this.s.right.addTexture  ([textureCube], params.displacmentScale)
+  this.s.left.addTexture   ([textureCube], params.displacmentScale)
+  this.s.top.addTexture    ([textureCube], params.displacmentScale)
+  this.s.bottom.addTexture ([textureCube], params.displacmentScale)
 
 
   this.allp = [

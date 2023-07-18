@@ -74,8 +74,8 @@ Now let's crank up the `levels` all the way to 10 (a reasonable number without m
 To get a better understanding of the `levels` parameter, let's take a look at a single quad (single dimension). If we were to grab a quad from thatour sphere without the projection and adding a simple height map texture. Setting `params.levels = 6` gives a single dimension the ability to go six levels deep. As you can see each child in each level with a random color. 
 ![quad Sphere](./public/readmeImg/img4.jpg)
 
-now lets say we want to add a texture to our sphere and start making it look like a planet.
-the code will be the smae as before
+Now lets say we want to add a texture to our sphere and start making it look like a planet.
+the code will be the same as before.
 ```javascript
   const params = {
     width: 100,
@@ -117,5 +117,5 @@ the code will be the smae as before
   s.bottom.addTexture ([loader6], params.displacmentScale)
 
 ```
-notice we dont need the color anymore. And all we added was a THREE.TextureLoader, increase `quadTreeDimensions` to 3 and increase `displacmentScale` to 5.
-![quad Sphere](./public/readmeImg/img7.png)
+Notice we dont need the color anymore. And all we added was a THREE.TextureLoader, increase `quadTreeDimensions` to 3 and increase `displacmentScale` to 5.
+![quad Sphere](./public/readmeImg/img8.png)

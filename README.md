@@ -1,6 +1,9 @@
 # WorldTechJS
-![Example Planet](./public/readmeImg/example-planet.png)![Example Planet](./public/readmeImg/img5.png)
+![Example Planet](./public/readmeImg/example-planet.png)
 
+<p align="center">
+  <img src="./public/readmeImg/img6.png" />
+</p>
 
 WorldTechJS is a JavaScript library for generating procedural planets and terrains. It provides a simple and flexible way to create realistic and visually appealing 3D planets with customizable features such as terrain height, textures, and atmospheric effects.
 

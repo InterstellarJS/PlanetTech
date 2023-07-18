@@ -2,8 +2,9 @@ import * as NODE from 'three/nodes';
 import * as THREE from 'three';
 import renderer from './render';
 import { nodeFrame } from 'three/addons/renderers/webgl/nodes/WebGLNodes.js';
+import Quad         from './core/quad/quad.js'
+import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 
-console.log(NODE)
 
 
 class ViewGL {
@@ -17,36 +18,41 @@ this.rend.webglRenderer(canvasViewPort);
 this.rend.scene();
 this.rend.stats();
 this.rend.camera();
-this.rend.updateCamera(0,0,.8)
+this.rend.updateCamera(0,0,200)
 this.rend.orbitControls()
-
-
 }
 
 initViewPort(canvasViewPort) {
 this.canvasViewPort = canvasViewPort;
 }
 
-initQuad(tex) {}
+initQuad(tex) {
+  this. q = new Quad(100,100,50,50,2)
+  this.q.createQuadTree(3)
+  this.q.createDimensions()
+  const loader1 = new THREE.TextureLoader().load('./front_image.png');
+  this.q.addTexture  (loader1)
+  this.rend.scene_.add( ...this.q.instances.map(x=>x.plane) );
+}
 
 initPlanet() {}
 
+initPlayer(){
+var boxGeometry        = new THREE.BoxGeometry( 1, 1, 1,1 )
+var boxMaterial        = new THREE.MeshBasicMaterial({color:'red'});
+this.player            = new THREE.Mesh( boxGeometry, boxMaterial );
+this.player.position.z = this.rend.camera_.position.z
+this.controls               = new FirstPersonControls( this.player, document.body );
+this.controls.movementSpeed = 30
+this.controls.lookSpeed     = 0
+this.clock = new THREE.Clock();
+this.rend.scene_.add(this.player)
+}
+
 start() {
 this.render(this.canvasViewPort);
-const geometry = new THREE.BoxGeometry( 1.0, 1.0, 1.0 );
-const material = new NODE.MeshStandardNodeMaterial({color:'blue'});
-this. mesh     = new THREE.Mesh( geometry, material );
-const light    = new THREE.AmbientLight( 0x404040 ); // soft white light
-const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-this.rend.scene_.add( this.mesh );
-this.rend.scene_.add( light );
-this.rend.scene_.add( directionalLight );
-this.mesh.material.positionNode = NODE.glslFn(`
-vec3 planeToSphere(vec3 p, vec3 localCenter){
-    return 1.2*normalize(p-localCenter) + localCenter;
-  }
-`)({p:NODE.positionLocal,localCenter:NODE.vec3(0,0,-.9)})
-
+this.initPlayer()
+this.initQuad()
 this.update();
 }
 
@@ -55,13 +61,19 @@ this.rend.renderer.setSize(vpW, vpH);
 }
 
 updateMeshPosition(value){
-this.mesh.position.x = value
+//this.mesh.position.x = value
 }
 
 update(t) {
 this.rend.stats_.begin();
-this.mesh.rotation.x = t / 2000;
-this.mesh.rotation.y = t / 1000;
+
+if(this.q){
+  this.controls.update(this.clock.getDelta())
+  for (var i = 0; i < this.q.instances.length; i++) {
+    this.q.instances[i].update(this.player)
+  }
+}
+
 this.rend.stats_.end();
 requestAnimationFrame(this.update.bind(this));
 nodeFrame.update();

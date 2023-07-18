@@ -40,6 +40,9 @@ this.container.clientWidth / this.container.clientHeight,
 );
 }
 
+
+
+
 updateCamera(x, y, z) {
 this.camera_.position.x = x;
 this.camera_.position.y = y;
@@ -52,7 +55,13 @@ this.scene_ = new THREE.Scene();
 
 clock() {}
 
-cameraLight() {}
+light() {
+const ambientLight     = new THREE.AmbientLight( 0x404040 ); // soft white light
+const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+this.scene_.add(ambientLight)
+this.scene_.add(directionalLight)
+
+}
 
 orbitControls(){
     this. controls = new OrbitControls(this.camera_, this.renderer.domElement);

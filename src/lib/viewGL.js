@@ -62,7 +62,7 @@ this.controls               = new FirstPersonControls( this.player, document.bod
 this.controls.movementSpeed = 30
 this.controls.lookSpeed     = 0
 this.clock = new THREE.Clock();
-this.rend.scene_.add(this.player)
+//this.rend.scene_.add(this.player)
 }
 
 start() {

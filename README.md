@@ -1,11 +1,11 @@
-# WorldTechJS
+# PlanetTechJS
 ![Example Planet](./public/readmeImg/example-planet.png)
 
 <p align="center">
   <img src="./public/readmeImg/img6.png" />
 </p>
 
-WorldTechJS is a JavaScript library for generating procedural planets and terrains. It provides a simple and flexible way to create realistic and visually appealing 3D planets with customizable features such as terrain height, textures, and atmospheric effects.
+PlanetTechJS is a JavaScript library for generating procedural planets and terrains. It provides a simple and flexible way to create realistic and visually appealing 3D planets with customizable features such as terrain height, textures, and atmospheric effects.
 
 
 ## Features
@@ -20,7 +20,7 @@ WorldTechJS is a JavaScript library for generating procedural planets and terrai
 - User interaction: Allow users to interact with the generated planet by zooming, rotating, and exploring different regions.
 
 
-## Examples
+## How It Works
 Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.
 ```javascript
 

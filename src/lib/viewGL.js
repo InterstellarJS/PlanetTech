@@ -47,10 +47,7 @@ initPlanet() {
     ...this.s.top.instances,
     ...this.s.bottom.instances,
   ]
-
   this.rend.scene_.add( this.s.sphere);
-
-
 }
 
 initPlayer(){

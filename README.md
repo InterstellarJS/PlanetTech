@@ -33,7 +33,7 @@ import Sphere from './core/sphere/sphere'
     radius: 100
  }
 
-  this.s = new Sphere(
+ let s = new Sphere(
     params.width,
     params.height,
     params.widthSegment,
@@ -41,12 +41,12 @@ import Sphere from './core/sphere/sphere'
     params.quadTreeDimensions
     )
 
-  this.s.build(
+  s.build(
     params.levels,
     params.radius,
   )
 
-  this.rend.scene_.add( this.s.sphere);
+ scene.add(s.sphere);
 
 ```
-![quad Sphere](./public/readmeImg/img1.png)
+![quad Sphere](./public/readmeImg/img2.png)

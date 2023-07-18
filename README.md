@@ -7,8 +7,9 @@ WorldTechJS is a JavaScript library for generating procedural planets and terrai
 
 
 ## Features
-- quadtree sphere
 - Procedural planet generation: Create unique and realistic planets using procedural algorithms.
+- flexability and speed.
+- quadtree sphere.
 - Terrain generation: Generate detailed and customizable terrains with different types of landscapes such as mountains, valleys, and plains.
 - Texture mapping: Apply textures to the terrain to enhance visual realism and add visual variety.
 - Gpu generated normal map.
@@ -18,7 +19,7 @@ WorldTechJS is a JavaScript library for generating procedural planets and terrai
 
 
 ## Examples
-let create a basic quadtree sphere without any textures or displacment.
+let create a basic quadtree sphere without any textures or displacment. Just coloring each dimensions to show whats going on.
 ```javascript
 
 import Sphere from './core/sphere/sphere'
@@ -50,3 +51,7 @@ import Sphere from './core/sphere/sphere'
 
 ```
 ![quad Sphere](./public/readmeImg/img2.png)
+
+Now let crank the levels up all the way to 10 (a reasonable number without my machine freezing up). 
+So you're creating a sphere with 10x10x6 dimensions at a resoultion of 50. you can play with the paramters for whatever fits your needs the only limitation is your machine.
+![quad Sphere](./public/readmeImg/img3.png)

@@ -37,7 +37,7 @@ initQuad(tex) {
 }
 
 initPlanet() {
-  this.s = new Sphere(100,100,50,50,1)
+  this.s = new Sphere(100,100,50,50,10)
   this.s.build(1,100)
   this.allp = [
     ...this.s.front.instances,

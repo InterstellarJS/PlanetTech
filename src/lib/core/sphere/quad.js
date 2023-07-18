@@ -37,7 +37,7 @@ var patternCount = 0
     }
 
 
-    addTexture(texture_){
+    addTexture(texture_, displacementScale){
       this.textures.push(texture_)
       this.quadTreeconfig.config.dataTransfer[this.side] = {textuers:this.textures}
       var w = this.quadData.width
@@ -46,7 +46,6 @@ var patternCount = 0
       var halfScale   = testscaling / 2
       for (var i = 0; i < this.instances.length; i++) {
         var q = this.instances[i]
-        q.side = this.side
         var p = q.plane
         p.material.uniforms[`displacementScale_${this.count}`] = new THREE.Vector2(1,1);
         p.material.uniforms[`lightDirection_${this.count}`]    = new THREE.Vector3(.0, .0, 0); 
@@ -60,7 +59,7 @@ var patternCount = 0
         var cnt = this.quadTreeconfig.config.cnt.clone()
         p.worldToLocal(cnt)
         var textureNode = NODE.texture(texture_[0],newUV)
-        var textureNodeN = NODE.texture(texture_[1],newUV)
+        //var textureNodeN = NODE.texture(texture_[1],newUV)
 
         textureNode._TexId = `${i}_${this.count}` 
         if(p.material.positionNode){
@@ -73,8 +72,9 @@ var patternCount = 0
           //p.material.positionNode = p.material.positionNode.add( displace );
 
 
-          p.material.colorNode = textureNodeN//displacemntTextureV3(texture_,newUV)
-          const displace = textureNode.z.mul(0.0).mul(NODE.positionLocal.sub(cnt).normalize())
+          //p.material.colorNode = textureNodeN//displacemntTextureV3(texture_,newUV)
+          p.material.colorNode = textureNode
+          const displace = textureNode.r.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
           p.material.positionNode =  p.material.positionNode.add( displace );
           
         }else{
@@ -85,7 +85,7 @@ var patternCount = 0
           //const displace = textureNode.x.mul(screenFXNode.x).mul(NODE.normalLocal)
           //p.material.colorNode = textureNode .mul(2.0).sub(1.0)//lighting((displacedNormal(textureNode,newUV)),ld )
           //p.material.positionNode = NODE.positionLocal.add(displace);
-          const displace = textureNode.z.mul(1.0).mul(NODE.normalLocal)
+          const displace = textureNode.r.mul(displacementScale).mul(NODE.normalLocal)
           p.material.colorNode = textureNode
           p.material.positionNode = NODE.positionLocal.add( displace );
         }

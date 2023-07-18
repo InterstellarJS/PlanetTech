@@ -43,11 +43,10 @@ initPlanet() {
     height: 100,
     widthSegment: 50,
     heightSegment: 50,
-    quadTreeDimensions: 1,
-    levels: 3,
+    quadTreeDimensions: 3,
+    levels: 2,
     radius: 100,
-    displacmentScale:1,
-    color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
+    displacmentScale:5,
  }
 
  this. s = new Sphere(
@@ -62,8 +61,25 @@ initPlanet() {
     params.levels,
     params.radius,
     params.displacmentScale,
-    params.color
   )
+
+
+  const loader1 = new THREE.TextureLoader().load('./worldTextures/front_image.png');
+  const loader2 = new THREE.TextureLoader().load('./worldTextures/back_image.png');
+  const loader3 = new THREE.TextureLoader().load('./worldTextures/right_image.png');
+  const loader4 = new THREE.TextureLoader().load('./worldTextures/left_image.png');
+  const loader5 = new THREE.TextureLoader().load('./worldTextures/top_image.png');
+  const loader6 = new THREE.TextureLoader().load('./worldTextures/bottom_image.png');
+
+
+  
+  this.s.front.addTexture  ([loader1], params.displacmentScale)
+  this.s.back.addTexture   ([loader2], params.displacmentScale)
+  this.s.right.addTexture  ([loader3], params.displacmentScale)
+  this.s.left.addTexture   ([loader4], params.displacmentScale)
+  this.s.top.addTexture    ([loader5], params.displacmentScale)
+  this.s.bottom.addTexture ([loader6], params.displacmentScale)
+
 
   this.allp = [
     ...this.s.front.instances,

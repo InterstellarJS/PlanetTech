@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
-import Stats from 'stats-js';
+import Stats from 'https://www.unpkg.com/stats-gl';
 import * as Nodes from 'three/nodes';
 import { global } from 'three/nodes';
 
@@ -26,9 +26,17 @@ this.container.clientHeight
 }
 
 stats() {
-this.stats_ = new Stats();
-this.stats_.showPanel(0);
-document.body.appendChild(this.stats_.dom);
+this.stats_ =  new Stats();
+document.body.appendChild(this.stats_.container );
+this.stats_.init( this.renderer.domElement );
+var that = this
+this.scene_.onBeforeRender = function () {
+  that.stats_.begin();
+};
+
+this.scene_.onAfterRender = function () {
+  that.stats_.end();
+};
 }
 
 camera(x = 0, y = 0, z = 0) {

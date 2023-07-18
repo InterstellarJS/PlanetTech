@@ -135,7 +135,7 @@ var patternCount = 0
       this.quadTree = new QuadTrees.QuadTreeLoD()
     }  
 
-    createDimensions(){
+    createDimensions(sideName){
       const w = this.quadData.width
       const d = this.quadData.dimensions
       const shardedGeometry = this.quadTreeconfig.config.arrybuffers[w]
@@ -145,6 +145,7 @@ var patternCount = 0
           var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
           var q = this.createNewMesh(shardedGeometry).setPosition( [i_,-j_,0], 'dimensions')
           q.quadTree = new QuadTrees.QuadTreeLoD()
+          q.side = sideName
           this.instances.push(q)
         }
       }

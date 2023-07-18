@@ -12,6 +12,7 @@ vec3 light_(vec3 n, vec3 ld ) {
 `,[light])
 
 
+
 export function frontsetData(obj){
     console.log('f')
     var position = obj.config.position
@@ -29,22 +30,11 @@ export function frontsetData(obj){
     var p = obj.child.plane
     var cnt = obj.cnt.clone()
     p.worldToLocal(cnt)
-    if(p.material.colorNode){
-      //const displace = NODE.normalLocal.mul( p.material.positionNode.add(textureNode.x.mul(5)) );
-      //p.material.colorNode = p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV)))
-      //p.material.positionNode =  NODE.positionLocal.add( displace );
-    }else{
-      //p.material.colorNode = textureNode //p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV),ld))
-      //const displace = textureNode.z.mul(5500.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      //p.material.colorNode = textureNode
-      //p.material.positionNode =  p.material.positionNode.add( displace );
-      const displace = textureNode.z.mul(1.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      p.material.colorNode = textureNode
-      p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
-      var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-      p.material.positionNode = newP.add( displace );
-
-    }
+    const displace = textureNode.r.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.colorNode = textureNode
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
+    var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+    p.material.positionNode = newP.add( displace );
 
   }  
 
@@ -67,23 +57,11 @@ export function frontsetData(obj){
     var p = obj.child.plane
     var cnt = obj.cnt
     p.worldToLocal(obj.cnt)
-    if(p.material.colorNode){
-      //const displace = NODE.normalLocal.mul( p.material.positionNode.add(textureNode.x.mul(5)) );
-      //p.material.colorNode = p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV)))
-      //p.material.positionNode =  NODE.positionLocal.add( displace );
-    }else{
-      //p.material.colorNode = textureNode //p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV),ld))
-      //const displace = textureNode.z.mul(5500.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      //p.material.colorNode = textureNode
-      //p.material.positionNode =  p.material.positionNode.add( displace );
-
-      const displace = textureNode.z.mul(1.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      p.material.colorNode = textureNode
-      p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
-      var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-      p.material.positionNode = newP.add( displace );
-
-    }
+    const displace = textureNode.r.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.colorNode = textureNode
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
+    var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+    p.material.positionNode = newP.add( displace );
 
   }
   
@@ -107,23 +85,11 @@ export function frontsetData(obj){
     var p = obj.child.plane
     var cnt = obj.cnt
     p.worldToLocal(obj.cnt)
-    if(p.material.colorNode){
-      //const displace = NODE.normalLocal.mul( p.material.positionNode.add(textureNode.x.mul(5)) );
-      //p.material.colorNode = p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV)))
-      //p.material.positionNode =  NODE.positionLocal.add( displace );
-    }else{
-      //p.material.colorNode = textureNode //p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV),ld))
-      //const displace = textureNode.z.mul(5500.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      //p.material.colorNode = textureNode
-      //p.material.positionNode =  p.material.positionNode.add( displace );
-
-      const displace = textureNode.z.mul(1.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      p.material.colorNode = textureNode
-      p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
-      var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-      p.material.positionNode = newP.add( displace );
-
-    }
+    const displace = textureNode.r.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.colorNode = textureNode
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
+    var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+    p.material.positionNode = newP.add( displace );
 
   } 
   
@@ -147,23 +113,11 @@ export function frontsetData(obj){
     var p = obj.child.plane
     var cnt = obj.cnt
     p.worldToLocal(obj.cnt)
-    if(p.material.colorNode){
-      //const displace = NODE.normalLocal.mul( p.material.positionNode.add(textureNode.x.mul(5)) );
-      //p.material.colorNode = p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV)))
-      //p.material.positionNode =  NODE.positionLocal.add( displace );
-    }else{
-      //p.material.colorNode = textureNode //p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV),ld))
-      //const displace = textureNode.z.mul(5500.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      //p.material.colorNode = textureNode
-      //p.material.positionNode =  p.material.positionNode.add( displace );
-
-      const displace = textureNode.z.mul(1.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      p.material.colorNode = textureNode
-      p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
-      var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-      p.material.positionNode = newP.add( displace );
-
-    }
+    const displace = textureNode.r.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.colorNode = textureNode
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
+    var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+    p.material.positionNode = newP.add( displace );
 
   } 
   
@@ -187,23 +141,11 @@ export function frontsetData(obj){
     var p = obj.child.plane
     var cnt = obj.cnt
     p.worldToLocal(obj.cnt)
-    if(p.material.colorNode){
-      //const displace = NODE.normalLocal.mul( p.material.positionNode.add(textureNode.x.mul(5)) );
-      //p.material.colorNode = p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV)))
-      //p.material.positionNode =  NODE.positionLocal.add( displace );
-    }else{
-      //p.material.colorNode = textureNode //p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV),ld))
-      //const displace = textureNode.z.mul(5500.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      //p.material.colorNode = textureNode
-      //p.material.positionNode =  p.material.positionNode.add( displace );
-
-      const displace = textureNode.z.mul(1.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      p.material.colorNode = textureNode
-      p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
-      var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-      p.material.positionNode = newP.add( displace );
-
-    }
+    const displace = textureNode.r.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.colorNode = textureNode
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
+    var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+    p.material.positionNode = newP.add( displace );
 
   } 
   
@@ -226,22 +168,11 @@ export function frontsetData(obj){
     var p = obj.child.plane
     var cnt = obj.cnt
     p.worldToLocal(obj.cnt)
-    if(p.material.colorNode){
-      //const displace = NODE.normalLocal.mul( p.material.positionNode.add(textureNode.x.mul(5)) );
-      //p.material.colorNode = p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV)))
-      //p.material.positionNode =  NODE.positionLocal.add( displace );
-    }else{
-      //p.material.colorNode = textureNode //p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV),ld))
-      //const displace = textureNode.z.mul(5500.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      //p.material.colorNode = textureNode
-      //p.material.positionNode =  p.material.positionNode.add( displace );
-
-      const displace = textureNode.z.mul(1.0).mul(NODE.positionLocal.sub(cnt).normalize())
-      p.material.colorNode = textureNode
-      p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
-      var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-      p.material.positionNode = newP.add( displace );
-    }
+    const displace = textureNode.r.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.colorNode = textureNode
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,0,0)})
+    var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+    p.material.positionNode = newP.add( displace );
 
   }
 

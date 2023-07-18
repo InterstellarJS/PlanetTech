@@ -1,7 +1,6 @@
 import * as THREEWG from 'three/nodes';
 import * as THREE   from 'three';
 import Quad         from './quad'
-import {getRandomColor,hexToRgbA} from './utils'
 import {QuadTrees}    from './quadtree'
 
 
@@ -26,7 +25,6 @@ export default class Sphere{
         var center = new THREE.Vector3();
         bbox.getCenter(center);
         var cnt = center
-        console.log(cnt)
         this.front. quadTreeconfig.config['cnt'] = cnt.clone()
         this.back.  quadTreeconfig.config['cnt'] = cnt.clone()
         this.right. quadTreeconfig.config['cnt'] = cnt.clone()
@@ -44,7 +42,6 @@ export default class Sphere{
         var center = new THREE.Vector3();
         bbox.getCenter(center);
         var cnt = center
-        console.log(cnt)
         this.front. quadTreeconfig.config['cnt'] = cnt.clone()
         this.back.  quadTreeconfig.config['cnt'] = cnt.clone()
         this.right. quadTreeconfig.config['cnt'] = cnt.clone()
@@ -55,65 +52,61 @@ export default class Sphere{
       }
     
 
-    build(lvl,radius){
-        this. combindeConfig = {}
+    build(lvl,radius, displacmentScale, color=this.quadTreeconfig.shardedData.color){
+        this.quadTreeconfig.shardedData.radius = radius 
+        this.quadTreeconfig.shardedData.color = color
+        this.quadTreeconfig.shardedData.displacmentScale = displacmentScale
+
 
         this.front = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.front.createQuadTree(lvl)
-        this.front.createDimensions()
+        this.front.createDimensions('front')
         var front = new THREE.Group();
         front.add( ...this.front.instances.map(x=>x.plane) );
-        this.front.quadTreeconfig.config. radius = radius //todo
-        this.front.side = 'front'
 
         this.back = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.back.createQuadTree(lvl)
-        this.back.createDimensions()
+        this.back.createDimensions('back')
         var back = new THREE.Group();
         back.add( ...this.back.instances.map(x=>x.plane) );
         back.position.z = -this.w*this.d;
         back.rotation.y =  Math.PI;
-        this.back.side = 'back'
 
         this.right = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.right.createQuadTree(lvl)
-        this.right.createDimensions()
+        this.right.createDimensions('right')
         var right = new THREE.Group();
         right.add( ...this.right.instances.map(x=>x.plane) );
         right.position.z = -(this.w*this.d)/2;
         right.position.x =  (this.w*this.d)/2;
         right.rotation.y =  Math.PI/2;
-        this.right.side = 'right'
 
         this.left = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.left.createQuadTree(lvl)
-        this.left.createDimensions()
+        this.left.createDimensions('left')
         var left = new THREE.Group();
         left.add( ...this.left.instances.map(x=>x.plane) );
         left.position.z =  -(this.w*this.d)/2;
         left.position.x =  -(this.w*this.d)/2;
         left.rotation.y =  -Math.PI/2;
-        this.left.side = 'left'
 
         this.top = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.top.createQuadTree(lvl)
-        this.top.createDimensions()
+        this.top.createDimensions('top')
         var top = new THREE.Group();
         top.add( ...this.top.instances.map(x=>x.plane) );
         top.position.z = -(this.w*this.d)/2;
         top.position.y =  (this.w*this.d)/2;
         top.rotation.x = -Math.PI/2;
-        this.top.side = 'top'
 
         this.bottom = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.bottom.createQuadTree(lvl)
-        this.bottom.createDimensions()
+        this.bottom.createDimensions('bottom')
         var bottom = new THREE.Group();
         bottom.add( ...this.bottom.instances.map(x=>x.plane) );
         bottom.position.z = -(this.w*this.d)/2;
         bottom.position.y = -(this.w*this.d)/2;
         bottom.rotation.x =  Math.PI/2;
-        this.bottom.side = 'bottom'
 
         this.sphere.add(front);
         this.sphere.add(back);
@@ -138,7 +131,7 @@ export default class Sphere{
             e.worldToLocal(cnt_)
             var ps = THREEWG.float(radius).mul((THREEWG.positionLocal.sub(cnt_).normalize())).add(cnt_) 
             e.material.positionNode = ps
-            e.material.colorNode    =  THREEWG.vec3(...hexToRgbA(getRandomColor()))
+            e.material.colorNode    = color instanceof Function ? color() : color
            })
            this.front. quadTreeconfig.config['cnt'] = cnt.clone()
            this.back.  quadTreeconfig.config['cnt'] = cnt.clone()

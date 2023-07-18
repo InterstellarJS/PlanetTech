@@ -124,7 +124,7 @@ class QuadTreeLoDCore  {
           //p.material.colorNode = p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV)))
           //p.material.positionNode =  THREEWG.positionLocal.add( displace );
         }else{
-          const displace = textureNode.r.mul(10.0).mul(THREEWG.normalLocal)
+          const displace = textureNode.r.mul(15.0).mul(THREEWG.normalLocal)
           p.material.colorNode = textureNode
           //p.material.colorNode = lighting.call({n:p.material.colorNode,ld:THREEWG.vec3(0,0,0)})
           p.material.positionNode = THREEWG.positionLocal.add( displace );
@@ -144,7 +144,7 @@ class QuadTreeLoDCore  {
           //p.material.colorNode = p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV)))
           //p.material.positionNode =  THREEWG.positionLocal.add( displace );
         }else{
-          const displace = textureNode.r.mul(10.0).mul(THREEWG.normalLocal)
+          const displace = textureNode.r.mul(15.0).mul(THREEWG.normalLocal)
           p.material.colorNode = textureNode
           //p.material.colorNode = lighting.call({n:p.material.colorNode,ld:THREEWG.vec3(0,0,0)})
           p.material.positionNode = THREEWG.positionLocal.add( displace );
@@ -163,7 +163,7 @@ class QuadTreeLoDCore  {
           //p.material.colorNode = p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV)))
           //p.material.positionNode =  THREEWG.positionLocal.add( displace );
         }else{
-          const displace = textureNode.r.mul(10.0).mul(THREEWG.normalLocal)
+          const displace = textureNode.r.mul(15.0).mul(THREEWG.normalLocal)
           p.material.colorNode = textureNode
           //p.material.colorNode = lighting.call({n:p.material.colorNode,ld:THREEWG.vec3(0,0,0)})
           p.material.positionNode = THREEWG.positionLocal.add( displace );
@@ -182,7 +182,7 @@ class QuadTreeLoDCore  {
           //p.material.colorNode = p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV)))
           //p.material.positionNode = p.material.positionNode.add( displace );
         }else{
-          const displace = textureNode.r.mul(10.0).mul(THREEWG.normalLocal)
+          const displace = textureNode.r.mul(15.0).mul(THREEWG.normalLocal)
           p.material.colorNode = textureNode
           //p.material.colorNode = lighting.call({n:p.material.colorNode,ld:THREEWG.vec3(0,0,0)})
           p.material.positionNode = THREEWG.positionLocal.add( displace );

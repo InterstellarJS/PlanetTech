@@ -78,7 +78,7 @@ var patternCount = 0
           //p.material.colorNode = textureNode .mul(2.0).sub(1.0)//lighting((displacedNormal(textureNode,newUV)),ld )
           //p.material.positionNode = NODE.positionLocal.add(displace);
 
-          const displace = textureNode.r.mul(10.0).mul(NODE.normalLocal)
+          const displace = textureNode.r.mul(15.0).mul(NODE.normalLocal)
           p.material.colorNode = textureNode
           p.material.positionNode = NODE.positionLocal.add( displace );
 

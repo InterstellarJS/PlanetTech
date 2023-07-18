@@ -4,6 +4,7 @@ import renderer from './render';
 import { nodeFrame } from 'three/addons/renderers/webgl/nodes/WebGLNodes.js';
 import Quad         from './core/quad/quad.js'
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
+import Sphere     from './core/sphere/sphere'
 
 
 
@@ -30,12 +31,27 @@ initQuad(tex) {
   this. q = new Quad(100,100,50,50,2)
   this.q.createQuadTree(3)
   this.q.createDimensions()
-  const loader1 = new THREE.TextureLoader().load('./front_image.png');
+  const loader1 = new THREE.TextureLoader().load('./hm4.png');
   this.q.addTexture  (loader1)
   this.rend.scene_.add( ...this.q.instances.map(x=>x.plane) );
 }
 
-initPlanet() {}
+initPlanet() {
+  this.s = new Sphere(100,100,50,50,1)
+  this.s.build(1,100)
+  this.allp = [
+    ...this.s.front.instances,
+    ...this.s.back.instances,
+    ...this.s.right.instances,
+    ...this.s.left.instances,
+    ...this.s.top.instances,
+    ...this.s.bottom.instances,
+  ]
+
+  this.rend.scene_.add( this.s.sphere);
+
+
+}
 
 initPlayer(){
 var boxGeometry        = new THREE.BoxGeometry( 1, 1, 1,1 )
@@ -52,7 +68,7 @@ this.rend.scene_.add(this.player)
 start() {
 this.render(this.canvasViewPort);
 this.initPlayer()
-this.initQuad()
+this.initPlanet()
 this.update();
 }
 
@@ -67,12 +83,12 @@ updateMeshPosition(value){
 update(t) {
 this.rend.stats_.begin();
 
-if(this.q){
+/*if(this.q){
   this.controls.update(this.clock.getDelta())
   for (var i = 0; i < this.q.instances.length; i++) {
     this.q.instances[i].update(this.player)
   }
-}
+}*/
 
 this.rend.stats_.end();
 requestAnimationFrame(this.update.bind(this));

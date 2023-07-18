@@ -44,7 +44,7 @@ initPlanet() {
     widthSegment: 50,
     heightSegment: 50,
     quadTreeDimensions: 1,
-    levels: 2,
+    levels: 3,
     radius: 100,
     displacmentScale:1,
     color: () => NODE.vec3(...hexToRgbA(getRandomColor())),

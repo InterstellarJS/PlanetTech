@@ -1,8 +1,5 @@
 # WorldTechJS
-
-![Example Planet](./public/readmeImg/example-planet.png)
-<img src="./public/readmeImg/img1.png" style="max-width: 512px; max-height: 512px;">
-
+![Example Planet](./public/readmeImg/example-planet.png)![Example Planet](./public/readmeImg/img1.png)
 
 
 WorldTechJS is a JavaScript library for generating procedural planets and terrains. It provides a simple and flexible way to create realistic and visually appealing 3D planets with customizable features such as terrain height, textures, and atmospheric effects.
@@ -21,7 +18,7 @@ WorldTechJS is a JavaScript library for generating procedural planets and terrai
 
 
 ## Examples
-let create a basic quadtree sphere without any textures or displacment. Just coloring each dimensions to show whats going on.
+Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on.
 ```javascript
 
 import Sphere from './core/sphere/sphere'
@@ -55,11 +52,9 @@ import Sphere from './core/sphere/sphere'
 ```
 ![quad Sphere](./public/readmeImg/img2.png)
 
-Now let crank the levels up all the way to 10 (a reasonable number without my machine freezing up). 
-So you're creating a sphere with 10x10x6 dimensions at a resoultion of 50. you can play with the paramters for whatever fits your needs the only limitation is your machine.
+Now let's crank up the `levels` all the way to 10 (a reasonable number without my machine freezing up). So you'll be creating a sphere with 10x10x6 dimensions at a resolution of 50. You can play with the parameters to fit your needs; the only limitation is your machine.
 ![quad Sphere](./public/readmeImg/img3.png)
 
 
-To get a better understanding on the `levels` permater lets take a look at a single quad (single dimension).
-Setting `params.levels = 6` gives a single dimension the ability to go six levels deep.
+To get a better understanding of the `levels` parameter, let's take a look at a single quad (single dimension). Setting `params.levels = 6` gives a single dimension the ability to go six levels deep.
 ![quad Sphere](./public/readmeImg/img4.jpg)

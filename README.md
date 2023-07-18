@@ -1,7 +1,7 @@
 # WorldTechJS
 
 ![Example Planet](./public/readmeImg/example-planet.png)
-<img src="./public/readmeImg/img1.png" style=" width:512px ; height:512px "  >
+<img src="./public/readmeImg/img1.png" style="max-width: 512px; max-height: 512px;">
 
 
 

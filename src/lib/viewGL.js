@@ -5,7 +5,8 @@ import Quad          from './core/quad/quad.js'
 import Sphere        from './core/sphere/sphere'
 import { nodeFrame } from 'three/addons/renderers/webgl/nodes/WebGLNodes.js';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
-import { getRandomColor,hexToRgbA } from './core/sphere/utils'
+import { getRandomColor,hexToRgbA,displacementNormalNoiseFBM } from './core/sphere/utils'
+import {CubeTexture} from "./core/textures/cubetexture"
 
 
 
@@ -20,7 +21,7 @@ this.rend.webglRenderer(canvasViewPort);
 this.rend.scene();
 this.rend.stats();
 this.rend.camera();
-this.rend.updateCamera(0,0,200)
+this.rend.updateCamera(0,0,200000)
 this.rend.orbitControls()
 }
 
@@ -37,16 +38,22 @@ initQuad(tex) {
   this.rend.scene_.add( ...this.q.instances.map(x=>x.plane) );
 }
 
-initPlanet() {
+initPlanet(c) {
+ 
+
+  var cbt = new CubeTexture()
+  var t = cbt.get(this.rend)
+  console.log(t)
+
   const params = {
-    width: 100,
-    height: 100,
-    widthSegment: 250,
-    heightSegment: 250,
+    width: 100000,
+    height: 100000,
+    widthSegment: 50,
+    heightSegment: 50,
     quadTreeDimensions: 1,
     levels: 2,
-    radius: 100,
-    displacmentScale:5,
+    radius: 100000,
+    displacmentScale:10000,
  }
 
  this. s = new Sphere(
@@ -64,31 +71,31 @@ initPlanet() {
   )
 
 
-  const loader1 = new THREE.TextureLoader().load('./worldTextures/front_image.png');
-  const loader2 = new THREE.TextureLoader().load('./worldTextures/back_image.png');
-  const loader3 = new THREE.TextureLoader().load('./worldTextures/right_image.png');
-  const loader4 = new THREE.TextureLoader().load('./worldTextures/left_image.png');
-  const loader5 = new THREE.TextureLoader().load('./worldTextures/top_image.png');
-  const loader6 = new THREE.TextureLoader().load('./worldTextures/bottom_image.png');
 
 
-  var urls = [ 
-    './worldTextures/right_image.png',
-    './worldTextures/left_image.png',
-    './worldTextures/top_image.png',
-    './worldTextures/bottom_image.png',
-    './worldTextures/front_image.png',
-    './worldTextures/back_image.png',
-            ]
-var textureCube = new THREE.CubeTextureLoader().load( urls );
 
+  //var cbt = new CubeTexture()
+  //var t = cbt.get(this.rend)
+  t[0][0] = new THREE.CanvasTexture(c)
+
+  t[2][0] = new THREE.CanvasTexture(c)
+
+  console.log(t[0][0])
+  this.s.front.addTexture  (t[0], params.displacmentScale)
+  this.s.back.addTexture   (t[1], params.displacmentScale)
+  this.s.right.addTexture  (t[2], params.displacmentScale)
+  this.s.left.addTexture   (t[3], params.displacmentScale)
+  this.s.top.addTexture    (t[4], params.displacmentScale)
+  this.s.bottom.addTexture (t[5], params.displacmentScale)
+
+
+  this.s.front.lighting    (NODE.vec3(0,0,0))
+  this.s.back.lighting     (NODE.vec3(0,0,0))
+  this.s.right.lighting    (NODE.vec3(0,0,0))
+  this.s.left.lighting     (NODE.vec3(0,0,0))
+  this.s.top.lighting      (NODE.vec3(0,0,0))
+  this.s.bottom.lighting   (NODE.vec3(0,0,0))
   
-  this.s.front.addTexture  ([textureCube], params.displacmentScale)
-  this.s.back.addTexture   ([textureCube], params.displacmentScale)
-  this.s.right.addTexture  ([textureCube], params.displacmentScale)
-  this.s.left.addTexture   ([textureCube], params.displacmentScale)
-  this.s.top.addTexture    ([textureCube], params.displacmentScale)
-  this.s.bottom.addTexture ([textureCube], params.displacmentScale)
 
 
   this.allp = [
@@ -120,7 +127,7 @@ this.rend.scene_.add(this.player)
 start() {
 this.render(this.canvasViewPort);
 this.initPlayer()
-this.initPlanet()
+//this.initPlanet()
 this.update();
 }
 

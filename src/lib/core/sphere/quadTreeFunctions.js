@@ -5,7 +5,7 @@ import {
   light
 } from  './../shaders/glslFunctions'
 
-var lighting = NODE.glslFn(`
+var lighting = NODE.func(`
 vec3 light_(vec3 n, vec3 ld ) {
   return light( n,ld);
 }

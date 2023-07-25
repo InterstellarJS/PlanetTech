@@ -5,8 +5,49 @@ import * as THREE from 'three';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
- function asyncCall(canvas, viewGL) {
-  //viewGL.initPlanet();
+  // Function to create the canvas dynamically
+  function createCanvas(width, height) {
+    const canvas = document.getElementById("myCanvas");
+    canvas.width = width;
+    canvas.height = height;
+    return canvas;
+}
+
+
+
+ function  asyncCall(canvasI, viewGL) {
+  // Get the canvas and its context
+// Set the source of the second image
+var src2 = "./worldTextures/right_image.png";
+// Set the source of the first image
+var src1 = "./worldTextures/front_image.png";
+
+const canvas = createCanvas(512, 512);
+const ctx = canvas.getContext("2d");
+
+const image1 = new Image();
+const image2 = new Image();
+
+
+
+        image1.onload = () => {
+            // Once the first image is loaded, draw it on the left side of the canvas
+            ctx.drawImage(image1, 0, 0, 512/2, 512/2);
+
+            image2.onload = () => {
+                // Once the second image is loaded, draw it on the right side of the canvas
+                ctx.drawImage(image2, 512/2, 0, 512/2, 512/2);
+                viewGL.initPlanet(canvas);
+
+            };
+
+            // Set the source of the second image
+            image2.src = src2;
+        };
+
+        // Set the source of the first image
+        image1.src = src1;
+
 }
 
 const RightPanel = () => {
@@ -66,8 +107,8 @@ const RightPanel = () => {
           position: 'absolute',
           top: '0',
           left: '0',
-          width: '200px',
-          height: '200px',
+          width: '1024px',
+          height: '512px',
           backgroundColor: 'green',
         }}
       />

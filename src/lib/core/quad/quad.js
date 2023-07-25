@@ -90,7 +90,7 @@ var patternCount = 0
 
  
     fbm(op,wpscale,offset, seed, scale, persistance, lacunarity, redistribution, octaves,  iteration, terbulance,  ridge, patternNoise){
-      var fn = NODE.glslFn(`
+      var fn = NODE.func(`
       vec3 displacementNormalNoiseFBM_${fbmCount}(vec3 wp ,vec3 vn, float seed, float scale,float persistance,float lacunarity,float redistribution,int octaves, int iteration,bool terbulance, bool ridge,bool patternNoise){
         vec3 n =  displacementNormalNoiseFBM(wp,vn, seed,  scale, persistance, lacunarity, redistribution, octaves,  iteration, terbulance,  ridge, patternNoise);
         return vec3( n.r );
@@ -140,7 +140,7 @@ var patternCount = 0
 
 
     lighting(ld){
-      var fn = NODE.glslFn(`
+      var fn = NODE.func(`
       vec3 light_(vec3 n, vec3 ld ) {
         return light( n,ld);
       }

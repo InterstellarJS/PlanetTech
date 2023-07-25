@@ -100,7 +100,7 @@ class QuadTreeLoDCore  {
       quad.add(child3);
       quad.add(child4);
 
-      var lighting = THREEWG.glslFn(`
+      var lighting = THREEWG.func(`
       vec3 light_(vec3 n, vec3 ld ) {
         return light( n,ld);
       }

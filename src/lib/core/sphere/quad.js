@@ -2,7 +2,7 @@ import * as NODE from 'three/nodes';
 import * as THREE   from 'three';
 import {QuadTrees}  from './quadtree'
 import {norm}       from './utils'
-import {light} from  './../shaders/glslFunctions'
+import {light,displacemntNormalV3,displacemntNormalV2} from  './../shaders/glslFunctions'
 
 
 console.log(NODE)
@@ -49,21 +49,29 @@ var patternCount = 0
       for (var i = 0; i < this.instances.length; i++) {
         var q = this.instances[i]
         var p = q.plane
-        p.material.uniforms[`displacementScale_${this.count}`] = new THREE.Vector2(1,1);
-        p.material.uniforms[`lightDirection_${this.count}`]    = new THREE.Vector3(.0, .0, 0); 
-        var wp = p.position.clone()//todo
-        var nxj = norm(wp.x,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
-        var nyj = norm(wp.y,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
-        var offSets = NODE.vec2(nxj-halfScale,nyj-halfScale)
-        var newUV   = NODE.uv().mul(testscaling).add(offSets)
-        //var scale = 1.0
-        //newUV = newUV.mul(scale).add(0.5 * (1.0-scale)).add(NODE.vec2(0.0,0.0))
+
+ 
         var cnt = this.quadTreeconfig.config.cnt.clone()
         p.worldToLocal(cnt)
-        var textureNode = NODE.cubeTexture(texture_[0],NODE.positionWorld.sub(cnt))
-        //var textureNodeN = NODE.texture(texture_[1],newUV)
 
-        textureNode._TexId = `${i}_${this.count}` 
+        var newUV   = NODE.uv()
+
+if(this.side == 'front'){
+  var scale = .5
+  var newUV = newUV.mul(scale).add(0.5 * (1.0-scale)).add(NODE.vec2(-.25,.251))
+}else{
+  var scale = .5
+  var newUV = newUV.mul(scale).add(0.5 * (1.0-scale)).add(NODE.vec2(0.25,.251))
+}
+
+
+
+        console.log(texture_)
+        var textureNodeD = NODE.texture(texture_[0],newUV)
+        var textureNodeN = NODE.texture(texture_[1],newUV)
+
+
+        //textureNode._TexId = `${i}_${this.count}` 
         if(p.material.positionNode){
           //var mouse = p.material.uniforms[`displacementScale_${this.count}`]
           //var ld    = p.material.uniforms[`lightDirection_${this.count}`]
@@ -75,8 +83,8 @@ var patternCount = 0
 
 
           //p.material.colorNode = textureNodeN//displacemntTextureV3(texture_,newUV)
-          p.material.colorNode = textureNode
-          const displace = textureNode.r.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
+          p.material.colorNode = displacemntNormalV3(texture_[0],newUV)
+          const displace = textureNodeD.x.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
           p.material.positionNode =  p.material.positionNode.add( displace );
           
         }else{
@@ -87,9 +95,9 @@ var patternCount = 0
           //const displace = textureNode.x.mul(screenFXNode.x).mul(NODE.normalLocal)
           //p.material.colorNode = textureNode .mul(2.0).sub(1.0)//lighting((displacedNormal(textureNode,newUV)),ld )
           //p.material.positionNode = NODE.positionLocal.add(displace);
-          const displace = textureNode.r.mul(displacementScale).mul(NODE.normalLocal)
-          p.material.colorNode = textureNode
-          p.material.positionNode = NODE.positionLocal.add( displace );
+          const displace = textureNodeD.r.mul(displacementScale).mul(NODE.normalLocal)
+          p.material.colorNode = textureNodeD
+          //p.material.positionNode = NODE.positionLocal.add( displace );
         }
         }
         this.count++
@@ -97,7 +105,7 @@ var patternCount = 0
 
 
     lighting(ld){
-      var fn = NODE.glslFn(`
+      var fn = NODE.func(`
       vec3 light_(vec3 n, vec3 ld ) {
         return light( n,ld);
       }
@@ -151,6 +159,7 @@ var patternCount = 0
           this.instances.push(q)
         }
       }
+      this.side = sideName
     }
   
 

@@ -2,24 +2,24 @@ import * as NODE from 'three/nodes';
 
 
 
-const permute = NODE.glslFn(
+const permute = NODE.func(
     `
     vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
     `)
 
-const taylorInvSqrt = NODE.glslFn(
+const taylorInvSqrt = NODE.func(
     `
     vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
     `)
 
-const orthogonal = NODE.glslFn(`
+const orthogonal = NODE.func(`
     vec3 orthogonal(vec3 v) {
       return normalize(abs(v.x) > abs(v.z) ? vec3(-v.y, v.x, 0.0)
       : vec3(0.0, -v.z, v.y));
     }
     `)   
 
-export const snoise3D = NODE.glslFn(
+export const snoise3D = NODE.func(
     `
       float snoise3D(vec3 v){ 
         const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
@@ -84,7 +84,7 @@ export const snoise3D = NODE.glslFn(
       `,[permute,taylorInvSqrt]
   )
   
-export const  fbmNoise = NODE.glslFn(`
+export const  fbmNoise = NODE.func(`
 float fbm(vec3 v_, float seed_, float scale_,float persistance_,float lacunarity_,float redistribution_,int octaves_, int iteration_,bool terbulance_, bool ridge_  ) {
   vec3 v = v_; 
   v += (seed_ * 100.0);
@@ -127,7 +127,7 @@ float fbm(vec3 v_, float seed_, float scale_,float persistance_,float lacunarity
 `,[snoise3D])
 
 
-export  const  displacementNormalNoiseFBM = NODE.glslFn(`
+export  const  displacementNormalNoiseFBM = NODE.func(`
   
   vec3 displacementNormalNoiseFBM(
     vec3 wp, vec3 vn, 
@@ -153,7 +153,7 @@ export  const  displacementNormalNoiseFBM = NODE.glslFn(`
   `,[orthogonal,fbmNoise])
 
 
-export  const  patternNoise = NODE.glslFn(`
+export  const  patternNoise = NODE.func(`
   float pattern(vec3 p, float seed, float scale, float persistance ,float lacunarity,float redistribution, int octaves, int iteration,bool terbulance, bool ridge)
   {
       vec3 q = vec3(fbm(p + vec3(8.0, 3.0, 4.0), seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge),
@@ -166,7 +166,7 @@ export  const  patternNoise = NODE.glslFn(`
 
   `,[fbmNoise])
 
-export  const  patternNormal = NODE.glslFn(`
+export  const  patternNormal = NODE.func(`
   vec3 patternNormal(
     vec3 wp, vec3 vn, 
     float seed0, float scale0, float postionScale0, float persistance0 ,float lacunarity0,float redistribution0, int octaves0, int iteration0,bool terbulance0, bool ridge0,
@@ -189,7 +189,7 @@ export  const  patternNormal = NODE.glslFn(`
 
   `,[orthogonal,patternNoise])
 
-export  const  light = NODE.glslFn(`
+export  const  light = NODE.func(`
     vec3 light(vec3 displacedNormal,vec3 ld){
         float  lightAmbient  = 0.65;
         float  lightDiffuse  = 0.9;
@@ -208,7 +208,7 @@ export  const  light = NODE.glslFn(`
     `)
 
 
-export const computeNormal = NODE.glslFn( `
+export const computeNormal = NODE.func( `
 vec3 computeNormal(vec2 uv, sampler2D textureMap ) {
   float texelSize = 1.0 / float(textureSize(textureMap, 0).x);
   float hL = texture2D(textureMap, uv + vec2(-texelSize, 0)).r;
@@ -257,7 +257,7 @@ return displacedNormal
 
 
 export const displacemntNormalV2 = (texture_,newUV) =>{
-  var scale    = 0.9;   // Adjust this to control the amount of displacement
+  var scale    = 8.9;   // Adjust this to control the amount of displacement
   var epsilon  = 0.01;  // Small value for calculating gradients
   var strength = 1.0;                   
   var center = NODE.texture(texture_,newUV).r; // Sample displacement map
@@ -281,3 +281,137 @@ export const displacemntNormalV3 = (texture_,newUV) =>{
   var normalMap = NODE.vec3(dx.mul(scale), dy.mul(scale), 1.0).normalize(); 
   normalMap = normalMap.mul(strength);                                                       // Apply strength to the normal vector
   return NODE.vec4(normalMap.mul(.5).add(.5), 1.0);  }
+
+
+  let hashivec3 = NODE.func(`
+  vec3 hash( ivec3 p )   {   
+	ivec3 n = ivec3( p.x*127 + p.y*311 + p.z*74,
+                     p.x*269 + p.y*183 + p.z*246,
+                     p.x*113 + p.y*271 + p.z*124);
+
+	// 1D hash by Hugo Elias
+	n = (n << 13) ^ n;
+    n = n * (n * n * 15731 + 789221) + 1376312589;
+    return -1.0+2.0*vec3( n & ivec3(0x0fffffff))/float(0x0fffffff);
+}
+  `)
+
+ let  hashiq = NODE.func(`
+
+ vec3 hash( vec3 p )      
+{                        // replace this by something better
+	p = vec3( dot(p,vec3(127.1,311.7, 74.7)),
+			  dot(p,vec3(269.5,183.3,246.1)),
+			  dot(p,vec3(113.5,271.9,124.6)));
+
+	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
+}
+  `)
+
+
+  export const iqNoise = NODE.func(
+
+    `
+
+vec4 noised( in vec3 x )
+{
+    // grid
+    vec3 p = floor(x);
+    vec3 w = fract(x);
+    
+    // quintic interpolant
+    vec3 u = w*w*w*(w*(w*6.0-15.0)+10.0);
+    vec3 du = 30.0*w*w*(w*(w-2.0)+1.0);
+    
+    // gradients
+    vec3 ga = hash( p+vec3(0.0,0.0,0.0) );
+    vec3 gb = hash( p+vec3(1.0,0.0,0.0) );
+    vec3 gc = hash( p+vec3(0.0,1.0,0.0) );
+    vec3 gd = hash( p+vec3(1.0,1.0,0.0) );
+    vec3 ge = hash( p+vec3(0.0,0.0,1.0) );
+    vec3 gf = hash( p+vec3(1.0,0.0,1.0) );
+    vec3 gg = hash( p+vec3(0.0,1.0,1.0) );
+    vec3 gh = hash( p+vec3(1.0,1.0,1.0) );
+    
+    // projections
+    float va = dot( ga, w-vec3(0.0,0.0,0.0) );
+    float vb = dot( gb, w-vec3(1.0,0.0,0.0) );
+    float vc = dot( gc, w-vec3(0.0,1.0,0.0) );
+    float vd = dot( gd, w-vec3(1.0,1.0,0.0) );
+    float ve = dot( ge, w-vec3(0.0,0.0,1.0) );
+    float vf = dot( gf, w-vec3(1.0,0.0,1.0) );
+    float vg = dot( gg, w-vec3(0.0,1.0,1.0) );
+    float vh = dot( gh, w-vec3(1.0,1.0,1.0) );
+	
+    // interpolation
+    float v = va + 
+              u.x*(vb-va) + 
+              u.y*(vc-va) + 
+              u.z*(ve-va) + 
+              u.x*u.y*(va-vb-vc+vd) + 
+              u.y*u.z*(va-vc-ve+vg) + 
+              u.z*u.x*(va-vb-ve+vf) + 
+              u.x*u.y*u.z*(-va+vb+vc-vd+ve-vf-vg+vh);
+              
+    vec3 d = ga + 
+             u.x*(gb-ga) + 
+             u.y*(gc-ga) + 
+             u.z*(ge-ga) + 
+             u.x*u.y*(ga-gb-gc+gd) + 
+             u.y*u.z*(ga-gc-ge+gg) + 
+             u.z*u.x*(ga-gb-ge+gf) + 
+             u.x*u.y*u.z*(-ga+gb+gc-gd+ge-gf-gg+gh) +   
+             
+             du * (vec3(vb-va,vc-va,ve-va) + 
+                   u.yzx*vec3(va-vb-vc+vd,va-vc-ve+vg,va-vb-ve+vf) + 
+                   u.zxy*vec3(va-vb-ve+vf,va-vb-vc+vd,va-vc-ve+vg) + 
+                   u.yzx*u.zxy*(-va+vb+vc-vd+ve-vf-vg+vh));
+                   
+    return vec4( v, d );                   
+}
+
+`,[hashiq,hashivec3]
+  )
+
+
+
+
+export const iqNoiseFBM = NODE.func(`
+vec4 fbmd(  vec3 x, int octaves)
+{
+    const float scale  = 1.;
+    float a = 0.0;
+    float b = 0.5;
+	  float f = 2.0;
+    vec3  d = vec3(0.0);
+    for( int i=0; i<octaves; i++ )
+    {
+        vec4 n = noised(f*x*scale);
+        a += b*n.x;           // accumulate values		
+        d += b*n.yzw*f*scale; // accumulate derivatives
+        b *= 0.5;             // amplitude decrease
+        f *= 1.8;             // frequency increase
+    }
+
+	return vec4( a, d );
+}
+  `,[iqNoise])
+
+
+  export const normalV4 = NODE.func(`
+  vec4 iqNormal(vec3 worldPosition,vec3 center, int octaves){
+    vec3 sampleDir = normalize(worldPosition.xyz - center);
+    vec4 noise = fbmd(sampleDir,octaves); // Using IQ's "noise-with-derivative"
+
+    // IQ's version returns noise value in x, gradient in yzw.
+    float height = noise.x;
+    vec3 gradient = noise.yzw;
+
+    // Zero out component perpendicular to the sphere.
+    vec3 onSphere = gradient - dot(sampleDir, gradient) * sampleDir;
+
+    // Normal vector tilts away from "uphill" direction.
+    vec3 n =  normalize(sampleDir - onSphere * 1.0);
+    return vec4(height,n);
+  }
+  `,[iqNoiseFBM])

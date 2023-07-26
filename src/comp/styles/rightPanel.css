@@ -1,5 +1,11 @@
-#myCanvas{
-    width:400px;
-    height:400px;
+
+#myCanvas {
+    /* all four are needed to support the most browsers */
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background-color: blue;
+
   }
-  
+  /* optional: can also be applied to `img` tags */

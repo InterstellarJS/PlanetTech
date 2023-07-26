@@ -257,7 +257,7 @@ return displacedNormal
 
 
 export const displacemntNormalV2 = (texture_,newUV) =>{
-  var scale    = 8.9;   // Adjust this to control the amount of displacement
+  var scale    = 2.9;   // Adjust this to control the amount of displacement
   var epsilon  = 0.01;  // Small value for calculating gradients
   var strength = 1.0;                   
   var center = NODE.texture(texture_,newUV).r; // Sample displacement map

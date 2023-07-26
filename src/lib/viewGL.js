@@ -21,7 +21,7 @@ this.rend.webglRenderer(canvasViewPort);
 this.rend.scene();
 this.rend.stats();
 this.rend.camera();
-this.rend.updateCamera(0,0,200000)
+this.rend.updateCamera(0,0,2000)
 this.rend.orbitControls()
 }
 
@@ -38,22 +38,22 @@ initQuad(tex) {
   this.rend.scene_.add( ...this.q.instances.map(x=>x.plane) );
 }
 
-initPlanet(c) {
+initPlanet(canvas) {
  
 
-  var cbt = new CubeTexture()
-  var t = cbt.get(this.rend)
-  console.log(t)
+  //var cbt = new CubeTexture()
+  //var t = cbt.get(this.rend)
+  //console.log(t)
 
   const params = {
-    width: 100000,
-    height: 100000,
+    width: 1,
+    height: 1,
     widthSegment: 50,
     heightSegment: 50,
     quadTreeDimensions: 1,
     levels: 2,
-    radius: 100000,
-    displacmentScale:10000,
+    radius: 1000,
+    displacmentScale:50,
  }
 
  this. s = new Sphere(
@@ -76,17 +76,13 @@ initPlanet(c) {
 
   //var cbt = new CubeTexture()
   //var t = cbt.get(this.rend)
-  t[0][0] = new THREE.CanvasTexture(c)
-
-  t[2][0] = new THREE.CanvasTexture(c)
-
-  console.log(t[0][0])
-  this.s.front.addTexture  (t[0], params.displacmentScale)
-  this.s.back.addTexture   (t[1], params.displacmentScale)
-  this.s.right.addTexture  (t[2], params.displacmentScale)
-  this.s.left.addTexture   (t[3], params.displacmentScale)
-  this.s.top.addTexture    (t[4], params.displacmentScale)
-  this.s.bottom.addTexture (t[5], params.displacmentScale)
+  
+  this.s.front.addTexture  ([new THREE.CanvasTexture(canvas[0])], params.displacmentScale)
+  this.s.back.addTexture   ([new THREE.CanvasTexture(canvas[5])], params.displacmentScale)
+  this.s.right.addTexture  ([new THREE.CanvasTexture(canvas[2])], params.displacmentScale)
+  this.s.left.addTexture   ([new THREE.CanvasTexture(canvas[3])], params.displacmentScale)
+  this.s.top.addTexture    ([new THREE.CanvasTexture(canvas[1])], params.displacmentScale)
+  this.s.bottom.addTexture ([new THREE.CanvasTexture(canvas[4])], params.displacmentScale)
 
 
   this.s.front.lighting    (NODE.vec3(0,0,0))

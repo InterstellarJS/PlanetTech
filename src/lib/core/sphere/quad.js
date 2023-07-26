@@ -49,26 +49,27 @@ var patternCount = 0
       for (var i = 0; i < this.instances.length; i++) {
         var q = this.instances[i]
         var p = q.plane
-
- 
         var cnt = this.quadTreeconfig.config.cnt.clone()
         p.worldToLocal(cnt)
 
-        var newUV   = NODE.uv()
+  var clampedUVs = NODE.func(`
+          vec2 clampedUVs(vec2 uv){
+            float scale   = 0.3333333333333333;
+            vec2 offset   = vec2(1.0,1.0);
+            vec2 uu = vec2(0.5) + (uv - vec2(0.5))/1.0;
+            vec2 newUv    = (uu + offset) * scale;
+            // Get minimum & maximum limits of UVs
+            vec2 min = vec2(offset.x + 0.0, offset.y + 0.0) * scale;
+            vec2 max = vec2(offset.x + 1.0, offset.y + 1.0) * scale;
+            return clamp(newUv, min, max);
+          
+          }
+          `)
+          var uv = clampedUVs.call({uv:NODE.uv()})
 
-if(this.side == 'front'){
-  var scale = .5
-  var newUV = newUV.mul(scale).add(0.5 * (1.0-scale)).add(NODE.vec2(-.25,.251))
-}else{
-  var scale = .5
-  var newUV = newUV.mul(scale).add(0.5 * (1.0-scale)).add(NODE.vec2(0.25,.251))
-}
-
-
-
-        console.log(texture_)
-        var textureNodeD = NODE.texture(texture_[0],newUV)
-        var textureNodeN = NODE.texture(texture_[1],newUV)
+          var textureNodeD = NODE.texture(texture_[0],uv)
+          var textureNodeN = NODE.texture(texture_[0],uv)  
+       
 
 
         //textureNode._TexId = `${i}_${this.count}` 
@@ -83,7 +84,7 @@ if(this.side == 'front'){
 
 
           //p.material.colorNode = textureNodeN//displacemntTextureV3(texture_,newUV)
-          p.material.colorNode = displacemntNormalV3(texture_[0],newUV)
+          p.material.colorNode = displacemntNormalV2(texture_[0],uv)
           const displace = textureNodeD.x.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
           p.material.positionNode =  p.material.positionNode.add( displace );
           

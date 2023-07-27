@@ -507,7 +507,9 @@ const RightPanel = () => {
   }, []);
 
   useEffect(() => {
-    asyncCall(canvasRef.current, viewGL);
+    //asyncCall(canvasRef.current, viewGL);
+    viewGL.initPlanet();
+
   }, []);
 
   useEffect(() => {

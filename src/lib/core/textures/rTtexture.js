@@ -18,6 +18,15 @@ export class RtTexture {
     this. renderTarget  = new THREE.WebGLRenderTarget(this.rtWidth, this.rtHeight);
   }
 
+  initRenderTragetCubeMap(){
+    var width = 6
+    var height = 6
+    this. rtScene       = new THREE.Scene();
+    this. rtScene.background  = new THREE.Color('blue');
+    this. rtCamera      = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
+    this. renderTarget  = new THREE.WebGLRenderTarget(this.rtWidth, this.rtHeight);
+  }
+
   toMesh(w,h,wr,hs){
     const geometry = new THREE.PlaneGeometry( w,h,wr,hs);
     const material = new NODE.MeshBasicNodeMaterial();

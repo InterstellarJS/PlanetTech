@@ -7,6 +7,7 @@ import { nodeFrame } from 'three/addons/renderers/webgl/nodes/WebGLNodes.js';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA,displacementNormalNoiseFBM } from './core/sphere/utils'
 import {CubeTexture} from "./core/textures/cubetexture"
+import {CubeMap} from "./core/textures/cubeMap"
 
 
 
@@ -74,24 +75,42 @@ initPlanet(canvas) {
 
 
 
-  //var cbt = new CubeTexture()
-  //var t = cbt.get(this.rend)
+var cm = new CubeMap()
+/*
+let frtt = cm.snapShotFront({v: NODE.positionWorld.sub(NODE.vec3(0,0,-1)).normalize() })
+var fpixels = frtt.getPixels(this.rend)
+var fcanvas = frtt.toImage(fpixels)
+frtt.download(fcanvas,'front')
+
+let rrtt = cm.snapShotRight({v: NODE.positionWorld.sub(NODE.vec3(0,0,-1)).normalize() })
+let rpixels = rrtt.getPixels(this.rend)
+let rcanvas = rrtt.toImage(rpixels)
+rrtt.download(rcanvas,'right')
+
+let trtt = cm.snapShotTop({v: NODE.positionWorld.sub(NODE.vec3(0,0,-1)).normalize() })
+let tpixels = trtt.getPixels(this.rend)
+let tcanvas = trtt.toImage(tpixels)
+trtt.download(tcanvas,'top')
+*/
+
+
+
   
-  this.s.front.addTexture  ([new THREE.CanvasTexture(canvas[0])], params.displacmentScale)
-  this.s.back.addTexture   ([new THREE.CanvasTexture(canvas[5])], params.displacmentScale)
-  this.s.right.addTexture  ([new THREE.CanvasTexture(canvas[2])], params.displacmentScale)
-  this.s.left.addTexture   ([new THREE.CanvasTexture(canvas[3])], params.displacmentScale)
-  this.s.top.addTexture    ([new THREE.CanvasTexture(canvas[1])], params.displacmentScale)
-  this.s.bottom.addTexture ([new THREE.CanvasTexture(canvas[4])], params.displacmentScale)
+
+  this.s.front.addTexture  ([ new THREE.TextureLoader().load('./worldTextures/fc.png')], params.displacmentScale)
+  //this.s.back.addTexture   ([new THREE.CanvasTexture(canvas[5])], params.displacmentScale)
+  this.s.right.addTexture  ([new THREE.TextureLoader().load('./worldTextures/rc.png')], params.displacmentScale)
+  //this.s.left.addTexture   ([new THREE.CanvasTexture(canvas[3])], params.displacmentScale)
+  this.s.top.addTexture    ([new THREE.TextureLoader().load('./worldTextures/tc.png')], params.displacmentScale)
+  //this.s.bottom.addTexture ([new THREE.CanvasTexture(canvas[4])], params.displacmentScale)
 
 
   this.s.front.lighting    (NODE.vec3(0,0,0))
-  this.s.back.lighting     (NODE.vec3(0,0,0))
+ // this.s.back.lighting     (NODE.vec3(0,0,0))
   this.s.right.lighting    (NODE.vec3(0,0,0))
-  this.s.left.lighting     (NODE.vec3(0,0,0))
+  //this.s.left.lighting     (NODE.vec3(0,0,0))
   this.s.top.lighting      (NODE.vec3(0,0,0))
-  this.s.bottom.lighting   (NODE.vec3(0,0,0))
-  
+  //this.s.bottom.lighting   (NODE.vec3(0,0,0))
 
 
   this.allp = [
@@ -103,7 +122,6 @@ initPlanet(canvas) {
     ...this.s.bottom.instances,
   ]
 
-console.log( this.s.quadTreeconfig.shardedData)
 
   this.rend.scene_.add( this.s.sphere);
 }

@@ -2,8 +2,8 @@ import * as THREE  from 'three'
 import {RtTexture} from './rTtexture'
 import renderer    from '../../render'
 import * as NODE from 'three/nodes';
-import {fbmNoise,displacemntNormalV3} from  './../shaders/glslFunctions'
-
+import {fbmNoise,displacemntNormalV3,snoise3D,displacementNormalNoiseFBM} from  './../shaders/glslFunctions'
+import {snoise,normals} from  './../shaders/analyticalNormals'
 
 console.log(NODE)
 
@@ -106,9 +106,9 @@ console.log(NODE)
 
       /*var n1  = displacementNormalNoiseFBM.call({
         wp:wp,vn:NODE.normalLocal,
-        seed0:1.0, scale0:5.3, postionScale0:.08, persistance0:2.0, lacunarity0:0.5, redistribution0:1.0, octaves0:8, iteration0:5, terbulance0:true, ridge0:true,
-        seed1:6.0, scale1:0.5, postionScale1:.08, persistance1:2.0, lacunarity1:0.5, redistribution1:2.0, octaves1:4, iteration1:5, terbulance1:true, ridge1:false,
-        seed2:1.0, scale2:5.3, postionScale2:.08, persistance2:1.8, lacunarity2:0.5, redistribution2:1.0, octaves2:8, iteration2:5, terbulance2:true, ridge2:true,
+        seed0:1.0, scale0:5.3, postionScale0:.08, persistance0:2.0, lacunarity0:0.5, redistribution0:1.0, octaves0:4, iteration0:5, terbulance0:true, ridge0:true,
+        seed1:1.0, scale1:5.3, postionScale1:.08, persistance1:2.0, lacunarity1:0.5, redistribution1:1.0, octaves1:4, iteration1:5, terbulance1:true, ridge1:true,
+        seed2:1.0, scale2:5.3, postionScale2:.08, persistance2:2.0, lacunarity2:0.5, redistribution2:1.0, octaves2:4, iteration2:5, terbulance2:true, ridge2:true,
       }) 
 
       var n2  = displacementNormalNoiseFBM.call({
@@ -129,7 +129,19 @@ console.log(NODE)
         v_:wp.mul(.1).add(NODE.normalLocal), seed_:6.0, scale_:0.3,  persistance_:2.0, lacunarity_:0.5, redistribution_:2.0, octaves_:4, iteration_:5, terbulance_:false, ridge_:false,
       }) 
 
-      element.material.colorNode = n1
+      var sampleDir = wp.xyz.sub(cnt_).normalize();
+      var grad = NODE.vec3(0.)
+      var noisegrad = snoise.call({v:sampleDir,gradient:grad})
+
+      var n1  = displacementNormalNoiseFBM.call({
+        wp:wp,vn:NODE.normalLocal,
+        seed0:1.0, scale0:0.3, postionScale0:.08, persistance0:2.0, lacunarity0:0.5, redistribution0:1.0, octaves0:4, iteration0:5, terbulance0:true, ridge0:true,
+        seed1:1.0, scale1:0.3, postionScale1:.08, persistance1:2.0, lacunarity1:0.5, redistribution1:1.0, octaves1:4, iteration1:5, terbulance1:true, ridge1:true,
+        seed2:1.0, scale2:0.3, postionScale2:.08, persistance2:2.0, lacunarity2:0.5, redistribution2:1.0, octaves2:4, iteration2:5, terbulance2:true, ridge2:true,
+      }) 
+
+
+      element.material.colorNode =n1//normals.call({grad:noisegrad.yzw,sampleDir:sampleDir}) 
     }
 
     var cp = new THREE.Vector3()
@@ -141,12 +153,11 @@ console.log(NODE)
     frtt.rtScene.add(cube.clone())
     var t = frtt.getTexture()
     frtt.snapShot(rend)
-  var t2 = this.displacementToNormal(t,size,rend)
 
     //var pixels = frtt.getPixels(rend)
     //var canvas = frtt.toImage(pixels)
-    //frtt.download(canvas,'front')
-    ts.push([t,t2])
+    //frtt.download(canvas,'FG')
+    ts.push([t])
   
   var cp = new THREE.Vector3()
   var cr = new THREE.Vector3(0,-Math.PI,0)
@@ -156,13 +167,12 @@ console.log(NODE)
   brtt.rtScene.add(cube.clone())
   var t = brtt.getTexture()
   brtt.snapShot( rend)
-  var t2 = this.displacementToNormal(t,size,rend)
 
-  /*
-  var pixels = brtt.getPixels(rend)
-  var canvas = brtt.toImage(pixels)
-  brtt.download(img,'back')*/
-  ts.push([t,t2])
+  
+ // var pixels = brtt.getPixels(rend)
+ // var canvas = brtt.toImage(pixels)
+ // brtt.download(canvas,'BAG')
+  ts.push([t])
   //----------
   var cp = new THREE.Vector3()
   var cr = new THREE.Vector3(0,Math.PI/2,0)
@@ -172,13 +182,12 @@ console.log(NODE)
   rrtt.rtScene.add(cube.clone())
   var t = rrtt.getTexture()
   rrtt.snapShot( rend)
-  var t2 = this.displacementToNormal(t,size,rend)
-  /*
-  var pixels = rrtt.getPixels(rend)
-  var canvas = rrtt.toImage(pixels)
-  rrtt.download(canvas,'right')
-  */
-  ts.push([t,t2])
+  
+ // var pixels = rrtt.getPixels(rend)
+ // var canvas = rrtt.toImage(pixels)
+//  rrtt.download(canvas,'RG')
+  
+  ts.push([t])
   //----------
   var cp = new THREE.Vector3()
   var cr = new THREE.Vector3(0,-Math.PI/2,0)
@@ -188,15 +197,14 @@ console.log(NODE)
   lrtt.rtScene.add(cube.clone())
   var t = lrtt.getTexture()
   lrtt.snapShot( rend)
-  var t2 = this.displacementToNormal(t,size,rend)
 
-    /*
+    
 
-  var pixels = lrtt.getPixels(rend)
-  var canvas = lrtt.toImage(pixels)
-  lrtt.download(canvas,'left')
-  */
-  ts.push([t,t2])
+ // var pixels = lrtt.getPixels(rend)
+ // var canvas = lrtt.toImage(pixels)
+ // lrtt.download(canvas,'LG')
+  
+  ts.push([t])
   //----------
   var cp = new THREE.Vector3()
   var cr = new THREE.Vector3(-Math.PI/2,0,0)
@@ -206,15 +214,14 @@ console.log(NODE)
   trtt.rtScene.add(cube.clone())
   var t = trtt.getTexture()
   trtt.snapShot( rend)
-  var t2 = this.displacementToNormal(t,size,rend)
 
-    /*
+    
 
-  var pixels = trtt.getPixels(rend)
-  var canvas = trtt.toImage(pixels)
-  trtt.download(canvas,'top')
-  */
-  ts.push([t,t2])
+  //var pixels = trtt.getPixels(rend)
+  //var canvas = trtt.toImage(pixels)
+  //trtt.download(canvas,'TG')
+  
+  ts.push([t])
   //----------
   var cp = new THREE.Vector3()
   var cr = new THREE.Vector3(Math.PI/2,0,0)
@@ -224,14 +231,11 @@ console.log(NODE)
   bortt.rtScene.add(cube.clone())
   var t = bortt.getTexture()
   bortt.snapShot( rend)
-  var t2 = this.displacementToNormal(t,size,rend)
 
-  /*
-  var pixels = bortt.getPixels(rend)
-  var canvas = bortt.toImage(pixels)
-  bortt.download(canvas,'bottom')
-*/
-  ts.push([t,t2])
+  //var pixels = bortt.getPixels(rend)
+  //var canvas = bortt.toImage(pixels)
+  //bortt.download(canvas,'BG')
+  ts.push([t])
   
   
   return ts
@@ -239,4 +243,3 @@ console.log(NODE)
   
   
   }
-

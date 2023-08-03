@@ -1,14 +1,11 @@
 import * as NODE     from 'three/nodes';
 import * as THREE    from 'three';
 import renderer      from './render';
-import Quad          from './core/quad/quad.js'
 import Sphere        from './core/sphere/sphere'
 import { nodeFrame } from 'three/addons/renderers/webgl/nodes/WebGLNodes.js';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
-import { getRandomColor,hexToRgbA,displacementNormalNoiseFBM } from './core/sphere/utils'
-import {CubeTexture} from "./core/textures/cubetexture"
-import {CubeMap} from "./core/textures/cubeMap"
-
+import { getRandomColor,hexToRgbA } from './core/sphere/utils'
+import { CubeMap } from './core/textures/cubeMap';
 
 
 class ViewGL {
@@ -22,7 +19,7 @@ this.rend.webglRenderer(canvasViewPort);
 this.rend.scene();
 this.rend.stats();
 this.rend.camera();
-this.rend.updateCamera(0,0,2000)
+this.rend.updateCamera(0,0,200)
 this.rend.orbitControls()
 }
 
@@ -31,30 +28,47 @@ this.canvasViewPort = canvasViewPort;
 }
 
 initQuad(tex) {
-  const loader1 = new THREE.TextureLoader().load('./hm4.png');
+  /*const loader1 = new THREE.TextureLoader().load('./hm4.png');
   this.q = new Quad(100,100,50,50,2)
   this.q.createQuadTree(3)
   this.q.createDimensions()
   this.q.addTexture  (loader1)
-  this.rend.scene_.add( ...this.q.instances.map(x=>x.plane) );
+  this.rend.scene_.add( ...this.q.instances.map(x=>x.plane) );*/
 }
 
-initPlanet(canvas) {
- 
+initPlanet() {
 
-  //var cbt = new CubeTexture()
-  //var t = cbt.get(this.rend)
-  //console.log(t)
+const cm = new CubeMap()
+cm.build()
+cm.snapShotFront()
+cm.snapShotBack()
+cm.snapShotRight()
+cm.snapShotLeft()
+cm.snapShotTop()
+cm.snapShotbottom()
+
+const cmn = new CubeMap()
+cmn.build(true)
+cmn.snapShotFront()
+cmn.snapShotBack()
+cmn.snapShotRight()
+cmn.snapShotLeft()
+cmn.snapShotTop()
+cmn.snapShotbottom()
+
+
+let ta  =  (cm.textuerArray)
+let tan = (cmn.textuerArray)
 
   const params = {
-    width: 1,
-    height: 1,
-    widthSegment: 50,
-    heightSegment: 50,
+    width: 100,
+    height: 100,
+    widthSegment: 100,
+    heightSegment: 100,
     quadTreeDimensions: 1,
     levels: 2,
-    radius: 1000,
-    displacmentScale:50,
+    radius: 100,
+    displacmentScale:5,
  }
 
  this. s = new Sphere(
@@ -72,45 +86,31 @@ initPlanet(canvas) {
   )
 
 
+  const loader1 = new THREE.TextureLoader().load('./text/f_image.png');
+  const loader2 = new THREE.TextureLoader().load('./text/back_image.png');
+  const loader3 = new THREE.TextureLoader().load('./text/r_image.png');
+  const loader4 = new THREE.TextureLoader().load('./text/left_image.png');
+  const loader5 = new THREE.TextureLoader().load('./text/t_image.png');
+  const loader6 = new THREE.TextureLoader().load('./text/bottom_image.png');
 
 
-
-var cm = new CubeMap()
-/*
-let frtt = cm.snapShotFront({v: NODE.positionWorld.sub(NODE.vec3(0,0,-1)).normalize() })
-var fpixels = frtt.getPixels(this.rend)
-var fcanvas = frtt.toImage(fpixels)
-frtt.download(fcanvas,'front')
-
-let rrtt = cm.snapShotRight({v: NODE.positionWorld.sub(NODE.vec3(0,0,-1)).normalize() })
-let rpixels = rrtt.getPixels(this.rend)
-let rcanvas = rrtt.toImage(rpixels)
-rrtt.download(rcanvas,'right')
-
-let trtt = cm.snapShotTop({v: NODE.positionWorld.sub(NODE.vec3(0,0,-1)).normalize() })
-let tpixels = trtt.getPixels(this.rend)
-let tcanvas = trtt.toImage(tpixels)
-trtt.download(tcanvas,'top')
-*/
-
-
+console.log(ta[0])
 
   
+  this.s.front.addTexture  ([ta[0],tan[0]], params.displacmentScale)
+  this.s.back.addTexture   ([ta[1],tan[1]], params.displacmentScale)
+  this.s.right.addTexture  ([ta[2],tan[2]], params.displacmentScale)
+  this.s.left.addTexture   ([ta[3],tan[3]], params.displacmentScale)
+  this.s.top.addTexture    ([ta[4],tan[4]], params.displacmentScale)
+  this.s.bottom.addTexture ([ta[5],tan[5]], params.displacmentScale)
 
-  this.s.front.addTexture  ([ new THREE.TextureLoader().load('./worldTextures/fc.png')], params.displacmentScale)
-  //this.s.back.addTexture   ([new THREE.CanvasTexture(canvas[5])], params.displacmentScale)
-  this.s.right.addTexture  ([new THREE.TextureLoader().load('./worldTextures/rc.png')], params.displacmentScale)
-  //this.s.left.addTexture   ([new THREE.CanvasTexture(canvas[3])], params.displacmentScale)
-  this.s.top.addTexture    ([new THREE.TextureLoader().load('./worldTextures/tc.png')], params.displacmentScale)
-  //this.s.bottom.addTexture ([new THREE.CanvasTexture(canvas[4])], params.displacmentScale)
+this.s.front.lighting    (NODE.vec3(0,0,0))
+this.s.back.lighting     (NODE.vec3(0,0,0))
+this.s.right.lighting    (NODE.vec3(0,0,0))
+this.s.left.lighting     (NODE.vec3(0,0,0))
+this.s.top.lighting      (NODE.vec3(0,0,0))
+this.s.bottom.lighting   (NODE.vec3(0,0,0))
 
-
-  this.s.front.lighting    (NODE.vec3(0,0,0))
- // this.s.back.lighting     (NODE.vec3(0,0,0))
-  this.s.right.lighting    (NODE.vec3(0,0,0))
-  //this.s.left.lighting     (NODE.vec3(0,0,0))
-  this.s.top.lighting      (NODE.vec3(0,0,0))
-  //this.s.bottom.lighting   (NODE.vec3(0,0,0))
 
 
   this.allp = [
@@ -122,6 +122,7 @@ trtt.download(tcanvas,'top')
     ...this.s.bottom.instances,
   ]
 
+console.log( this.s.quadTreeconfig.shardedData)
 
   this.rend.scene_.add( this.s.sphere);
 }
@@ -141,7 +142,7 @@ this.rend.scene_.add(this.player)
 start() {
 this.render(this.canvasViewPort);
 this.initPlayer()
-//this.initPlanet()
+this.initPlanet()
 this.update();
 }
 
@@ -159,7 +160,7 @@ update(t) {
 if(this.s){
   this.controls.update(this.clock.getDelta())
   for (var i = 0; i < this.allp.length; i++) {
-    this.allp[i].update(this.player)
+   // this.allp[i].update(this.player)
   }
 }
 

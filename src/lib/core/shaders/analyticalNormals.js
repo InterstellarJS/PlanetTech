@@ -172,3 +172,42 @@ mat3 TBN = mat3(_tangent,bitangent,(norma));
 return (TBN*nmap); 
 }
 `)
+
+
+export const sdfbm = NODE.func(`
+vec4 fbmd(  vec3 x, int octaves, bool t){
+
+	bool terbulance = t;
+  bool ridg = t && true;
+  const float scale  = 1.5;
+
+  float a = 0.0;
+  float b = 0.5;
+  float f = 1.0;
+  vec3  d = vec3(0.0);
+ 
+    for( int i=0; i<octaves; i++ )
+    {
+       if (i >= octaves)
+      		break;
+   
+        vec4 n = snoise(f*x*scale,vec3(0.));
+        
+          if (terbulance){
+             n= abs(n);
+       		}
+        
+            if (ridg){
+             n = -1.*n;
+       		}
+        
+        a += b*n.x;           // accumulate values		
+        d += b*n.yzw*scale; // accumulate derivatives
+        b *= 0.5;             // amplitude decrease
+        f *= 1.8;             // frequency increase
+    }
+
+	return vec4( a, d );
+}
+
+`,[snoise])

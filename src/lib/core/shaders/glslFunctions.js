@@ -86,28 +86,117 @@ export const snoise3D = NODE.func(
   
 
   export const noiseNormal = NODE.func(`
-  vec4 noiseNormal(vec3 worldPosition,vec3 normal, vec4 tangent){
-    float noise = snoise3D(worldPosition.xyz*.2);
+  vec4 noiseNormal(vec3 worldPosition, vec3 center){
+    vec3 p  = 50.*normalize(worldPosition.xyz-center);
+    vec3 pu = 50.*normalize(worldPosition.xyz-center);
+		vec3 pw = 50.*normalize(worldPosition.xyz-center);
+    float n = snoise3D(p);
+		p.z = n;
 
-    vec3 displacedPosition = worldPosition.xyz + normal * noise;
+    vec3 u = (pu);
+    vec3 w = (pw);
     
-    float offset   = 0.01;
-    vec3 tangent_  = tangent.xyz;
-    vec3 bitangent = normalize(cross(normal, tangent_));
-    vec3 neighbour1 =  worldPosition.xyz + tangent_ * offset;
-    vec3 neighbour2 =  worldPosition.xyz + bitangent * offset;
-    vec3 displacedNeighbour1 = neighbour1 + normal * snoise3D(neighbour1*.2);
-    vec3 displacedNeighbour2 = neighbour2 + normal * snoise3D(neighbour2*.2);
+		u.x += 0.01;
+    u.z = snoise3D(u);
+
+		w.y += 0.01;
+    w.z = snoise3D(w);
+
+		vec3 t = u-p;
+    vec3 b = w-p;
     
-    vec3 displacedTangent = displacedNeighbour1 - displacedPosition;
-    vec3 displacedBitangent = displacedNeighbour2 - displacedPosition;
-    
-    vec3 displacedNormal = normalize(cross(displacedTangent, displacedBitangent));
-    return vec4(noise,displacedNormal);
+    vec3 tb = normalize(cross(t,b))*.5+.5;
+
+  
+    return vec4(n,tb);
     
   }
 
   `,[snoise3D])
+
+
+
+
+
+  export const  fbmNoise = NODE.func(`
+  float fbm(vec3 v_, float seed_, float scale_,float persistance_,float lacunarity_,float redistribution_,int octaves_, int iteration_,bool terbulance_, bool ridge_  ) {
+    vec3 v = v_; 
+    v += (seed_ * 100.0);
+    float persistance = persistance_;
+    float lacunarity = lacunarity_;
+    float redistribution = redistribution_;
+    int octaves = octaves_;
+    bool terbulance = terbulance_;
+    bool ridge = terbulance_ && ridge_;
+  
+    float result = 0.0;
+    float amplitude = 1.0;
+    float frequency = 1.0;
+    float maximum = amplitude;
+  
+    for (int i = 0; i < iteration_; i++) {
+      if (i >= octaves)
+        break;
+  
+      vec3 p = v * frequency * scale_;
+  
+      float noiseVal = snoise3D(p);
+  
+      if (terbulance)
+        noiseVal = abs(noiseVal);
+  
+      if (ridge)
+        noiseVal = -1.0 * noiseVal;
+  
+      result += noiseVal * amplitude;
+  
+      frequency *= lacunarity;
+      amplitude *= persistance;
+      maximum += amplitude;
+    }
+  
+    float redistributed = pow(result, redistribution);
+    return redistributed / maximum;
+  }
+  `,[snoise3D])
+  
+  
+  export  const  displacementNormalNoiseFBM = NODE.func(`
+    
+    vec4 displacementNormalNoiseFBM(
+      vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float postionScale, float persistance,float lacunarity,float redistribution, int octaves, int iteration,bool terbulance, bool ridge){
+      
+      float n = fbm(wp*postionScale,  seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge);  
+      vec3 displacedPosition = wp + vn * n;
+      float offset = .01;
+      vec3 tangent_ = tangent.xyz;
+      vec3 bitangent = normalize(cross(vn, tangent_));
+      vec3 neighbour1 = wp + tangent_ * offset;
+      vec3 neighbour2 = wp + bitangent * offset;
+      vec3 displacedNeighbour1 = neighbour1 + vn * fbm(neighbour1*postionScale,  seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge );
+      vec3 displacedNeighbour2 = neighbour2 + vn * fbm(neighbour2*postionScale,  seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge );
+      vec3 displacedTangent = displacedNeighbour1 - displacedPosition;
+      vec3 displacedBitangent = displacedNeighbour2 - displacedPosition;
+      vec3 displacedNormal = normalize(cross(displacedTangent, displacedBitangent));
+      return vec4(n,displacedNormal);
+    }
+  
+    `,[fbmNoise])
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 export const light= NODE.func(`

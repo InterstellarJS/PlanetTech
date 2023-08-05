@@ -75,9 +75,9 @@ var patternCount = 0
 
 
           //p.material.colorNode = textureNodeN//displacemntTextureV2(texture_,newUV)
-          p.material.colorNode = textureNode//displacemntNormalV2(texture_[0],uv)
-          const displace = textureNodeN.z.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
-          p.material.positionNode =  p.material.positionNode.add( displace );
+          p.material.colorNode = textureNodeN//displacemntNormalV2(texture_[0],uv)
+          const displace = textureNode.z.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
+          //p.material.positionNode =  p.material.positionNode.add( displace );
           
         }else{
           //var mouse = p.material.uniforms[`displacementScale_${this.count}`]

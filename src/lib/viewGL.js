@@ -40,6 +40,7 @@ initPlanet() {
 
 const cm = new CubeMap()
 cm.build()
+cm.snoise3D()
 cm.snapShotFront()
 cm.snapShotBack()
 cm.snapShotRight()
@@ -48,13 +49,8 @@ cm.snapShotTop()
 cm.snapShotbottom()
 
 const cmn = new CubeMap()
-cmn.build(true)
-cmn.snapShotFront()
-cmn.snapShotBack()
-cmn.snapShotRight()
-cmn.snapShotLeft()
-cmn.snapShotTop()
-cmn.snapShotbottom()
+cmn.toNormal(cm.textuerArray)
+cmn.snapShotNoramls()
 
 
 let ta  =  (cm.textuerArray)
@@ -63,12 +59,12 @@ let tan = (cmn.textuerArray)
   const params = {
     width: 100,
     height: 100,
-    widthSegment: 100,
-    heightSegment: 100,
+    widthSegment: 50,
+    heightSegment: 50,
     quadTreeDimensions: 1,
     levels: 2,
     radius: 100,
-    displacmentScale:5,
+    displacmentScale:10,
  }
 
  this. s = new Sphere(
@@ -94,7 +90,6 @@ let tan = (cmn.textuerArray)
   const loader6 = new THREE.TextureLoader().load('./text/bottom_image.png');
 
 
-console.log(ta[0])
 
   
   this.s.front.addTexture  ([ta[0],tan[0]], params.displacmentScale)
@@ -122,7 +117,6 @@ this.s.bottom.lighting   (NODE.vec3(0,0,0))
     ...this.s.bottom.instances,
   ]
 
-console.log( this.s.quadTreeconfig.shardedData)
 
   this.rend.scene_.add( this.s.sphere);
 }

@@ -3,7 +3,7 @@ import * as THREE  from 'three'
 import {RtTexture} from './rTtexture'
 import renderer_    from '../../render'
 import * as NODE   from 'three/nodes';
-import {snoise3D,noiseNormal,displacementNormalNoiseFBM}  from  './../shaders/glslFunctions'
+import {fbmNoise,snoise3D,noiseNormal,displacementNormalNoiseFBM}  from  './../shaders/glslFunctions'
 import { snoise,normals,sdfbm } from '../shaders/analyticalNormals';
 
 let widthHeight = 2
@@ -63,37 +63,37 @@ export class CubeMap{
   
       buildRttMeshNormal(texture){
         const geometry = new THREE.PlaneGeometry( 2,2,10,10);
-        const material = new THREE.MeshNormalMaterial({bumpMap:texture,bumpScale:0.1});
+        const material = new THREE.MeshNormalMaterial({bumpMap:texture,bumpScale:0.05});
         const plane = new THREE.Mesh( geometry, material );
         return plane
       }
 
-    noiseFBM(params){
-        this.cube.children.map((p)=>{
-            var n1 = `fbmNoise.call(params)` 
-            p.material.colorNode = n1
-        })
-    }
 
 
-
-    simplexDerivatives(params,normal=false){
+    snoiseFBM(params){
         this.cube.children.map((p)=>{
             var cnt_ = this.center.clone()
             p.worldToLocal(cnt_)
-            var newPostion = NODE.float(100.0).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
-            var wp = (NODE.modelViewMatrix.mul(NODE.vec4(newPostion,1.0))).xyz;
-            var sampleDir = wp.sub(cnt_).normalize()
-            var shiftedScaledSample = sampleDir.mul(8)
-            var n1 = snoise.call({v:shiftedScaledSample,gradient:NODE.vec3(0)}) 
-            if(normal){
-                p.material.colorNode = normals.call({grad:n1.yzw,sampleDir:sampleDir})
+            //var newPostion = NODE.float(100.0).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
+            //var wp = (NODE.modelViewMatrix.mul(NODE.vec4(newPostion,1.0))).xyz;
+            var position = NODE.positionWorld.sub(cnt_).normalize()
+            var params = {
+                v_:position.mul(40).add(NODE.normalLocal), 
+                seed_:6.0, 
+                scale_:0.3,  
+                persistance_:2.0, 
+                lacunarity_:0.5, 
+                redistribution_:2.0, 
+                octaves_:4, 
+                iteration_:5, 
+                terbulance_:false, 
+                ridge_:false,
 
-            }else{
-                p.material.colorNode = n1.x
-            }
+              }
+            p.material.colorNode = fbmNoise.call(params)
         })
     }
+
 
     sdfbm(params,normal=false){
         this.cube.children.map((p)=>{
@@ -125,34 +125,21 @@ export class CubeMap{
         })
     }
 
-    
-    displacementNormalNoiseFBM(params,normal=false){
+
+    simplexDerivatives(params,normal=false){
         this.cube.children.map((p)=>{
-            p.geometry.computeTangents()
             var cnt_ = this.center.clone()
             p.worldToLocal(cnt_)
             var newPostion = NODE.float(100.0).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
             var wp = (NODE.modelViewMatrix.mul(NODE.vec4(newPostion,1.0))).xyz;
-            var params = {
-                wp:wp.mul(.1),
-                vn:NODE.normalLocal,
-                tangent:NODE.tangentLocal,
-                seed:1.0, 
-                scale:5.3, 
-                postionScale:.8, 
-                persistance:2.0, 
-                lacunarity:0.5, 
-                redistribution:1.0, 
-                octaves:4, 
-                iteration:5, 
-                terbulance:true, 
-                ridge:true,
-              }
-
+            var sampleDir = wp.sub(cnt_).normalize()
+            var shiftedScaledSample = sampleDir.mul(8)
+            var n1 = snoise.call({v:shiftedScaledSample,gradient:NODE.vec3(0)}) 
             if(normal){
-                p.material.colorNode = displacementNormalNoiseFBM.call(params).yzw.mul(.5).add(.5)
+                p.material.colorNode = normals.call({grad:n1.yzw,sampleDir:sampleDir})
+
             }else{
-                p.material.colorNode = displacementNormalNoiseFBM.call(params).x
+                p.material.colorNode = n1.x
             }
         })
     }
@@ -167,17 +154,17 @@ export class CubeMap{
     
 
 toNormal(displaceTextures){
-    this. frtt = new RtTexture(512)
+    this. frtt = new RtTexture(2512)
     this. frtt.initRenderTraget()
-    this. brtt = new RtTexture(512)
+    this. brtt = new RtTexture(2512)
     this. brtt.initRenderTraget()
-    this. rrtt = new RtTexture(512)
+    this. rrtt = new RtTexture(2512)
     this. rrtt.initRenderTraget()
-    this. lrtt = new RtTexture(512)
+    this. lrtt = new RtTexture(2512)
     this. lrtt.initRenderTraget()
-    this. trtt = new RtTexture(512)
+    this. trtt = new RtTexture(2512)
     this. trtt.initRenderTraget()
-    this. bortt = new RtTexture(512)
+    this. bortt = new RtTexture(2512)
     this. bortt.initRenderTraget()
 
     var front   = this.buildRttMeshNormal(displaceTextures[0])
@@ -195,19 +182,18 @@ toNormal(displaceTextures){
     this.bortt.rtScene.add(bottom)
 }
 
-build(normals){
-
-    this. frtt = new RtTexture(512)
+build(){
+    this. frtt = new RtTexture(2512)
     this. frtt.initRenderTraget()
-    this. brtt = new RtTexture(512)
+    this. brtt = new RtTexture(2512)
     this. brtt.initRenderTraget()
-    this. rrtt = new RtTexture(512)
+    this. rrtt = new RtTexture(2512)
     this. rrtt.initRenderTraget()
-    this. lrtt = new RtTexture(512)
+    this. lrtt = new RtTexture(2512)
     this. lrtt.initRenderTraget()
-    this. trtt = new RtTexture(512)
+    this. trtt = new RtTexture(2512)
     this. trtt.initRenderTraget()
-    this. bortt = new RtTexture(512)
+    this. bortt = new RtTexture(2512)
     this. bortt.initRenderTraget()
 
     var front  = this.buildRttMesh()
@@ -238,22 +224,6 @@ build(normals){
     this.lrtt.rtScene.add(this.cube.clone())
     this.trtt.rtScene.add(this.cube.clone())
     this.bortt.rtScene.add(this.cube.clone())
-
-    /*
-    for (let index = 0; index < this.cube.children.length; index++) {
-        const element =  this.cube.children[index];
-        element.geometry.computeTangents()
-        var cnt_ = this.center.clone()
-        element.worldToLocal(cnt_)
-        var newPostion = NODE.float(100.0).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
-        var wp = (NODE.modelViewMatrix.mul(NODE.vec4(newPostion,1.0))).xyz;
-        if(normals){
-            element.material.colorNode = noiseNormal.call({worldPosition:wp.mul(.2),normal:NODE.normalLocal,tangent:NODE.tangentLocal}).x
-        }else{
-            element.material.colorNode = noiseNormal.call({worldPosition:wp.mul(.2),normal:NODE.normalLocal,tangent:NODE.tangentLocal}).yzw
-        }
-    }
-*/
 
     }
   

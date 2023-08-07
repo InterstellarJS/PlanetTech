@@ -40,7 +40,7 @@ initPlanet() {
 
 const cm = new CubeMap()
 cm.build()
-cm.snoise3D()
+cm.sdfbm()
 cm.snapShotFront()
 cm.snapShotBack()
 cm.snapShotRight()
@@ -49,10 +49,15 @@ cm.snapShotTop()
 cm.snapShotbottom()
 
 const cmn = new CubeMap()
-cmn.toNormal(cm.textuerArray)
-cmn.snapShotNoramls()
+cmn.build()
 
-
+cmn.sdfbm({},true)
+cmn.snapShotFront()
+cmn.snapShotBack()
+cmn.snapShotRight()
+cmn.snapShotLeft()
+cmn.snapShotTop()
+cmn.snapShotbottom()
 let ta  =  (cm.textuerArray)
 let tan = (cmn.textuerArray)
 
@@ -64,7 +69,7 @@ let tan = (cmn.textuerArray)
     quadTreeDimensions: 1,
     levels: 2,
     radius: 100,
-    displacmentScale:10,
+    displacmentScale:1.0,
  }
 
  this. s = new Sphere(

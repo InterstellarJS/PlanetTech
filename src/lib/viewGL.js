@@ -38,38 +38,22 @@ initQuad(tex) {
 
 initPlanet() {
 
-const cm = new CubeMap()
-cm.build()
-cm.sdfbm()
-cm.snapShotFront()
-cm.snapShotBack()
-cm.snapShotRight()
-cm.snapShotLeft()
-cm.snapShotTop()
-cm.snapShotbottom()
+  const cm = new CubeMap()
+  cm.simplexNoiseFBm('+',5.0,{x:1,y:1,z:1},.2, 2.2, 4)
+  cm.buildRttMesh(true)
+  cm.complie(5512)
 
-const cmn = new CubeMap()
-cmn.build()
-
-cmn.sdfbm({},true)
-cmn.snapShotFront()
-cmn.snapShotBack()
-cmn.snapShotRight()
-cmn.snapShotLeft()
-cmn.snapShotTop()
-cmn.snapShotbottom()
 let ta  =  (cm.textuerArray)
-let tan = (cmn.textuerArray)
 
   const params = {
     width: 100,
     height: 100,
-    widthSegment: 50,
-    heightSegment: 50,
+    widthSegment: 100,
+    heightSegment: 100,
     quadTreeDimensions: 1,
-    levels: 2,
+    levels: 3,
     radius: 100,
-    displacmentScale:1.0,
+    displacmentScale:0.8,
  }
 
  this. s = new Sphere(
@@ -86,31 +70,20 @@ let tan = (cmn.textuerArray)
     params.displacmentScale,
   )
 
-
-  const loader1 = new THREE.TextureLoader().load('./text/f_image.png');
-  const loader2 = new THREE.TextureLoader().load('./text/back_image.png');
-  const loader3 = new THREE.TextureLoader().load('./text/r_image.png');
-  const loader4 = new THREE.TextureLoader().load('./text/left_image.png');
-  const loader5 = new THREE.TextureLoader().load('./text/t_image.png');
-  const loader6 = new THREE.TextureLoader().load('./text/bottom_image.png');
-
-
+  this.s.front.addTexture  (ta[4], params.displacmentScale)
+  this.s.back.addTexture   (ta[5], params.displacmentScale)
+  this.s.right.addTexture  (ta[0], params.displacmentScale)
+  this.s.left.addTexture   (ta[1], params.displacmentScale)
+  this.s.top.addTexture    (ta[2], params.displacmentScale)
+  this.s.bottom.addTexture (ta[3], params.displacmentScale)
 
   
-  this.s.front.addTexture  ([ta[0],tan[0]], params.displacmentScale)
-  this.s.back.addTexture   ([ta[1],tan[1]], params.displacmentScale)
-  this.s.right.addTexture  ([ta[2],tan[2]], params.displacmentScale)
-  this.s.left.addTexture   ([ta[3],tan[3]], params.displacmentScale)
-  this.s.top.addTexture    ([ta[4],tan[4]], params.displacmentScale)
-  this.s.bottom.addTexture ([ta[5],tan[5]], params.displacmentScale)
-
-this.s.front.lighting    (NODE.vec3(0,0,0))
-this.s.back.lighting     (NODE.vec3(0,0,0))
-this.s.right.lighting    (NODE.vec3(0,0,0))
-this.s.left.lighting     (NODE.vec3(0,0,0))
-this.s.top.lighting      (NODE.vec3(0,0,0))
-this.s.bottom.lighting   (NODE.vec3(0,0,0))
-
+  this.s.front.lighting    (NODE.vec3(0,0,0))
+  this.s.back.lighting     (NODE.vec3(0,0,0))
+  this.s.right.lighting    (NODE.vec3(0,0,0))
+  this.s.left.lighting     (NODE.vec3(0,0,0))
+  this.s.top.lighting      (NODE.vec3(0,0,0))
+  this.s.bottom.lighting   (NODE.vec3(0,0,0))
 
 
   this.allp = [
@@ -159,7 +132,7 @@ update(t) {
 if(this.s){
   this.controls.update(this.clock.getDelta())
   for (var i = 0; i < this.allp.length; i++) {
-   // this.allp[i].update(this.player)
+   this.allp[i].update(this.player)
   }
 }
 

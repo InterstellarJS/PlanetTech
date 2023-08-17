@@ -85,34 +85,6 @@ export const snoise3D = NODE.func(
   )
   
 
-  export const noiseNormal = NODE.func(`
-  vec4 noiseNormal(vec3 worldPosition, vec3 center){
-    vec3 p  = 50.*normalize(worldPosition.xyz-center);
-    vec3 pu = 50.*normalize(worldPosition.xyz-center);
-		vec3 pw = 50.*normalize(worldPosition.xyz-center);
-    float n = snoise3D(p);
-		p.z = n;
-
-    vec3 u = (pu);
-    vec3 w = (pw);
-    
-		u.x += 0.01;
-    u.z = snoise3D(u);
-
-		w.y += 0.01;
-    w.z = snoise3D(w);
-
-		vec3 t = u-p;
-    vec3 b = w-p;
-    
-    vec3 tb = normalize(cross(t,b))*.5+.5;
-
-  
-    return vec4(n,tb);
-    
-  }
-
-  `,[snoise3D])
 
 
 
@@ -160,6 +132,36 @@ export const snoise3D = NODE.func(
   }
   `,[snoise3D])
   
+
+  export const noiseNormal = NODE.func(`
+  vec4 noiseNormal(vec3 worldPosition, vec3 center, float seed, float scale,float persistance,float lacunarity,float redistribution,int octaves, int iteration,bool terbulance, bool ridge ){
+    vec3 p  = 10.*normalize(worldPosition.xyz-center);
+    vec3 pu = 10.*normalize(worldPosition.xyz-center);
+		vec3 pw = 10.*normalize(worldPosition.xyz-center);
+    float n = fbm(p, seed,  scale, persistance, lacunarity, redistribution, octaves,  iteration, terbulance,  ridge);
+		p.z = n;
+
+    vec3 u = (pu);
+    vec3 w = (pw);
+    
+		u.x += 0.2;
+    u.z = fbm(u, seed,  scale, persistance, lacunarity, redistribution, octaves,  iteration, terbulance,  ridge);
+
+		w.y += 0.2;
+    w.z = fbm(w, seed,  scale, persistance, lacunarity, redistribution, octaves,  iteration, terbulance,  ridge);
+
+		vec3 t = u-p;
+    vec3 b = w-p;
+    
+    vec3 tb = normalize(cross(t,b));
+
+  
+    return vec4(n,tb);
+    
+  }
+
+  `,[fbmNoise])
+
   
   export  const  displacementNormalNoiseFBM = NODE.func(`
     
@@ -168,7 +170,7 @@ export const snoise3D = NODE.func(
       
       float n = fbm(wp*postionScale,  seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge);  
       vec3 displacedPosition = wp + vn * n;
-      float offset = .01;
+      float offset = .1;
       vec3 tangent_ = tangent.xyz;
       vec3 bitangent = normalize(cross(vn, tangent_));
       vec3 neighbour1 = wp + tangent_ * offset;

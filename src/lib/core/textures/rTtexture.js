@@ -1,9 +1,6 @@
 import * as THREE from 'three';
-import * as NODE from 'three/nodes';
 
-function scaleTo100(number) {
-  return 100 * (1 / number);
-}
+
 
 export class RtTexture {
   constructor(resoultion=512) {
@@ -18,34 +15,10 @@ export class RtTexture {
     this. renderTarget  = new THREE.WebGLRenderTarget(this.rtWidth, this.rtHeight);
   }
 
-  toMesh(w,h,wr,hs){
-    const geometry = new THREE.PlaneGeometry( w,h,wr,hs);
-    const material = new NODE.MeshBasicNodeMaterial();
-    const plane = new THREE.Mesh( geometry, material );
-    return plane
-
-  }
-
-  toPlaneMesh(w,h,wr,hs){
-    const geometry = new THREE.PlaneGeometry( w,h,wr,hs);
-    const material = new NODE.MeshBasicNodeMaterial();
-    const plane = new THREE.Mesh( geometry, material );
-    return plane
-    
-  }
-
   getTexture(){
-    var t = this.renderTarget.texture
-    return t
+    return this.renderTarget.texture
   }
 
-  add(mesh){
-    var s = scaleTo100(mesh.geometry.parameters.width)
-    this.rtCamera.position.set(mesh.position.x, mesh.position.y, mesh.position.z);
-    this.rtCamera.position.z += 65
-    this.rtScene.add(mesh)
-    mesh.scale.set(s,s,s)
-  }
 
   snapShot(rend){
     rend.renderer.setRenderTarget(this.renderTarget);
@@ -98,105 +71,6 @@ export class RtTexture {
   }
 
 
-   height2normal( canvas ) {
-
-    var context = canvas.getContext( '2d' );
-
-    var width = canvas.width;
-    var height = canvas.height;
-
-    var src = context.getImageData( 0, 0, width, height );
-    var dst = context.createImageData( width, height );
-
-    for ( var i = 0, l = width * height * 4; i < l; i += 4 ) {
-
-      var x1, x2, y1, y2;
-
-      if ( i % ( width * 4 ) == 0 ) {
-
-        // left edge
-
-        x1 = src.data[ i ];
-        x2 = src.data[ i + 4 ];
-
-      } else if ( i % ( width * 4 ) == ( width - 1 ) * 4 ) {
-
-        // right edge
-
-        x1 = src.data[ i - 4 ];
-        x2 = src.data[ i ];
-
-      } else {
-
-        x1 = src.data[ i - 4 ];
-        x2 = src.data[ i + 4 ];
-
-      }
-
-      if ( i < width * 4 ) {
-
-        // top edge
-
-        y1 = src.data[ i ];
-        y2 = src.data[ i + width * 4 ];
-
-      } else if ( i > width * ( height - 1 ) * 4) {
-
-        // bottom edge
-
-        y1 = src.data[ i - width * 4 ];
-        y2 = src.data[ i ];
-
-      } else {
-
-        y1 = src.data[ i - width * 4 ];
-        y2 = src.data[ i + width * 4 ];
-
-      }
-
-      dst.data[ i ] = ( x1 - x2 ) + 127;
-      dst.data[ i + 1 ] = ( y1 - y2 ) + 127;
-      dst.data[ i + 2 ] = 255;
-      dst.data[ i + 3 ] = 255;
-
-
-    }
-
-    context.putImageData( dst, 0, 0 );
-    return canvas
-  }
-
-
-  height2normalv2(canvasInput){
-		var canvasOutput = document.createElement('canvas'); // Setup output canvas, context & dimensions...
-    var ctx_i = canvasInput.getContext('2d');
-    var ctx_o = canvasOutput.getContext('2d');
-    var w = canvasInput.width - 1;
-    var h = canvasInput.height - 1;
-    var pixel, x_vector, y_vector;
-    canvasOutput.width = w + 1;
-		canvasOutput.height = h + 1;
-    for (var y = 0; y < h + 1; y += 1) {
-      for (var x = 0; x < w + 1; x += 1) {
-        var data = [0, 0, 0, 0, x > 0, x < w, y > 0, y < h, x - 1, x + 1, x, x, y, y, y - 1, y + 1];
-        for (var z = 0; z < 4; z += 1) {
-          if (data[z + 4]) {
-            pixel = ctx_i.getImageData(data[z + 8], data[z + 12], 1, 1);
-            data[z] = ((0.299 * (pixel.data[0] / 255) * 1.5) + (0.587 * (pixel.data[1] / 255) * 1.5) + (0.114 * (pixel.data[2] / 255))) / 3;
-          } else {
-            pixel = ctx_i.getImageData(x, y, 1, 1);
-            data[z] = ((0.299 * (pixel.data[0] / 255) * 1.5) + (0.587 * (pixel.data[1] / 255) * 1.5) + (0.114 * (pixel.data[2] / 255))) / 3;
-          }
-        }
-        x_vector = parseFloat((Math.abs(data[0] - data[1]) + 1) * 0.5) * 255;
-        y_vector = parseFloat((Math.abs(data[2] - data[3]) + 1) * 0.5) * 255;
-        ctx_o.fillStyle = "rgba(" + x_vector + "," + y_vector + ",255,255)";
-        ctx_o.fillRect(x, y, 1, 1);
-      }
-    }
-    return canvasOutput
-  }
-
 
   download(canvas,c=0){
     // Download the canvas as an image
@@ -219,18 +93,3 @@ export class RtTexture {
 }
 
 
-
-/*
-
-this.rtt = new RtTexture()
-this.rtt.initRenderTraget()
-this.rtt.add(this.quad.instances[28].plane)
-this.rtt.snapShot(this.rend)
-var plane = this.rtt.toMesh(50000, 50000,50,50)
-plane.position.z = 500000
-this.rend.scene.add(plane)
-var pixels = this.rtt.getPixels(this.rend)
-var img = this.rtt.toImage(pixels)
-//this.rtt.download(img)
-
-*/

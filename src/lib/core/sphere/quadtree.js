@@ -24,7 +24,7 @@ class QuadTreeLoDCore  {
       bottom: {textuers:[]},
     },
     position:{x:0,y:0,z:0},
-    scale: 0,
+    scale: 1,
     color: NODE.vec3(0,0,0)
   }
 
@@ -146,10 +146,10 @@ class QuadTreeLoDCore  {
     child4.plane.material.positionNode = newP
 
     for (var i = 0; i < textures.length; i++) {
-      frontsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      frontsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      frontsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      frontsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
+      frontsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      frontsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      frontsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      frontsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
     }
 
     return [child1,child2,child3,child4]
@@ -202,10 +202,10 @@ class QuadTreeLoDCore  {
     child4.plane.material.positionNode = newP
 
     for (var i = 0; i < textures.length; i++) {
-      backsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      backsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      backsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      backsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
+      backsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      backsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      backsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      backsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
     }
 
     return [child1,child2,child3,child4]
@@ -258,10 +258,10 @@ class QuadTreeLoDCore  {
     child4.plane.material.positionNode = newP
 
     for (var i = 0; i < textures.length; i++) {
-      rightsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      rightsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      rightsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      rightsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
+      rightsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      rightsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      rightsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      rightsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
     }
 
     return [child1,child2,child3,child4]
@@ -313,10 +313,10 @@ class QuadTreeLoDCore  {
     child4.plane.material.positionNode = newP
 
     for (var i = 0; i < textures.length; i++) {
-      leftsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      leftsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      leftsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      leftsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
+      leftsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      leftsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      leftsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      leftsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
     }
 
     return [child1,child2,child3,child4]
@@ -367,10 +367,10 @@ class QuadTreeLoDCore  {
     child4.plane.material.colorNode = currentColor
     child4.plane.material.positionNode = newP
     for (var i = 0; i < textures.length; i++) {
-      topsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      topsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      topsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      topsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
+      topsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      topsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      topsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      topsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
     }
     return [child1,child2,child3,child4]
   }
@@ -422,10 +422,10 @@ class QuadTreeLoDCore  {
     child4.plane.material.positionNode = newP
 
     for (var i = 0; i < textures.length; i++) {
-      bottomsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      bottomsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      bottomsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
-      bottomsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:cnt.clone(),config:this.config})
+      bottomsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      bottomsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      bottomsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+      bottomsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
     }
 
 

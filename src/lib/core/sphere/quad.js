@@ -49,36 +49,20 @@ var patternCount = 0
       for (var i = 0; i < this.instances.length; i++) {
         var q = this.instances[i]
         var p = q.plane
-        p.material.uniforms[`displacementScale_${this.count}`] = new THREE.Vector2(1,1);
-        p.material.uniforms[`lightDirection_${this.count}`]    = new THREE.Vector3(.0, .0, 0); 
         var wp = p.position.clone()//todo
         var nxj = norm(wp.x,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
         var nyj = norm(wp.y,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
         var offSets = NODE.vec2(nxj-halfScale,nyj-halfScale)
         var newUV   = NODE.uv().mul(testscaling).add(offSets)
-
-
         var cnt = this.quadTreeconfig.config.cnt.clone()
         p.worldToLocal(cnt)
-        var textureNode = NODE.texture(texture_[0],NODE.uv())
-        var textureNodeN = NODE.texture(texture_[1],NODE.uv())
-
-        textureNode._TexId = `${i}_${this.count}` 
+        var textureNodeN = NODE.texture(texture_,newUV)
         if(p.material.positionNode){
-          //var mouse = p.material.uniforms[`displacementScale_${this.count}`]
-          //var ld    = p.material.uniforms[`lightDirection_${this.count}`]
-          //const screenFXNode = NODE.uniform( mouse )
-          //var ld  = NODE.uniform( ld ).add(NODE.vec3(.0, .0, 0))
-          //const displace = textureNode.x.mul(screenFXNode.x).mul(NODE.normalLocal)
-          //p.material.colorNode = textureNode //p.material.colorNode.add(lighting(displacedNormal(textureNode,newUV),ld))
-          //p.material.positionNode = p.material.positionNode.add( displace );
+          p.material.colorNode = textureNodeN.xyz.mul(2).sub(1)
+          //p.material.colorNode = textureNodeN.w
 
-
-          //p.material.colorNode = textureNodeN//displacemntTextureV2(texture_,newUV)
-          p.material.colorNode = textureNodeN//displacemntNormalV2(texture_[0],uv)
-          const displace = textureNode.r.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
+          const displace = textureNodeN.w.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
           p.material.positionNode =  p.material.positionNode.add( displace );
-          
         }else{
           //var mouse = p.material.uniforms[`displacementScale_${this.count}`]
           //var ld    = p.material.uniforms[`lightDirection_${this.count}`]
@@ -87,9 +71,9 @@ var patternCount = 0
           //const displace = textureNode.x.mul(screenFXNode.x).mul(NODE.normalLocal)
           //p.material.colorNode = textureNode .mul(2.0).sub(1.0)//lighting((displacedNormal(textureNode,newUV)),ld )
           //p.material.positionNode = NODE.positionLocal.add(displace);
-          const displace = textureNode.z.mul(displacementScale).mul(NODE.normalLocal)
-          p.material.colorNode = textureNode
-          p.material.positionNode = NODE.positionLocal.add( displace );
+          //const displace = textureNode.z.mul(displacementScale).mul(NODE.normalLocal)
+          //p.material.colorNode = textureNode
+          //p.material.positionNode = NODE.positionLocal.add( displace );
         }
         }
         this.count++
@@ -99,7 +83,7 @@ var patternCount = 0
       lighting(ld){
         var fn = NODE.func(`
         float light_(vec4 n, vec3 ld, vec3 cp ) {
-          return lightv2( n, ld, cp);
+          return lightv2(n,ld,cp);
         }
         `,[lightv2])
         for (var i = 0; i < this.instances.length; i++) {
@@ -140,6 +124,7 @@ var patternCount = 0
     }  
 
     createDimensions(sideName){
+      this.side = sideName
       const w = this.quadData.width
       const d = this.quadData.dimensions
       const shardedGeometry = this.quadTreeconfig.config.arrybuffers[w]

@@ -126,9 +126,9 @@ float lightv2(vec4 normalMap, vec3 lightPosition, vec3 cP) {
 
 vec3 lightDirection = normalize(lightPosition - normalMap.xyz);
 vec3 viewDirection = normalize(cP - normalMap.xyz);
-vec3 ambientColor = vec3(0.2, 0.2, 0.2);  // Ambient light color
+vec3 ambientColor = vec3(0.0, 0.0, 0.0);  // Ambient light color
 vec3 diffuseColor = vec3(0.2, 0.2, 0.2);  // Diffuse light color
-vec3 specularColor = vec3(0.2, 0.2, 0.2); // Specular light color
+vec3 specularColor = vec3(0.0, 0.0, 0.0); // Specular light color
 float shininess = 0.0;  // Material shininess factor
 
 // Ambient lighting calculation
@@ -144,11 +144,18 @@ float specularIntensity = pow(max(dot(reflectionDirection, viewDirection), 0.0),
 vec3 specular = specularColor * specularIntensity;
 
 // Final lighting calculation
-vec3 finalColor = ambient + diffuse + specular;
+vec3 finalColor = (ambient + diffuse + specular) * 1.;
 return clamp(dot(normalMap.xyz, lightDirection), 0.0, 1.0) * max(max(finalColor.r, finalColor.g), finalColor.b);
 }
 `)
 
+
+export const simpleLight = NODE.func(`
+float simpleLight(vec3 normalMap) {
+  vec3 lightDirection = vec3(0.57, -0.57, 0.57);
+  return dot(normalMap, lightDirection);
+}
+`)
 
 export const normals = NODE.func(`
 vec3 normals(vec3 grad,vec3 sampleDir){
@@ -157,7 +164,7 @@ vec3 gradient = grad;
 // Zero out component perpendicular to the sphere.
 vec3 onSphere = gradient - dot(sampleDir, gradient) * sampleDir;
 // Normal vector tilts away from "uphill" direction.
-vec3 normal = normalize(sampleDir - onSphere * .1);
+vec3 normal = normalize(sampleDir - onSphere * .05);
 return normal;
 }
 
@@ -201,11 +208,12 @@ vec4 fbmd(  vec3 x, int octaves, bool t){
              n = -1.*n;
        		}
         
-        a += b*n.x;           // accumulate values		
+        a += b*(n.x);           // accumulate values		
         d += b*n.yzw*scale; // accumulate derivatives
         b *= 0.5;             // amplitude decrease
         f *= 1.8;             // frequency increase
     }
+  a = max(a-.5,0.);
 
 	return vec4( a, d );
 }

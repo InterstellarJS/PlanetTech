@@ -238,12 +238,6 @@ import * as THREE  from 'three'
     tangent = normalize(tangent * scale - cubePosition * dot(tangent, cubePosition));    
   }`;
   
-  export const combinedNoise_ = () =>{ return `
-  vec4 combinedNoise(){
-    vec4 noise;
-    return noise;
-  }
-  `}
 
 
 export const terrainFunctions = `
@@ -260,7 +254,7 @@ vec4 genTerrain(vec3 cubePosition, bool worldSpace) {
   samplePos = sphereNormal;
   vec4 noise;
   noise = combinedNoise();
-  float height = noise.x * 0.9;
+  float height = noise.x ;
   vec3 gradient = noise.yzw;
 
   vec3 onSphere = gradient - dot(sphereNormal, gradient) * sphereNormal;
@@ -279,3 +273,44 @@ vec4 genTerrain(vec3 cubePosition, bool worldSpace) {
 }`
 
 
+export const simplexPerlinNoiseFBm = `
+  float simplexPerlinNoiseFBm(vec3 v_, float seed_, float scale_,float persistance_,float lacunarity_,float redistribution_,int octaves_, int iteration_,bool terbulance_, bool ridge_  ) {
+    vec3 v = v_; 
+    v += (seed_ * 100.0);
+    float persistance = persistance_;
+    float lacunarity = lacunarity_;
+    float redistribution = redistribution_;
+    int octaves = octaves_;
+    bool terbulance = terbulance_;
+    bool ridge = terbulance_ && ridge_;
+  
+    float result = 0.0;
+    float amplitude = 1.0;
+    float frequency = 1.0;
+    float maximum = amplitude;
+  
+    for (int i = 0; i < iteration_; i++) {
+      if (i >= octaves)
+        break;
+  
+      vec3 p = v * frequency * scale_;
+  
+      float noiseVal = SimplexPerlin3D(p);
+  
+      if (terbulance)
+        noiseVal = abs(noiseVal);
+  
+      if (ridge)
+        noiseVal = -1.0 * noiseVal;
+  
+      result += noiseVal * amplitude;
+  
+      frequency *= lacunarity;
+      amplitude *= persistance;
+      maximum += amplitude;
+    }
+  
+    float redistributed = pow(result, redistribution);
+    return redistributed / maximum;
+  }
+  `

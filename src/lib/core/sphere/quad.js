@@ -12,6 +12,11 @@ var fbmCount = 0
 var displacementNormalCount= 0 
 var patternCount = 0 
 
+const normalDisplace = NODE.func(`
+vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
+  return vec4(normalM.xyz,displacMentM.x)
+}
+`)
 
   export default class Quad{
     constructor(w,h,ws,hs,d){
@@ -56,12 +61,16 @@ var patternCount = 0
         var newUV   = NODE.uv().mul(testscaling).add(offSets)
         var cnt = this.quadTreeconfig.config.cnt.clone()
         p.worldToLocal(cnt)
-        var textureNodeN = NODE.texture(texture_,newUV)
+        if(texture_.length == 2){
+          var textureNodeN = NODE.texture(texture_[0],newUV)
+          var textureNodeD = NODE.texture(texture_[1],newUV).r
+        }else{
+          var textureNodeN = NODE.texture(texture_[0],newUV).xyz
+          var textureNodeD = NODE.texture(texture_[0],newUV).r
+        }
         if(p.material.positionNode){
-          p.material.colorNode = textureNodeN.xyz.mul(2).sub(1)
-          //p.material.colorNode = textureNodeN.w
-
-          const displace = textureNodeN.w.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
+          p.material.colorNode = textureNodeN
+          const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
           p.material.positionNode =  p.material.positionNode.add( displace );
         }else{
           //var mouse = p.material.uniforms[`displacementScale_${this.count}`]
@@ -90,7 +99,7 @@ var patternCount = 0
           var p = this.instances[i].plane
           p.material.colorNode = fn.call({
             n:p.material.colorNode,
-            ld:NODE.vec3(0.,0.,100.),
+            ld:NODE.vec3(100.,100.,100.),
             cp:NODE.vec3(0.,0.,0.)
           })
         }

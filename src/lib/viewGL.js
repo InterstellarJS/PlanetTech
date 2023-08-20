@@ -6,6 +6,7 @@ import { nodeFrame } from 'three/addons/renderers/webgl/nodes/WebGLNodes.js';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA } from './core/sphere/utils'
 import { CubeMap } from './core/textures/cubeMap';
+import {NormalMaterial,NoiseMaterial} from './core/shaders/material';
 
 
 class ViewGL {
@@ -37,23 +38,25 @@ initQuad(tex) {
 }
 
 initPlanet() {
+ let noiseMaterial = new NoiseMaterial()
 
-  const cm = new CubeMap()
-  cm.simplexNoiseFBm('+',5.0,{x:1,y:1,z:1},.2, 2.2, 4)
+  const cm = new CubeMap(noiseMaterial)
+  cm.material.simplexPerlinNoiseFBm('+',5.3,{x:1,y:1,z:1}, 1., 2.0, .5, 1., 4,  5, false,  false)
+  cm.material.simplexPerlinNoiseFBm('*',6.3,{x:1,y:1,z:1}, 1., 2.0, .5, 1., 4,  5, true,  false)
+
   cm.buildRttMesh(true)
-  cm.complie(5512)
-
-let ta  =  (cm.textuerArray)
+  cm.complie(512*2)
+  let ta  =  (cm.textuerArray)
 
   const params = {
     width: 100,
     height: 100,
-    widthSegment: 100,
-    heightSegment: 100,
+    widthSegment: 150,
+    heightSegment: 150,
     quadTreeDimensions: 1,
     levels: 3,
     radius: 100,
-    displacmentScale:0.8,
+    displacmentScale:2.4,
  }
 
  this. s = new Sphere(
@@ -70,20 +73,37 @@ let ta  =  (cm.textuerArray)
     params.displacmentScale,
   )
 
-  this.s.front.addTexture  (ta[4], params.displacmentScale)
-  this.s.back.addTexture   (ta[5], params.displacmentScale)
-  this.s.right.addTexture  (ta[0], params.displacmentScale)
-  this.s.left.addTexture   (ta[1], params.displacmentScale)
-  this.s.top.addTexture    (ta[2], params.displacmentScale)
-  this.s.bottom.addTexture (ta[3], params.displacmentScale)
+  const loader1 = new THREE.TextureLoader().load('./tf.jpg');
+  const loader2 = new THREE.TextureLoader().load('./tr.jpg');
+  const loader1d = new THREE.TextureLoader().load('./tfd.jpg');
+  const loader2d = new THREE.TextureLoader().load('./trd.jpg');
+
+  this.s.front.addTexture  ([ta[4]], params.displacmentScale)
+  this.s.back.addTexture   ([ta[5]], params.displacmentScale)
+  this.s.right.addTexture  ([ta[0]], params.displacmentScale)
+  this.s.left.addTexture   ([ta[1]], params.displacmentScale)
+  this.s.top.addTexture    ([ta[2]], params.displacmentScale)
+  this.s.bottom.addTexture ([ta[3]], params.displacmentScale)
+
+
+  //this.s.front.addTexture  ([loader1,loader1d], params.displacmentScale)
+  //this.s.right.addTexture  ([loader2,loader2d], params.displacmentScale)
+
+  //this.s.front.lighting    (NODE.vec3(0,0,0))
+  //this.s.right.lighting    (NODE.vec3(0,0,0))
+
+/*
+
 
   
+
   this.s.front.lighting    (NODE.vec3(0,0,0))
   this.s.back.lighting     (NODE.vec3(0,0,0))
   this.s.right.lighting    (NODE.vec3(0,0,0))
   this.s.left.lighting     (NODE.vec3(0,0,0))
   this.s.top.lighting      (NODE.vec3(0,0,0))
   this.s.bottom.lighting   (NODE.vec3(0,0,0))
+*/
 
 
   this.allp = [
@@ -132,7 +152,7 @@ update(t) {
 if(this.s){
   this.controls.update(this.clock.getDelta())
   for (var i = 0; i < this.allp.length; i++) {
-   this.allp[i].update(this.player)
+   //this.allp[i].update(this.player)
   }
 }
 

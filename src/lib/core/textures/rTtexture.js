@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-
+import * as NODE from 'three/nodes';
+import renderer_    from '../../render'
 
 
 export class RtTexture {
@@ -15,21 +16,38 @@ export class RtTexture {
     this. renderTarget  = new THREE.WebGLRenderTarget(this.rtWidth, this.rtHeight);
   }
 
+  toMesh(w,h,wr,hs){
+    const geometry = new THREE.PlaneGeometry( w,h,wr,hs);
+    const material = new NODE.MeshBasicNodeMaterial();
+    const plane = new THREE.Mesh( geometry, material );
+    return plane
+
+  }
+
+  toPlaneMesh(w,h,wr,hs){
+    const geometry = new THREE.PlaneGeometry( w,h,wr,hs);
+    const material = new NODE.MeshBasicNodeMaterial();
+    const plane = new THREE.Mesh( geometry, material );
+    return plane
+    
+  }
+
   getTexture(){
-    return this.renderTarget.texture
+    var t = this.renderTarget.texture
+    return t
   }
 
 
-  snapShot(rend){
-    rend.renderer.setRenderTarget(this.renderTarget);
-    rend.renderer.clear();
-    rend.renderer.render(this.rtScene, this.rtCamera);
-    rend.renderer.setRenderTarget(null);
+  snapShot(){
+    renderer_.renderer.setRenderTarget(this.renderTarget);
+    renderer_.renderer.clear();
+    renderer_.renderer.render(this.rtScene, this.rtCamera);
+    renderer_.renderer.setRenderTarget(null);
   }
 
-  getPixels(rend){
+  getPixels(){
     var pixels = new Uint8Array(this.rtWidth * this.rtHeight * 4);
-    rend.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.rtWidth, this.rtHeight, pixels);
+    renderer_.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.rtWidth, this.rtHeight, pixels);
     return pixels
   }
 
@@ -91,5 +109,6 @@ export class RtTexture {
   }
 
 }
+
 
 

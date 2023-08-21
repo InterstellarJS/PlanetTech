@@ -2,7 +2,6 @@ import * as NODE from 'three/nodes';
 import * as THREE   from 'three';
 import {QuadTrees}  from './quadtree'
 import {norm}       from './utils'
-import {lightv2} from  './../shaders/analyticalNormals'
 
 
 console.log(NODE)
@@ -62,8 +61,8 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
         var cnt = this.quadTreeconfig.config.cnt.clone()
         p.worldToLocal(cnt)
         if(texture_.length == 2){
-          var textureNodeN = NODE.texture(texture_[0],newUV)
-          var textureNodeD = NODE.texture(texture_[1],newUV).r
+          var textureNodeN = NODE.texture(texture_[0],newUV).mul(2).sub(1)
+          var textureNodeD = NODE.texture(texture_[1],newUV).b
         }else{
           var textureNodeN = NODE.texture(texture_[0],newUV).xyz
           var textureNodeD = NODE.texture(texture_[0],newUV).r
@@ -92,9 +91,9 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
       lighting(ld){
         var fn = NODE.func(`
         float light_(vec4 n, vec3 ld, vec3 cp ) {
-          return lightv2(n,ld,cp);
+          return dot(n.xyz,vec3(.0,.0,.57));
         }
-        `,[lightv2])
+        `,[])
         for (var i = 0; i < this.instances.length; i++) {
           var p = this.instances[i].plane
           p.material.colorNode = fn.call({

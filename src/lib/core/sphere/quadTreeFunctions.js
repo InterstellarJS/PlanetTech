@@ -1,15 +1,12 @@
 import * as THREE          from 'three';
 import {norm}              from './utils'
 import * as NODE from 'three/nodes';
-import {
-  lightv2
-} from  './../shaders/analyticalNormals'
 
 var lighting = NODE.func(`
 float light_(vec4 n, vec3 ld, vec3 cp ) {
-  return lightv2(n,ld,cp);
+  return dot(n.xyz,vec3(.57,.57,.57));
 }
-`,[lightv2])
+`,[])
 
 
 

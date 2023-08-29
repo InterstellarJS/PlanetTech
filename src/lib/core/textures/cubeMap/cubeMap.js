@@ -123,7 +123,7 @@ export class CubeMap{
                 }
             }else{
                 if(this.mapType){
-                    p.material.colorNode = normals.call({grad:n1,sampleDir:sampleDir}).xyz
+                    p.material.colorNode = normals.call({grad:n1,sampleDir:sampleDir}).xyz.mul(.5).add(.5)
                 }else{
                     p.material.colorNode = n1.x.add(.3)
                 }

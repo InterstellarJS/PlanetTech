@@ -43,7 +43,6 @@ initPlanet() {
 
   const cm = new CubeMapTexture()
   cm.build(2048)
-  //seed_:6.0, scale_:0.3,  persistance_:2.0, lacunarity_:0.5, redistribution_:2.0, octaves_:4, iteration_:5, terbulance_:false, ridge_:false
   cm.simplexNoiseFbm({
     inScale:1,
     scale:0.1,  

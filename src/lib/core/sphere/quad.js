@@ -95,7 +95,7 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
           var p = this.instances[i].plane
           p.material.colorNode = fn.call({
             n:p.material.colorNode,
-            ld:NODE.vec3(10.,10.,10.0),
+            ld:NODE.vec3(5.,5.,10.0),
             cp:NODE.vec3(0.,0.,0.)
           })
         }

@@ -123,7 +123,9 @@ the code will be the same as before.
 
 ```
 Notice we dont need the color anymore. And all we added was a THREE.TextureLoader for loading a texture for each face of the planet, increase `quadTreeDimensions` to 3 and increase `displacmentScale` to 5.
-![quad Sphere](./public/readmeImg/img8.png)
+<p float="left">
+  <img src="./public/readmeImg/img8.png" width="500" />
+</p>
 
 PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows a user to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps.
 
@@ -133,15 +135,17 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
 
 <p float="left">
   World Space Normal:
-  <img src="./public/readmeImg/no.png" width="200" />
-  <img src="./public/readmeImg/objSS.png" width="200" />
+  <img src="./public/readmeImg/no.png" width="300" />
+  World Space Normal with light:
+  <img src="./public/readmeImg/objSS.png" width="300" />
 </p>
 
 
 <p float="left">
   Tangent Space Normal:
-  <img  src="./public/readmeImg/nt.png" width="200" />
-  <img  src="./public/readmeImg/tanSS.png" width="200" />
+  <img  src="./public/readmeImg/nt.png" width="300" />
+  Tangent Space Normal with light:
+  <img  src="./public/readmeImg/tanSS.png" width="300" />
 </p>
 
 ## Apache License 2.0.

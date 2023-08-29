@@ -14,7 +14,6 @@ function Editor() {
   return (
     <div id="MainApp" style={{ position:'absolute', display: 'flex', height: '100%', width:'100%', backgroundColor:'purple' }}>
       <ViewPort />
-      <RightPanel />
     </div>
   );
 }

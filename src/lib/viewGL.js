@@ -43,13 +43,7 @@ initPlanet() {
 
   const cm = new CubeMapTexture()
   cm.build(2048)
-    cm.simplexNoiseFbmD({ 
-    scale:8., 
-    octaves:8,  
-    persistence:.15,  
-    lacunarity:2.4
-  })
-  /*cm.simplexNoiseFbm({
+  cm.simplexNoiseFbm({
     inScale:1,
     scale:0.1,  
     scaleHeightOutput:.6,
@@ -64,15 +58,14 @@ initPlanet() {
     ridge:false,
     vn:NODE.normalLocal, 
     tangent:NODE.tangentLocal,  
-  })*/
+  })
   /*
   cm.simplexNoiseFbmD({ 
     scale:12., 
     octaves:8,  
     persistence:.15,  
     lacunarity:2.4
-  })
-  */
+  })*/
 
   cm.snapShot(false)
   let DN = cm.getTexture()
@@ -112,12 +105,7 @@ initPlanet() {
   this.s.top.addTexture    ([N[4],D[4]], params.displacmentScale)
   this.s.bottom.addTexture ([N[5],D[5]], params.displacmentScale)
 
-  this.s.front.lighting    (NODE.vec3(0,0,0))
-  this.s.back.lighting     (NODE.vec3(0,0,0))
-  this.s.right.lighting    (NODE.vec3(0,0,0))
-  this.s.left.lighting     (NODE.vec3(0,0,0))
-  this.s.top.lighting      (NODE.vec3(0,0,0))
-  this.s.bottom.lighting   (NODE.vec3(0,0,0))
+
 
 
 /*

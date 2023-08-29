@@ -1,7 +1,5 @@
 # CubeMaphJS 
-![Example Planet](./public/readmeImg/example-planet.png)
-
 <p align="center">
-  <img src="./public/readmeImg/objS.png" />
-  <img src="./public/readmeImg/tanS.png" />
+  <img src="./img/objS.png" />
+  <img src="./img/tanS.png" />
 </p>

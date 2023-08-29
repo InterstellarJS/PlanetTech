@@ -122,5 +122,4 @@ Notice we dont need the color anymore. And all we added was a THREE.TextureLoade
 
 PlanetTechJS comes with an experimental feature called CubeMapJS. CubeMapJS allows a user to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps.
 
-[!WARNING]
-In some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user.
+**WARNING:** In some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user.

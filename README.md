@@ -133,15 +133,15 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
 
 <p float="left">
   World Space Normal:
-  <img src="./public/readmeImg/no.png" />
-  <img src="./public/readmeImg/objSS.png" />
+  <img src="./public/readmeImg/no.png" width="100" />
+  <img src="./public/readmeImg/objSS.png" width="100" />
 </p>
 
 
 <p float="left">
   Tangent Space Normal:
-  <img  src="./public/readmeImg/nt.png" />
-  <img  src="./public/readmeImg/tanSS.png" />
+  <img  src="./public/readmeImg/nt.png" width="100" />
+  <img  src="./public/readmeImg/tanSS.png" width="100" />
 </p>
 
 ## Apache License 2.0.

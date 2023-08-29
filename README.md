@@ -120,6 +120,14 @@ the code will be the same as before.
 Notice we dont need the color anymore. And all we added was a THREE.TextureLoader for loading a texture for each face of the planet, increase `quadTreeDimensions` to 3 and increase `displacmentScale` to 5.
 ![quad Sphere](./public/readmeImg/img8.png)
 
-PlanetTechJS comes with an experimental feature called CubeMapJS. CubeMapJS allows a user to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps.
+PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows a user to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps.
 
 **WARNING:** In some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user.
+
+<p align="center">
+  World Space Normal:
+  <img src="./public/readmeImg/objSS.png" />
+  Tangent Space Normal:
+  <img src="./public/readmeImg/tanSS.png" />
+</p>
+

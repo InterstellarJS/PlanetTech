@@ -5,7 +5,7 @@ import Sphere        from './core/sphere/sphere'
 import { nodeFrame } from 'three/addons/renderers/webgl/nodes/WebGLNodes.js';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA } from './core/sphere/utils'
-import { CubeMap } from './core/textures/cubeMap';
+import { CubeMapTexture } from './core/textures/cubeMap/cubeMap.js';
 
 
 class ViewGL {
@@ -19,7 +19,7 @@ this.rend.webglRenderer(canvasViewPort);
 this.rend.scene();
 this.rend.stats();
 this.rend.camera();
-this.rend.updateCamera(0,0,200)
+this.rend.updateCamera(0,0,10000*2)
 this.rend.orbitControls()
 }
 
@@ -41,47 +41,49 @@ initPlanet() {
 
 
 
-  const cm = new CubeMap()
+  const cm = new CubeMapTexture()
   cm.build(2048)
-  cm.noiseFBM('add',{
-    seed_:1.0, 
-    scale_:5.3, 
-    persistance_:2.0, 
-    lacunarity_:0.5, 
-    redistribution_:1.0, 
-    octaves_:4, 
-    iteration_:5, 
-    terbulance_:false, 
-    ridge_:false,
-  }
-)
-
-
-cm.noiseFBM('add',{
-  seed_:1.0, 
-  scale_:1.3, 
-  persistance_:2.0, 
-  lacunarity_:0.5, 
-  redistribution_:1.0, 
-  octaves_:4, 
-  iteration_:5, 
-  terbulance_:true, 
-  ridge_:true,
-}
-)
+  //seed_:6.0, scale_:0.3,  persistance_:2.0, lacunarity_:0.5, redistribution_:2.0, octaves_:4, iteration_:5, terbulance_:false, ridge_:false
+  cm.simplexNoiseFbm({
+    inScale:1,
+    scale:0.1,  
+    scaleHeightOutput:.5,
+    seed:6.15,
+    normalScale:.001,
+    persistance:.4,
+    lacunarity:1.8,
+    redistribution:1.,
+    octaves:4,
+    iteration:8,
+    terbulance:false,
+    ridge:false,
+    vn:NODE.normalLocal, 
+    tangent:NODE.tangentLocal,  
+  })
+  /*
+  cm.simplexNoiseFbmD({ 
+    scale:12., 
+    octaves:8,  
+    persistence:.15,  
+    lacunarity:2.4
+  })*/
 
   cm.snapShot(false)
-   let ta  =  (cm.textuerArray)
-   
+  let DN = cm.getTexture()
+  let N  = DN.normal
+  let D  = DN.displacement
+
+
+
   const params = {
-    width: 100,
-    height: 100,
+    width: 10000,
+    height: 10000,
     widthSegment: 50,
-    heightSegment: 50,
+    heightSegment:50,
     quadTreeDimensions: 1,
     levels: 1,
-    radius: 100,
-    displacmentScale:9.0,
+    radius: 10000,
+    displacmentScale:100,
  }
 
  this. s = new Sphere(
@@ -97,25 +99,20 @@ cm.noiseFBM('add',{
     params.radius,
     params.displacmentScale,
   )
+  this.s.front.addTexture  ([N[0],D[0]], params.displacmentScale)
+  this.s.back.addTexture   ([N[1],D[1]], params.displacmentScale)
+  this.s.right.addTexture  ([N[2],D[2]], params.displacmentScale)
+  this.s.left.addTexture   ([N[3],D[3]], params.displacmentScale)
+  this.s.top.addTexture    ([N[4],D[4]], params.displacmentScale)
+  this.s.bottom.addTexture ([N[5],D[5]], params.displacmentScale)
 
-  const loader1 = new THREE.TextureLoader().load('./tf.jpg');
-  const loader2 = new THREE.TextureLoader().load('./tr.jpg');
-  const loader1d = new THREE.TextureLoader().load('./tfd.jpg');
-  const loader2d = new THREE.TextureLoader().load('./trd.jpg');
+  this.s.front.lighting    (NODE.vec3(0,0,0))
+  this.s.back.lighting     (NODE.vec3(0,0,0))
+  this.s.right.lighting    (NODE.vec3(0,0,0))
+  this.s.left.lighting     (NODE.vec3(0,0,0))
+  this.s.top.lighting      (NODE.vec3(0,0,0))
+  this.s.bottom.lighting   (NODE.vec3(0,0,0))
 
-  this.s.front.addTexture  ([ta[0]], params.displacmentScale)
-  this.s.back.addTexture   ([ta[1]], params.displacmentScale)
-  this.s.right.addTexture  ([ta[2]], params.displacmentScale)
-  this.s.left.addTexture   ([ta[3]], params.displacmentScale)
-  this.s.top.addTexture    ([ta[4]], params.displacmentScale)
-  this.s.bottom.addTexture ([ta[5]], params.displacmentScale)
-
-
-  //this.s.front.addTexture  ([loader1,loader1d], params.displacmentScale)
-  //this.s.right.addTexture  ([loader2,loader2d], params.displacmentScale)
-
- this.s.front.lighting    (NODE.vec3(0,0,0))
- this.s.right.lighting    (NODE.vec3(0,0,0))
 
 /*
   this.s.front.lighting    (NODE.vec3(0,0,0))

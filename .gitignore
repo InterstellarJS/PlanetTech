@@ -4,7 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
-
+/src/lib/core/textures/cubetexture.js
 # testing
 /coverage
 

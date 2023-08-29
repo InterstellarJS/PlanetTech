@@ -1,4 +1,4 @@
-# PlanetTechJS
+# PlanetTechJS (ALPHA V1)
 ![Example Planet](./public/readmeImg/example-planet.png)
 
 <p align="center">
@@ -102,11 +102,11 @@ the code will be the same as before.
     params.displacmentScale,
   )
 
-  const loader1 = new THREE.TextureLoader().load('./worldTextures/front_image.png');
-  const loader2 = new THREE.TextureLoader().load('./worldTextures/back_image.png');
-  const loader3 = new THREE.TextureLoader().load('./worldTextures/right_image.png');
-  const loader4 = new THREE.TextureLoader().load('./worldTextures/left_image.png');
-  const loader5 = new THREE.TextureLoader().load('./worldTextures/top_image.png');
+  const loader1 = new THREE.TextureLoader().load('./worldTextures/front_image.png' );
+  const loader2 = new THREE.TextureLoader().load('./worldTextures/back_image.png'  );
+  const loader3 = new THREE.TextureLoader().load('./worldTextures/right_image.png' );
+  const loader4 = new THREE.TextureLoader().load('./worldTextures/left_image.png'  );
+  const loader5 = new THREE.TextureLoader().load('./worldTextures/top_image.png'   );
   const loader6 = new THREE.TextureLoader().load('./worldTextures/bottom_image.png');
 
   s.front .addTexture ([loader1], params.displacmentScale)
@@ -117,5 +117,10 @@ the code will be the same as before.
   s.bottom.addTexture ([loader6], params.displacmentScale)
 
 ```
-Notice we dont need the color anymore. And all we added was a THREE.TextureLoader, increase `quadTreeDimensions` to 3 and increase `displacmentScale` to 5.
+Notice we dont need the color anymore. And all we added was a THREE.TextureLoader for loading a texture for each face of the planet, increase `quadTreeDimensions` to 3 and increase `displacmentScale` to 5.
 ![quad Sphere](./public/readmeImg/img8.png)
+
+PlanetTechJS comes with an experimental feature called CubeMapJS. CubeMapJS allows a user to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps.
+
+[!WARNING]
+In some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user.

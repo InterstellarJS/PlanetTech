@@ -133,73 +133,73 @@ export const snoise3D = NODE.func(
   `,[snoise3D])
   
 
-  export const noiseNormal = NODE.func(`
-  vec4 noiseNormal(vec3 worldPosition, vec3 center, float seed, float scale,float persistance,float lacunarity,float redistribution,int octaves, int iteration,bool terbulance, bool ridge ){
-    vec3 p  = 10.*normalize(worldPosition.xyz-center);
-    vec3 pu = 10.*normalize(worldPosition.xyz-center);
-		vec3 pw = 10.*normalize(worldPosition.xyz-center);
-    float n = fbm(p, seed,  scale, persistance, lacunarity, redistribution, octaves,  iteration, terbulance,  ridge);
-		p.z = n;
-
-    vec3 u = (pu);
-    vec3 w = (pw);
-    
-		u.x += 0.2;
-    u.z = fbm(u, seed,  scale, persistance, lacunarity, redistribution, octaves,  iteration, terbulance,  ridge);
-
-		w.y += 0.2;
-    w.z = fbm(w, seed,  scale, persistance, lacunarity, redistribution, octaves,  iteration, terbulance,  ridge);
-
-		vec3 t = u-p;
-    vec3 b = w-p;
-    
-    vec3 tb = normalize(cross(t,b));
 
   
-    return vec4(n,tb);
-    
-  }
-
-  `,[fbmNoise])
-
-  
-  export  const  displacementNormalNoiseFBM = NODE.func(`
-    
-    vec4 displacementNormalNoiseFBM(
-      vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float postionScale, float persistance,float lacunarity,float redistribution, int octaves, int iteration,bool terbulance, bool ridge){
-      
-      float n = fbm(wp*postionScale,  seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge);  
+  export  const  displacementNormalNoiseFBM = NODE.func(` 
+  vec3 displacementNormalNoiseFBM(
+      vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float normalScale, float persistance,float lacunarity,float redistribution, int octaves, int iteration,bool terbulance, bool ridge){
+      float n = fbm(wp,  seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge);  
       vec3 displacedPosition = wp + vn * n;
-      float offset = .1;
+      float offset = normalScale;
       vec3 tangent_ = tangent.xyz;
       vec3 bitangent = normalize(cross(vn, tangent_));
       vec3 neighbour1 = wp + tangent_ * offset;
       vec3 neighbour2 = wp + bitangent * offset;
-      vec3 displacedNeighbour1 = neighbour1 + vn * fbm(neighbour1*postionScale,  seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge );
-      vec3 displacedNeighbour2 = neighbour2 + vn * fbm(neighbour2*postionScale,  seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge );
+      vec3 displacedNeighbour1 = neighbour1 + vn * fbm(neighbour1,  seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge );
+      vec3 displacedNeighbour2 = neighbour2 + vn * fbm(neighbour2,  seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge );
       vec3 displacedTangent = displacedNeighbour1 - displacedPosition;
       vec3 displacedBitangent = displacedNeighbour2 - displacedPosition;
       vec3 displacedNormal = normalize(cross(displacedTangent, displacedBitangent));
-      return vec4(n,displacedNormal);
+      return displacedNormal;
     }
   
     `,[fbmNoise])
+
+
+    export const heightMapNormal = function heightMapNormal(tex,vUv,tan){
+
+      /*
+      const tex = new THREE.TextureLoader().load('./hm4.png' ); 
+      const vUv = NODE.uv();
+      const tan = NODE.tangentLocal;
+      */
+
+      var position = NODE.positionLocal
+      var normal   = NODE.normalLocal
+      var displacedPosition = position.add(normal.mul(NODE.texture(tex,vUv)));
+    
+      var texelSize = 1.0 / 212.0; // temporarily hardcoding texture resolution
+      var offset = 0.01;
+    
+      var tangent    = tan;
+      var bitangent  = NODE.cross(normal, tangent).normalize();
+      var neighbour1 = position.add(tangent.mul(offset));
+      var neighbour2 = position.add(bitangent.mul(offset));
+      // demo for now, the direction should be the same of the tangent and bitangent
+      var neighbour1uv = vUv.add(NODE.vec2(-texelSize, 0));
+      var neighbour2uv = vUv.add(NODE.vec2(0, -texelSize));
+      var displacedNeighbour1 = neighbour1.add(normal.mul(NODE.texture(tex,neighbour1uv)));
+      var displacedNeighbour2 = neighbour2.add(normal.mul(NODE.texture(tex,neighbour2uv)));
+      // https://i.ya-webdesign.com/images/vector-normals-tangent-16.png
+      var displacedTangent   = displacedNeighbour1.sub(displacedPosition);
+      var displacedBitangent = displacedNeighbour2.sub(displacedPosition);
+      // https://upload.wikimedia.org/wikipedia/commons/d/d2/Right_hand_rule_cross_product.svg
+      return  (NODE.cross(displacedTangent, displacedBitangent).normalize()).mul(.5).add(.5);
+    }
+
   
+    export  const  displacementFBM = NODE.func(` 
+    float displacementFBM(
+        vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float persistance,float lacunarity,float redistribution, int octaves, int iteration,bool terbulance, bool ridge){
+        float n = fbm(wp,  seed,  scale, persistance, lacunarity, redistribution,  octaves,  iteration, terbulance,  ridge);  
+        return n;
+      }
+    
+      `,[fbmNoise])
 
 
 
 
-    export const  normalMapping = (texture,vUv) => {
-      var scale    = 2.9;   // Adjust this to control the amount of displacement
-      var epsilon  = 0.01;  // Small value for calculating gradients
-      var strength = 1.;
-      var center = NODE.texture(texture,vUv).r; // Sample displacement map
-      var dx = NODE.texture(texture, vUv.add(NODE.vec2(epsilon, 0.0))).r.sub(center);  // Calculate gradients in the X  directions
-      var dy = NODE.texture(texture, vUv.add(NODE.vec2(0.0, epsilon))).r.sub(center);  // Calculate gradients in the Y directions
-      var normalMap = NODE.vec3(dx.mul(scale), dy.mul(scale), 1.0).normalize();               // Calculate the normal vector
-      var normalMap = normalMap.mul(strength);                                                       // Apply strength to the normal vector
-      return normalMap.mul(0.5).add(0.5)                                   // Output the resulting normal as a color
-  }
 
   export const clampedUVs = NODE.func(`
   vec2 clampedUVs(vec2 uv){
@@ -217,9 +217,9 @@ export const light= NODE.func(`
 float light(vec4 normalMap, vec3 lightPosition, vec3 cP) {
 vec3 lightDirection = normalize(lightPosition - normalMap.xyz);
 vec3 viewDirection = normalize(cP - normalMap.xyz);
-vec3 ambientColor = vec3(0.2, 0.2, 0.2);  // Ambient light color
+vec3 ambientColor = vec3(0.0, 0.0, 0.0);  // Ambient light color
 vec3 diffuseColor = vec3(0.2, 0.2, 0.2);  // Diffuse light color
-vec3 specularColor = vec3(0.2, 0.2, 0.2); // Specular light color
+vec3 specularColor = vec3(0.0, 0.0, 0.0); // Specular light color
 float shininess = 0.0;  // Material shininess factor
 
 // Ambient lighting calculation

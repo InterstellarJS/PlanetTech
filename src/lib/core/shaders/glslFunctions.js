@@ -199,7 +199,17 @@ export const snoise3D = NODE.func(
 
 
 
-
+    export const  normalMapping = (texture,vUv) => {
+      var scale    = 2.9;   // Adjust this to control the amount of displacement
+      var epsilon  = 0.01;  // Small value for calculating gradients
+      var strength = 1.;
+      var center = NODE.texture(texture,vUv).r; // Sample displacement map
+      var dx = NODE.texture(texture, vUv.add(NODE.vec2(epsilon, 0.0))).r.sub(center);  // Calculate gradients in the X  directions
+      var dy = NODE.texture(texture, vUv.add(NODE.vec2(0.0, epsilon))).r.sub(center);  // Calculate gradients in the Y directions
+      var normalMap = NODE.vec3(dx.mul(scale), dy.mul(scale), 1.0).normalize();               // Calculate the normal vector
+      var normalMap = normalMap.mul(strength);                                                       // Apply strength to the normal vector
+      return normalMap.mul(0.5).add(0.5)                                   // Output the resulting normal as a color
+  }
 
   export const clampedUVs = NODE.func(`
   vec2 clampedUVs(vec2 uv){

@@ -115,18 +115,10 @@ export class CubeMap{
                 params.samplePos = shiftedScaledSample;
               }
             var n1 = sdfbm2.call(params) 
-            if(p.material.colorNode){
-                if(this.mapType){
-                    p.material.colorNode = p.material.colorNode.xyz.add(normals.call({grad:n1,sampleDir:sampleDir}).xyz)
-                }else{
-                    p.material.colorNode = p.material.colorNode.add(n1.x.add(.8))
-                }
+            if(this.mapType){
+                p.material.colorNode = normals.call({grad:n1,sampleDir:sampleDir}).xyz.mul(.5).add(.5)
             }else{
-                if(this.mapType){
-                    p.material.colorNode = normals.call({grad:n1,sampleDir:sampleDir}).xyz.mul(.5).add(.5)
-                }else{
-                    p.material.colorNode = n1.x.add(.3)
-                }
+                p.material.colorNode = n1.x.add(.3)
             }
         })
     }

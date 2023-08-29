@@ -1,7 +1,7 @@
 ⚠️ **Disclaimer:** PlanetTechJS is currently in its alpha version and is being developed by a single developer. As a result, it's important to keep in mind that there may be bugs, spelling errors,no tests, and occasional inconsistencies in the library. While every effort is being made to provide a stable and enjoyable experience, please approach the library with the understanding that it's a work in progress. Your feedback, bug reports, and contributions are highly appreciated as they play a crucial role in improving the library and ensuring its quality.
 
 
-# PlanetTechJS (ALPHA V1) 
+# PlanetTechJS (ALPHA V0.1) 
 ![Example Planet](./public/readmeImg/example-planet.png)
 
 <p align="center">
@@ -16,6 +16,7 @@ PlanetTechJS is a JavaScript library for generating procedural planets and terra
 - Procedural planet generation: Create unique and realistic planets using procedural algorithms.
 - flexability and speed.
 - quadtree sphere.
+- subdivison cubeMap.
 - Terrain generation: Generate detailed and customizable terrains with different types of landscapes such as mountains, valleys, and plains.
 - Texture mapping: Apply textures to the terrain to enhance visual realism and add visual variety.(coming soon)
 - Gpu generated normal map.(coming soon)
@@ -126,14 +127,18 @@ Notice we dont need the color anymore. And all we added was a THREE.TextureLoade
 
 PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows a user to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps.
 
-**WARNING:** In some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user.
+⚠️ **Disclaimer:** In some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user.
 
 <p align="center">
   World Space Normal:
   <img src="./public/readmeImg/objSS.png" />
+  <img src="./public/readmeImg/no.png" />
   Tangent Space Normal: 
   <img  src="./public/readmeImg/tanSS.png" />
+  <img  src="./public/readmeImg/nt.png" />
 </p>
 
-## License
+## Apache License 2.0.
+This license  allows contributions to be open-source  while also ensuring that the project as a whole remains open and accessible to others.
+Under the Apache License 2.0, contributors retain the copyright to their individual contributions while granting a license to others to use, modify, and distribute the project as a whole. This means that someone cannot claim the entire project as their own, but they can claim ownership of their individual contributions.
  [License](./LICENSE.txt)

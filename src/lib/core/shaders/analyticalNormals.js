@@ -1,5 +1,4 @@
 import * as NODE from 'three/nodes';
-import * as THREE    from 'three';
 
 
 const  mod289_vec3 = NODE.func(
@@ -126,11 +125,11 @@ export const lightv2 = NODE.func(`
 float lightv2(vec4 normalMap, vec3 lightPosition, vec3 cP) {
 
 vec3 lightDirection = normalize(lightPosition - normalMap.xyz);
-vec3 viewDirection = normalize(cP - normalMap.xyz);
-vec3 ambientColor = vec3(0.0, 0.0, 0.0);  // Ambient light color
-vec3 diffuseColor = vec3(0.2, 0.2, 0.2);  // Diffuse light color
-vec3 specularColor = vec3(0.0, 0.0, 0.0); // Specular light color
-float shininess = 0.0;  // Material shininess factor
+vec3 viewDirection  = normalize(cP - normalMap.xyz);
+vec3 ambientColor   = vec3(0.0, 0.0, 0.0);  // Ambient light color
+vec3 diffuseColor   = vec3(0.2, 0.2, 0.2);  // Diffuse light color
+vec3 specularColor  = vec3(0.0, 0.0, 0.0); // Specular light color
+float shininess     = 0.0;  // Material shininess factor
 
 // Ambient lighting calculation
 vec3 ambient = ambientColor;
@@ -151,67 +150,6 @@ return clamp(dot(normalMap.xyz, lightDirection), 0.0, 1.0) * max(max(finalColor.
 `)
 
 
-function testSplat(a,textureNodeN){
-
-  const oceanTexture = NODE.texture(new THREE.TextureLoader().load('./water512.jpg'), NODE.uv().mul(10.)); 
-  const sandyTexture = NODE.texture(new THREE.TextureLoader().load('./sand-512.jpg'), NODE.uv().mul(1.)); 
-  const grassTexture = NODE.texture(new THREE.TextureLoader().load('./grass-512.jpg'),NODE.uv().mul(20.)); 
-  const rockyTexture = NODE.texture(new THREE.TextureLoader().load('./rock-512.jpg'), NODE.uv().mul(1.)); 
-  const snowyTexture = NODE.texture(new THREE.TextureLoader().load('./snow-512.jpg'), NODE.uv().mul(10.)); 
-
-
-  const testSplat_ = NODE.func(
-    `
-    vec3 testSplat(  float vAmount,vec3 N, vec4 oceanTexture, vec4 sandyTexture,vec4 grassTexture,vec4 rockyTexture, vec4 snowyTexture )
-    {
-      float ll = dot(N,vec3(0.57,  .57,  .57));
-
-    vec3 sandColor = mix(
-        vec3(0.86, 0.46, 0.32),
-        vec3(0.74, 0.25, 0.17),
-        smoothstep(0.0, 1.0, vAmount))*rockyTexture.rgb;
-    
-    // Lighting color mixing
-    vec3 lightingColor = mix(
-        vec3(0.8, 0.6, 0.3),
-        vec3(0.5, 0.2, 0.1),
-        smoothstep(0.0, 1.0, vAmount))*sandyTexture.rgb;
-        
-
-      return mix(sandColor,lightingColor,smoothstep(0.0,.076,vAmount) )*ll;
-    }
-    
-    `
-  )
-  return testSplat_.call({vAmount:a, N:textureNodeN, oceanTexture:oceanTexture,sandyTexture:sandyTexture,grassTexture:grassTexture,rockyTexture:rockyTexture,snowyTexture:snowyTexture})
-}
-
-function testSplat2(a){
-
-  const oceanTexture = NODE.texture(new THREE.TextureLoader().load('./water512.jpg'), NODE.uv().mul(10.)); 
-  const sandyTexture = NODE.texture(new THREE.TextureLoader().load('./sand-512.jpg'), NODE.uv().mul(10.)); 
-  const grassTexture = NODE.texture(new THREE.TextureLoader().load('./grass-512.jpg'),NODE.uv().mul(20.)); 
-  const rockyTexture = NODE.texture(new THREE.TextureLoader().load('./rock-512.jpg'), NODE.uv().mul(20.)); 
-  const snowyTexture = NODE.texture(new THREE.TextureLoader().load('./snow-512.jpg'), NODE.uv().mul(10.)); 
-
-
-  const testSplat_ = NODE.func(
-    `
-    vec4 testSplat(  float vAmount, vec4 oceanTexture, vec4 sandyTexture,vec4 grassTexture,vec4 rockyTexture, vec4 snowyTexture )
-    {
-      vec4 water = (smoothstep(0.0, 0.25, vAmount) - smoothstep(0.24, 0.26, vAmount)) * oceanTexture;
-      vec4 sandy = (smoothstep(0.24, 0.27, vAmount) - smoothstep(0.28, 0.31, vAmount)) * sandyTexture;
-      vec4 grass = (smoothstep(0.28, 0.32, vAmount) - smoothstep(0.35, 0.40, vAmount)) * grassTexture;
-      vec4 rocky = (smoothstep(0.30, 0.50, vAmount) - smoothstep(0.40, 0.70, vAmount)) * rockyTexture;
-      vec4 snowy = (smoothstep(0.50, 0.65, vAmount))                                   * snowyTexture;
-      return (vec4(0.0, 0.0, 0.0, 1.0) + water + sandy + grass + rocky + snowy);
-    }
-    
-    `
-  )
-  return testSplat_.call({vAmount:a,oceanTexture:oceanTexture,sandyTexture:sandyTexture,grassTexture:grassTexture,rockyTexture:rockyTexture,snowyTexture:snowyTexture})
-}
-
 export const normals = NODE.func(`
 vec4 normals(vec4 grad,vec3 sampleDir){
 vec3 gradient = grad.yzw;
@@ -224,6 +162,14 @@ return vec4(normal,grad.x);
 
 
 
+export const tangentSpace = NODE.func(`
+vec3 tangentSpace(vec4 tangent,vec3 norma, vec3 nmap){
+vec3 _tangent = tangent.xyz;
+vec3 bitangent = normalize(cross(_tangent,norma));
+mat3 TBN = mat3(_tangent,bitangent,(norma));
+return (TBN*nmap); 
+}
+`,)
 
 
 export const sdfbm = NODE.func(`
@@ -270,9 +216,9 @@ vec4 fbm(vec3 samplePos,int octaves, float persistence, float lacunarity) {
   vec4 accumulator = vec4(0, 0, 0, 0);
   float amplitude = 1.0;
   float frequency = 1.0;
-  vec3 p = samplePos;
+  
   for (int i = 0; i < octaves; i++) {
-      vec4 noise   = amplitude * snoise(p * frequency,vec3(0.));
+      vec4 noise   = amplitude * snoise(samplePos * frequency,vec3(0.));
       noise.yzw   *= frequency;
       accumulator += noise;
       amplitude   *= persistence;
@@ -281,5 +227,3 @@ vec4 fbm(vec3 samplePos,int octaves, float persistence, float lacunarity) {
   return accumulator;
 }
 `,[snoise])
-
-

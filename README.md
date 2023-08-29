@@ -123,7 +123,7 @@ the code will be the same as before.
 
 ```
 Notice we dont need the color anymore. And all we added was a THREE.TextureLoader for loading a texture for each face of the planet, increase `quadTreeDimensions` to 3 and increase `displacmentScale` to 5.
-<p float="left">
+<p align="center">
   <img src="./public/readmeImg/img8.png" width="500" />
 </p>
 
@@ -132,19 +132,15 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
 ⚠️ **Disclaimer:** In some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user.
 
 
-
-<p float="left">
-  World Space Normal:
+  World Space Normal & World Space Normal with light:
+<p align="center">
   <img src="./public/readmeImg/no.png" width="300" />
-  World Space Normal with light:
   <img src="./public/readmeImg/objSS.png" width="300" />
 </p>
 
-
-<p float="left">
-  Tangent Space Normal:
+  Tangent Space Normal & Tangent Space Normal with light:
+<p align="center">
   <img  src="./public/readmeImg/nt.png" width="300" />
-  Tangent Space Normal with light:
   <img  src="./public/readmeImg/tanSS.png" width="300" />
 </p>
 

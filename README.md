@@ -130,26 +130,19 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
 ⚠️ **Disclaimer:** In some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user.
 
 
-<div class="row">
+
+<p float="left">
   World Space Normal:
-  <div class="column">
   <img src="./public/readmeImg/no.png" />
-  </div>
-    World Space Normal With lighting:
-  <div class="column">
   <img src="./public/readmeImg/objSS.png" />
-  </div>
-    Tangent Space Normal: 
-  <div class="column">
+</p>
+
+
+<p float="left">
+  Tangent Space Normal:
   <img  src="./public/readmeImg/nt.png" />
-  </div>
-    Tangent Space Normal With lighting: 
-    <div class="column">
   <img  src="./public/readmeImg/tanSS.png" />
-  </div>
-</div>
-
-
+</p>
 
 ## Apache License 2.0.
 This license  allows contributions to be open-source  while also ensuring that the project as a whole remains open and accessible to others.

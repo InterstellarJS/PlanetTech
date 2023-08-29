@@ -128,6 +128,6 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
   World Space Normal:
   <img width="506.2" height="399" src="./public/readmeImg/objSS.png" />
   Tangent Space Normal: 
-  <img src="./public/readmeImg/tanSS.png" />
+  <img width="516" height="494" src="./public/readmeImg/tanSS.png" />
 </p>
 

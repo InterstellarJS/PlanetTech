@@ -105,7 +105,12 @@ initPlanet() {
   this.s.top.addTexture    ([N[4],D[4]], params.displacmentScale)
   this.s.bottom.addTexture ([N[5],D[5]], params.displacmentScale)
 
-
+  this.s.front.lighting    (NODE.vec3(0,0,0))
+  this.s.back.lighting     (NODE.vec3(0,0,0))
+  this.s.right.lighting    (NODE.vec3(0,0,0))
+  this.s.left.lighting     (NODE.vec3(0,0,0))
+  this.s.top.lighting      (NODE.vec3(0,0,0))
+  this.s.bottom.lighting   (NODE.vec3(0,0,0))
 
 
 /*

@@ -1,7 +1,7 @@
 ⚠️ **Disclaimer:** PlanetTechJS is currently in its alpha version and is being developed by a single developer. As a result, it's important to keep in mind that there may be bugs, spelling errors,no tests, and occasional inconsistencies in the library. While every effort is being made to provide a stable and enjoyable experience, please approach the library with the understanding that it's a work in progress. Your feedback, bug reports, and contributions are highly appreciated as they play a crucial role in improving the library and ensuring its quality.
 
 
-# PlanetTechJS (ALPHA V0.1) 
+# PlanetTechJS (ALPHA V0.0) 
 ![Example Planet](./public/readmeImg/example-planet.png)
 
 <p align="center">
@@ -80,7 +80,7 @@ To get a better understanding of the `levels` parameter, let's take a look at a 
 ![quad Sphere](./public/readmeImg/img4.jpg)
 
 Now lets say we want to add a texture to our sphere and start making it look like a planet.
-the code will be the same as before.
+the code will be the same as before except now we are using `addTexture` method.
 ```javascript
   const params = {
     width: 100,
@@ -114,15 +114,16 @@ the code will be the same as before.
   const loader5 = new THREE.TextureLoader().load('./worldTextures/top_image.png'   );
   const loader6 = new THREE.TextureLoader().load('./worldTextures/bottom_image.png');
 
-  s.front .addTexture ([loader1], params.displacmentScale)
-  s.back  .addTexture ([loader2], params.displacmentScale)
-  s.right .addTexture ([loader3], params.displacmentScale)
-  s.left  .addTexture ([loader4], params.displacmentScale)
-  s.top   .addTexture ([loader5], params.displacmentScale)
-  s.bottom.addTexture ([loader6], params.displacmentScale)
+  s.front .addTexture ([loader1,loader1], params.displacmentScale)
+  s.back  .addTexture ([loader2,loader2], params.displacmentScale)
+  s.right .addTexture ([loader3,loader3], params.displacmentScale)
+  s.left  .addTexture ([loader4,loader4], params.displacmentScale)
+  s.top   .addTexture ([loader5,loader5], params.displacmentScale)
+  s.bottom.addTexture ([loader6,loader6], params.displacmentScale)
 
 ```
 Notice we dont need the color anymore. And all we added was a THREE.TextureLoader for loading a texture for each face of the planet, increase `quadTreeDimensions` to 3 and increase `displacmentScale` to 5.
+`addTexture` method first argument takes an array. The first item in that arry is a texture to be drawn the second item is a texture for displacement.
 <p align="center">
   <img src="./public/readmeImg/img8.png" width="500" />
 </p>

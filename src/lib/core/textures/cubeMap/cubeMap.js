@@ -304,8 +304,8 @@ export class CubeMapTexture{
        }
 
         build(resoultion){
-            this.displacementNormalGen.forEach((e)=>{
-                e.build(resoultion)
+            this.displacementNormalGen.forEach((e,i)=>{
+                e.build(resoultion[i])
             })  
         }
 

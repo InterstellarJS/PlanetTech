@@ -42,7 +42,7 @@ initPlanet() {
 
 
   const cm = new CubeMapTexture()
-  cm.build(2048)
+  cm.build([1512,5048])
   cm.simplexNoiseFbm({
     inScale:1,
     scale:0.08,  
@@ -54,8 +54,8 @@ initPlanet() {
     redistribution:1.,
     octaves:4,
     iteration:8,
-    terbulance:false,
-    ridge:false,
+    terbulance:true,
+    ridge:true,
     vn:NODE.normalLocal, 
     tangent:NODE.tangentLocal,  
   })
@@ -77,8 +77,8 @@ initPlanet() {
   const params = {
     width: 10000,
     height: 10000,
-    widthSegment: 50,
-    heightSegment:50,
+    widthSegment: 350,
+    heightSegment:350,
     quadTreeDimensions: 1,
     levels: 1,
     radius: 10000,

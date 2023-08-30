@@ -134,14 +134,14 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
 
   World Space Normal & World Space Normal with light:
 <p align="center">
-  <img src="./public/readmeImg/no.png" width="300" />
-  <img src="./public/readmeImg/objSS.png" width="300" />
+  <img src="./public/readmeImg/no.png" width="400" />
+  <img src="./public/readmeImg/objSS.png" width="400" />
 </p>
 
   Tangent Space Normal & Tangent Space Normal with light:
 <p align="center">
-  <img  src="./public/readmeImg/nt.png" width="300" />
-  <img  src="./public/readmeImg/tanSS.png" width="300" />
+  <img  src="./public/readmeImg/nt.png" width="400" />
+  <img  src="./public/readmeImg/tanSS.png" width="400" />
 </p>
 
 ## Apache License 2.0.

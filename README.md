@@ -10,13 +10,13 @@
 
 
 
-PlanetTechJS is a JavaScript library for generating procedural planets and terrains. It provides a simple and flexible way to create realistic and visually appealing 3D planets with customizable features such as terrain height, textures, and atmospheric effects.
+PlanetTechJS is a JavaScript library for generating procedural planets and terrains. the aime of this project is  provide a simple and flexible way to create realistic and visually appealing 3D planets at scale with customizable features such as terrain height, textures, and atmospheric effects. This library is different because all the work is done on the GPU, from generating the textures for each face to displacement and molding the PlaneGeometries into a sphere. So no need for WebWorks at this stage.
 
 ## Features
 - Procedural planet generation: Create unique and realistic planets using procedural algorithms.
 - flexability and speed.
 - quadtree sphere.
-- subdivison cubeMap.
+- threaded subdivison cubeMap.
 - Terrain generation: Generate detailed and customizable terrains with different types of landscapes such as mountains, valleys, and plains.
 - Texture mapping: Apply textures to the terrain to enhance visual realism and add visual variety.(coming soon)
 - Gpu generated normal map.(coming soon)

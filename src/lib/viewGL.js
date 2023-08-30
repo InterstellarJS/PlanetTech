@@ -45,7 +45,7 @@ initPlanet() {
   cm.build(2048)
   cm.simplexNoiseFbm({
     inScale:1,
-    scale:0.1,  
+    scale:0.08,  
     scaleHeightOutput:.6,
     seed:6.15,
     normalScale:.01,

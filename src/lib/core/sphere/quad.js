@@ -144,6 +144,23 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
         }
       }
     }
+
+    createTiles(sideName){
+      this.side = sideName
+      const w = this.quadData.width
+      const d = this.quadData.dimensions
+      const shardedGeometry = this.quadTreeconfig.config.arrybuffers[w]
+      for (var i = 0; i < d; i++) {
+        var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
+        for (var j = 0; j < d; j++) {
+          var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
+          var q = new THREE.Object3D()
+          q.position.set(...[i_,-j_,0]) 
+          q.side = sideName
+          this.instances.push(q)
+        }
+      }
+    }
   
 
     setPosition( params, quadrent){

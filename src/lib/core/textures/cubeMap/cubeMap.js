@@ -47,54 +47,15 @@ function displayCanvasesInGrid(canvasArray,  gridSize) {
 }
 
 
-let widthHeight = 2
-//---
-var undorotationMatrixf = new THREE.Matrix4();
-undorotationMatrixf.makeRotationY(0);
-//---
-let bz    = -widthHeight
-let bry   = Math.PI
-var undorotationMatrixBa = new THREE.Matrix4();
-undorotationMatrixBa.makeRotationY(-bry);
-//---
-let rz    = -(widthHeight)/2;
-let rx    =  (widthHeight)/2;
-let rry   =  Math.PI/2;
-var undorotationMatrixR = new THREE.Matrix4();
-undorotationMatrixR.makeRotationY(-rry);
-//---
-let lz    =  -(widthHeight)/2;
-let lx    =  -(widthHeight)/2;
-let lry   =  -Math.PI/2;
-var undorotationMatrixL = new THREE.Matrix4();
-undorotationMatrixL.makeRotationY(-lry);
-//---
-let tz    =  -(widthHeight)/2;
-let ty    =  (widthHeight)/2;
-let trx   =  -Math.PI/2;
-var undorotationMatrixT = new THREE.Matrix4();
-undorotationMatrixT.makeRotationX(-trx);
-//---
-let boz   =  -(widthHeight)/2;
-let boy   =  -(widthHeight)/2;
-let borx  =  Math.PI/2;
-var undorotationMatrixBo = new THREE.Matrix4();
-undorotationMatrixBo.makeRotationX(-borx);
-
-function setPositionRoation(planeMesh, x, y, z, rotationX, rotationY, rotationZ) {
-    planeMesh.position.set(x, y, z);
-    planeMesh.rotation.set(rotationX, rotationY, rotationZ);
-    return planeMesh;
-    }
 
 
 
 export class CubeMap{
-    constructor(w,h,ws,hs,d,mapType=false){
-        this.w  = w
-        this.h  = h
-        this.ws = ws
-        this.hs = hs
+    constructor(wh,d=1,mapType=false){
+        this.w  = wh
+        this.h  = wh
+        this.ws = 1
+        this.hs = 1
         this.d  = d
         this.textuerArray = []
         this.mapType = mapType
@@ -111,7 +72,7 @@ export class CubeMap{
     
 
     buildRttMesh(size){
-        const geometry = new THREE.PlaneGeometry( 2,2,10,10);
+        const geometry = new THREE.PlaneGeometry( size,size,1,1);
         const material = new NODE.MeshBasicNodeMaterial();
         const plane = new THREE.Mesh( geometry, material );
         return plane
@@ -127,13 +88,21 @@ export class CubeMap{
 
     }
   
-      simplexNoiseFbmD(params){
-
-    }
- 
-
     simplexNoiseFbm(params){
-
+        this.allp.map((p)=>{
+            p.geometry.computeTangents()
+            var cnt_ = this.center.clone()
+            var newPostion = NODE.float(100.0).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
+            var wp = newPostion;
+            if (!params.hasOwnProperty('wp')) {
+                params.wp = wp.mul(params.inScale);
+              }
+            if(this.mapType){
+                p.material.colorNode = displacementNormalNoiseFBM.call(params).mul(.5).add(.5)
+            }else{
+                p.material.colorNode = displacementFBM.call(params).add(params.scaleHeightOutput)
+            }
+        })
     }
 
 
@@ -144,55 +113,75 @@ export class CubeMap{
 
         this.front = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.front.createQuadTree(1)
-        this.front.createDimensions('front')
+        this.front.createTiles('front')
         var front = new THREE.Group();
-        front.add( ...this.front.instances.map(x=>x.plane) );
+        front.add( ...this.front.instances );
+        let fmain = this.buildRttMesh(this.w*this.d)
+        fmain.position.set(...front.position.toArray())
+        fmain.rotation.set(...front.rotation.toArray())
 
         this.back = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.back.createQuadTree(1)
-        this.back.createDimensions('back')
+        this.back.createTiles('back')
         var back = new THREE.Group();
-        back.add( ...this.back.instances.map(x=>x.plane) );
+        back.add( ...this.back.instances);
         back.position.z = -this.w*this.d;
         back.rotation.y =  Math.PI;
+        let bmain = this.buildRttMesh(this.w*this.d)
+        bmain.position.set(...back.position.toArray())
+        bmain.rotation.set(...back.rotation.toArray())
 
         this.right = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.right.createQuadTree(1)
-        this.right.createDimensions('right')
+        this.right.createTiles('right')
         var right = new THREE.Group();
-        right.add( ...this.right.instances.map(x=>x.plane) );
+        right.add( ...this.right.instances );
         right.position.z = -(this.w*this.d)/2;
         right.position.x =  (this.w*this.d)/2;
         right.rotation.y =  Math.PI/2;
+        let rmain = this.buildRttMesh(this.w*this.d)
+        rmain.position.set(...right.position.toArray())
+        rmain.rotation.set(...right.rotation.toArray())
 
         this.left = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.left.createQuadTree(1)
-        this.left.createDimensions('left')
+        this.left.createTiles('left')
         var left = new THREE.Group();
-        left.add( ...this.left.instances.map(x=>x.plane) );
+        left.add( ...this.left.instances);
         left.position.z =  -(this.w*this.d)/2;
         left.position.x =  -(this.w*this.d)/2;
         left.rotation.y =  -Math.PI/2;
+        let lmain = this.buildRttMesh(this.w*this.d)
+        lmain.position.set(...left.position.toArray())
+        lmain.rotation.set(...left.rotation.toArray())
 
         this.top = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.top.createQuadTree(1)
-        this.top.createDimensions('top')
+        this.top.createTiles('top')
         var top = new THREE.Group();
-        top.add( ...this.top.instances.map(x=>x.plane) );
+        top.add( ...this.top.instances);
         top.position.z = -(this.w*this.d)/2;
         top.position.y =  (this.w*this.d)/2;
         top.rotation.x = -Math.PI/2;
+        let tmain = this.buildRttMesh(this.w*this.d)
+        tmain.position.set(...top.position.toArray())
+        tmain.rotation.set(...top.rotation.toArray())
+
 
         this.bottom = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         this.bottom.createQuadTree(1)
-        this.bottom.createDimensions('bottom')
+        this.bottom.createTiles('bottom')
         var bottom = new THREE.Group();
-        bottom.add( ...this.bottom.instances.map(x=>x.plane) );
+        bottom.add( ...this.bottom.instances);
         bottom.position.z = -(this.w*this.d)/2;
         bottom.position.y = -(this.w*this.d)/2;
         bottom.rotation.x =  Math.PI/2;
+        let bomain = this.buildRttMesh(this.w*this.d)
+        bomain.position.set(...bottom.position.toArray())
+        bomain.rotation.set(...bottom.rotation.toArray())
 
         const cube  = new THREE.Group();
+        const cube2  = new THREE.Group();
 
         cube.add(front);
         cube.add(back);
@@ -201,15 +190,22 @@ export class CubeMap{
         cube.add(top);
         cube.add(bottom);
 
-        this.center = this.centerPosition(cube)
+        cube2.add(fmain);
+        cube2.add(bmain);
+        cube2.add(rmain);
+        cube2.add(lmain);
+        cube2.add(tmain);
+        cube2.add(bomain);
+this.cube2 = cube2
+        this.center = this.centerPosition(cube2)
     
         this.allp = [
-            ...front.children,
-            ...back.children,
-            ...right.children,
-            ...left.children,
-            ...top.children,
-            ...bottom.children,
+            fmain,
+            bmain,
+            rmain,
+            lmain,
+            tmain,
+            bomain,
           ]
 
 
@@ -226,7 +222,7 @@ export class CubeMap{
         this. frtt = new RtTexture(resoultion)
         this. frtt.initRenderTraget()
         this. frtt.rtCamera = camera.clone()
-        this. frtt.rtScene.add(this.cube)
+        this. frtt.rtScene.add(this.cube2)
         }
       
 

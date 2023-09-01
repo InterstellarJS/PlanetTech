@@ -5,7 +5,7 @@ import Sphere        from './core/sphere/sphere'
 import { nodeFrame } from 'three/addons/renderers/webgl/nodes/WebGLNodes.js';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA } from './core/sphere/utils'
-import {CubeMap, CubeMapTexture } from './core/textures/cubeMap/cubeMap.js';
+import { CubeMap, CubeMapTexture } from './core/textures/cubeMap/cubeMap.js';
 
 
 class ViewGL {
@@ -28,26 +28,24 @@ this.canvasViewPort = canvasViewPort;
 }
 
 initQuad(tex) {
-  /*const loader1 = new THREE.TextureLoader().load('./hm4.png');
+  /*
+  const loader1 = new THREE.TextureLoader().load('./hm4.png');
   this.q = new Quad(100,100,50,50,2)
   this.q.createQuadTree(3)
   this.q.createDimensions()
   this.q.addTexture  (loader1)
-  this.rend.scene_.add( ...this.q.instances.map(x=>x.plane) );*/
+  this.rend.scene_.add( ...this.q.instances.map(x=>x.plane));
+  */
 }
 
 initPlanet() {
 
-  const cm = new CubeMap(1000,1000,1,1,10)
+
+  const cm = new CubeMap(2000,15)
   const download = false
   cm.build()
-  cm.simplexNoise(download)
-  cm.snapShotFront(download)
-  cm.snapShotBack(download)
-  cm.snapShotRight(download)
-  cm.snapShotLeft(download)
-  cm.snapShotTop(download)
-  cm.snapShotbottom(download)
+  cm.simplexNoise( )
+  cm.snapShot(download)
   let t = cm.textuerArray
 
   const params = {
@@ -58,7 +56,7 @@ initPlanet() {
     quadTreeDimensions: 1,
     levels: 1,
     radius: 10000,
-    displacmentScale:25,
+    displacmentScale:50,
  }
 
  this. s = new Sphere(
@@ -81,12 +79,6 @@ initPlanet() {
   this.s.top.addTexture    ([t[4],t[4]], params.displacmentScale)
   this.s.bottom.addTexture ([t[5],t[5]], params.displacmentScale)
 
-  this.s.front.lighting    (NODE.vec3(0,0,0))
-  this.s.back.lighting     (NODE.vec3(0,0,0))
-  this.s.right.lighting    (NODE.vec3(0,0,0))
-  this.s.left.lighting     (NODE.vec3(0,0,0))
-  this.s.top.lighting      (NODE.vec3(0,0,0))
-  this.s.bottom.lighting   (NODE.vec3(0,0,0))
 
 
 /*

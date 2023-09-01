@@ -91,7 +91,19 @@ To use the Cube Map Texture Generator, follow these steps:
 ## Examples
 
 Check the provided \`example.js\` file for a practical example of how to use the Cube Map Texture Generator to create and export cube map textures with different noise and displacement effects.
-
+```javaScript
+  const download = false
+  const cm = new CubeMap(1000,1000,1,1,10)
+  cm.build()
+  cm.simplexNoise  (download)
+  cm.snapShotFront (download)
+  cm.snapShotBack  (download)
+  cm.snapShotRight (download)
+  cm.snapShotLeft  (download)
+  cm.snapShotTop   (download)
+  cm.snapShotbottom(download)
+  let texture = cm.textuerArray
+```
 ## Contributing
 
 Contributions are welcome! If you find a bug, have an enhancement suggestion, or would like to add new features, feel free to open issues and pull requests in this repository.

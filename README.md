@@ -9,8 +9,10 @@
 </p>
 
 
+**GOAL:**
+PlanetTechJS is an open-source JavaScript library built using vanilla THREE.js, accompanied by a React UI, aimed at generating procedural planets and terrains. The goal of this project isn't to replicate titles like Star Citizen or No Man's Sky, but rather to provide a toolkit that emulates the tools they might utilize for planet creation. The focus is solely on crafting planets, offering a straightforward and adaptable approach to designing realistic and visually captivating 3D planets on a grand scale. This includes customizable features such as terrain height, textures, ground and flight physics, atmospheric effects, and more. So, it does not encompass spaceship, weapons, player dynamics, etc. Only planet generating.
 
-PlanetTechJS is a JavaScript library for generating procedural planets and terrains. the aime of this project is  provide a simple and flexible way to create realistic and visually appealing 3D planets at scale with customizable features such as terrain height, textures, and atmospheric effects. This library is different because all the work is done on the GPU, from generating the textures for each face to displacement and molding the PlaneGeometries into a sphere. So no need for WebWorks at this stage.
+What sets this library apart is its utilization of the GPU for all tasks. From generating textures for each facet to performing displacement and shaping PlaneGeometries into spherical forms, the entire process occurs on the GPU. As such, there is no need for WebWorkers at this stage
 
 ## Features
 - Procedural planet generation: Create unique and realistic planets using procedural algorithms.
@@ -148,6 +150,6 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
 </p>
 
 ## Apache License 2.0.
+[License](./LICENSE.txt)
 This license  allows contributions to be open-source  while also ensuring that the project as a whole remains open and accessible to others.
 Under the Apache License 2.0, contributors retain the copyright to their individual contributions while granting a license to others to use, modify, and distribute the project as a whole. This means that someone cannot claim the entire project as their own, but they can claim ownership of their individual contributions.
- [License](./LICENSE.txt)

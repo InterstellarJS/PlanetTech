@@ -16,7 +16,7 @@ PlanetTechJS is a JavaScript library for generating procedural planets and terra
 - Procedural planet generation: Create unique and realistic planets using procedural algorithms.
 - flexability and speed.
 - quadtree sphere.
-- threaded subdivison cubeMap.
+- cubeMap threading.
 - Terrain generation: Generate detailed and customizable terrains with different types of landscapes such as mountains, valleys, and plains.
 - Texture mapping: Apply textures to the terrain to enhance visual realism and add visual variety.(coming soon)
 - Gpu generated normal map.(coming soon)
@@ -130,7 +130,7 @@ Notice we dont need the color anymore. And all we added was a THREE.TextureLoade
 
 PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows a user to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps.
 
-⚠️ **Disclaimer:** In some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user.
+⚠️ **Disclaimer:** In some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. In most case the seam can be ignored because they are negligible. 
 
 
 <p align="center">

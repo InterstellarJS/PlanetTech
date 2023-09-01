@@ -5,7 +5,7 @@ import Sphere        from './core/sphere/sphere'
 import { nodeFrame } from 'three/addons/renderers/webgl/nodes/WebGLNodes.js';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA } from './core/sphere/utils'
-import { CubeMapTexture } from './core/textures/cubeMap/cubeMap.js';
+import {CubeMap, CubeMapTexture } from './core/textures/cubeMap/cubeMap.js';
 
 
 class ViewGL {
@@ -38,41 +38,17 @@ initQuad(tex) {
 
 initPlanet() {
 
-
-
-
-  const cm = new CubeMapTexture()
-  cm.build([1512,5048])
-  cm.simplexNoiseFbm({
-    inScale:1,
-    scale:0.08,  
-    scaleHeightOutput:.6,
-    seed:6.15,
-    normalScale:.01,
-    persistance:.4,
-    lacunarity:1.8,
-    redistribution:1.,
-    octaves:4,
-    iteration:8,
-    terbulance:true,
-    ridge:true,
-    vn:NODE.normalLocal, 
-    tangent:NODE.tangentLocal,  
-  })
-  /*
-  cm.simplexNoiseFbmD({ 
-    scale:12., 
-    octaves:8,  
-    persistence:.15,  
-    lacunarity:2.4
-  })*/
-
-  cm.snapShot(false)
-  let DN = cm.getTexture()
-  let N  = DN.normal
-  let D  = DN.displacement
-
-
+  const cm = new CubeMap(1000,1000,1,1,10)
+  const download = false
+  cm.build()
+  cm.simplexNoise(download)
+  cm.snapShotFront(download)
+  cm.snapShotBack(download)
+  cm.snapShotRight(download)
+  cm.snapShotLeft(download)
+  cm.snapShotTop(download)
+  cm.snapShotbottom(download)
+  let t = cm.textuerArray
 
   const params = {
     width: 10000,
@@ -82,7 +58,7 @@ initPlanet() {
     quadTreeDimensions: 1,
     levels: 1,
     radius: 10000,
-    displacmentScale:100,
+    displacmentScale:25,
  }
 
  this. s = new Sphere(
@@ -98,12 +74,12 @@ initPlanet() {
     params.radius,
     params.displacmentScale,
   )
-  this.s.front.addTexture  ([N[0],D[0]], params.displacmentScale)
-  this.s.back.addTexture   ([N[1],D[1]], params.displacmentScale)
-  this.s.right.addTexture  ([N[2],D[2]], params.displacmentScale)
-  this.s.left.addTexture   ([N[3],D[3]], params.displacmentScale)
-  this.s.top.addTexture    ([N[4],D[4]], params.displacmentScale)
-  this.s.bottom.addTexture ([N[5],D[5]], params.displacmentScale)
+  this.s.front.addTexture  ([t[0],t[0]], params.displacmentScale)
+  this.s.back.addTexture   ([t[1],t[1]], params.displacmentScale)
+  this.s.right.addTexture  ([t[2],t[2]], params.displacmentScale)
+  this.s.left.addTexture   ([t[3],t[3]], params.displacmentScale)
+  this.s.top.addTexture    ([t[4],t[4]], params.displacmentScale)
+  this.s.bottom.addTexture ([t[5],t[5]], params.displacmentScale)
 
   this.s.front.lighting    (NODE.vec3(0,0,0))
   this.s.back.lighting     (NODE.vec3(0,0,0))

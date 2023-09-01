@@ -61,7 +61,7 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
         var newUV   = NODE.uv().mul(testscaling).add(offSets)
         var cnt = this.quadTreeconfig.config.cnt.clone()
         p.worldToLocal(cnt)
-        var textureNodeN = NODE.texture(texture_[0],newUV).mul(2).sub(1)
+        var textureNodeN = NODE.texture(texture_[0],newUV)
         var textureNodeD = NODE.texture(texture_[1],newUV).r
         if(p.material.positionNode){
           p.material.colorNode = textureNodeN

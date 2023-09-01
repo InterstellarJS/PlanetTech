@@ -5,6 +5,7 @@ import {RtTexture} from './../rTtexture'
 import * as NODE   from 'three/nodes';
 import {snoise3D,fbmNoise,displacementNormalNoiseFBM,displacementFBM}  from  './../../shaders/glslFunctions'
 import {snoise,normals, sdfbm2,} from '../../shaders/analyticalNormals';
+import Quad from '../../sphere/quad';
 
 function downloadFile(data, filename_=`0`) {
   let filename = `${filename_}_exported.obj`
@@ -24,6 +25,26 @@ function downloadFile(data, filename_=`0`) {
   URL.revokeObjectURL(link.href);
 }
 
+
+
+function displayCanvasesInGrid(canvasArray,  gridSize) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const imageSize = canvasArray[0].width; // Assuming all canvases have the same size
+
+    canvas.width = Math.ceil(canvasArray.length / gridSize) * imageSize;
+    canvas.height = gridSize * imageSize;
+
+    for (let i = 0; i < canvasArray.length; i++) {
+        const row = i % gridSize;
+        const col = Math.floor(i / gridSize);
+        const x = col * imageSize;
+        const y = row * imageSize;
+
+        ctx.drawImage(canvasArray[i], x, y);
+    }
+    return canvas
+}
 
 
 let widthHeight = 2
@@ -69,7 +90,12 @@ function setPositionRoation(planeMesh, x, y, z, rotationX, rotationY, rotationZ)
 
 
 export class CubeMap{
-    constructor(mapType=false){
+    constructor(w,h,ws,hs,d,mapType=false){
+        this.w  = w
+        this.h  = h
+        this.ws = ws
+        this.hs = hs
+        this.d  = d
         this.textuerArray = []
         this.mapType = mapType
        }
@@ -92,207 +118,243 @@ export class CubeMap{
       }
 
       simplexNoise(params){
-        this.cube.children.map((p)=>{
+        this.allp.map((p)=>{
             p.geometry.computeTangents()
             var cnt_ = this.center.clone()
-            p.worldToLocal(cnt_)
             var newPostion = NODE.float(100.0).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
-            var wp = (NODE.modelViewMatrix.mul(NODE.vec4(newPostion,1.0))).xyz;
-                p.material.colorNode = snoise3D.call({v:wp.mul(0.05)})
-        
+            p.material.colorNode = snoise3D.call({v:newPostion.mul(.3)})
         })
+
     }
   
       simplexNoiseFbmD(params){
-        this.cube.children.map((p)=>{
-            var cnt_ = this.center.clone()
-            p.worldToLocal(cnt_)
-            var newPostion = NODE.float(100.0).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
-            var wp = (NODE.modelViewMatrix.mul(NODE.vec4(newPostion,1.0))).xyz;
-            var sampleDir = wp.sub(cnt_).normalize()
-            var shiftedScaledSample = sampleDir.mul(params.scale)
-            if (!params.hasOwnProperty('samplePos')) {
-                params.samplePos = shiftedScaledSample;
-              }
-            var n1 = sdfbm2.call(params) 
-            if(this.mapType){
-                p.material.colorNode = normals.call({grad:n1,sampleDir:sampleDir}).xyz.mul(.5).add(.5)
-            }else{
-                p.material.colorNode = n1.x.add(.3)
-            }
-        })
+
     }
  
 
     simplexNoiseFbm(params){
-        this.cube.children.map((p)=>{
-            p.geometry.computeTangents()
-            var cnt_ = this.center.clone()
-            p.worldToLocal(cnt_)
-            var newPostion = NODE.float(100.0).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
-            var wp = (NODE.modelViewMatrix.mul(NODE.vec4(newPostion,1.0))).xyz;
-            if (!params.hasOwnProperty('wp')) {
-                params.wp = wp.mul(params.inScale);
-              }
-            if(this.mapType){
-                p.material.colorNode = displacementNormalNoiseFBM.call(params).mul(.5).add(.5)
-            }else{
-                p.material.colorNode = displacementFBM.call(params).add(params.scaleHeightOutput)
-            }
-        })
+
     }
+
+
+
+
+    buildCube(){
+  
+
+        this.front = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+        this.front.createQuadTree(1)
+        this.front.createDimensions('front')
+        var front = new THREE.Group();
+        front.add( ...this.front.instances.map(x=>x.plane) );
+
+        this.back = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+        this.back.createQuadTree(1)
+        this.back.createDimensions('back')
+        var back = new THREE.Group();
+        back.add( ...this.back.instances.map(x=>x.plane) );
+        back.position.z = -this.w*this.d;
+        back.rotation.y =  Math.PI;
+
+        this.right = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+        this.right.createQuadTree(1)
+        this.right.createDimensions('right')
+        var right = new THREE.Group();
+        right.add( ...this.right.instances.map(x=>x.plane) );
+        right.position.z = -(this.w*this.d)/2;
+        right.position.x =  (this.w*this.d)/2;
+        right.rotation.y =  Math.PI/2;
+
+        this.left = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+        this.left.createQuadTree(1)
+        this.left.createDimensions('left')
+        var left = new THREE.Group();
+        left.add( ...this.left.instances.map(x=>x.plane) );
+        left.position.z =  -(this.w*this.d)/2;
+        left.position.x =  -(this.w*this.d)/2;
+        left.rotation.y =  -Math.PI/2;
+
+        this.top = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+        this.top.createQuadTree(1)
+        this.top.createDimensions('top')
+        var top = new THREE.Group();
+        top.add( ...this.top.instances.map(x=>x.plane) );
+        top.position.z = -(this.w*this.d)/2;
+        top.position.y =  (this.w*this.d)/2;
+        top.rotation.x = -Math.PI/2;
+
+        this.bottom = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+        this.bottom.createQuadTree(1)
+        this.bottom.createDimensions('bottom')
+        var bottom = new THREE.Group();
+        bottom.add( ...this.bottom.instances.map(x=>x.plane) );
+        bottom.position.z = -(this.w*this.d)/2;
+        bottom.position.y = -(this.w*this.d)/2;
+        bottom.rotation.x =  Math.PI/2;
+
+        const cube  = new THREE.Group();
+
+        cube.add(front);
+        cube.add(back);
+        cube.add(right);
+        cube.add(left);
+        cube.add(top);
+        cube.add(bottom);
+
+        this.center = this.centerPosition(cube)
+    
+        this.allp = [
+            ...front.children,
+            ...back.children,
+            ...right.children,
+            ...left.children,
+            ...top.children,
+            ...bottom.children,
+          ]
+
+
+
+            return cube
+          }
 
 
 
 
     build(resoultion=512){
+        this. cube = this.buildCube()
+        let camera = new THREE.OrthographicCamera( this.w / - 2, this.w / 2, this.h / 2, this.h / - 2, 0, this.d*2 );
         this. frtt = new RtTexture(resoultion)
         this. frtt.initRenderTraget()
-        this. brtt = new RtTexture(resoultion)
-        this. brtt.initRenderTraget()
-        this. rrtt = new RtTexture(resoultion)
-        this. rrtt.initRenderTraget()
-        this. lrtt = new RtTexture(resoultion)
-        this. lrtt.initRenderTraget()
-        this. trtt = new RtTexture(resoultion)
-        this. trtt.initRenderTraget()
-        this. bortt = new RtTexture(resoultion)
-        this. bortt.initRenderTraget()
-
-        var front  = this.buildRttMesh()
-        //----
-        var back   = this.buildRttMesh()
-        setPositionRoation(back,0,0,bz,0,bry,0)
-        //----
-        var right  = this.buildRttMesh()
-        setPositionRoation(right,rx,0,rz,0,rry,0)
-        //----
-        var left   = this.buildRttMesh()
-        setPositionRoation(left,lx,0,lz,0,lry,0)
-        //----
-        var top    = this.buildRttMesh()
-        setPositionRoation(top,0,ty,tz,trx,0,0)
-        //----
-        var bottom = this.buildRttMesh()
-        setPositionRoation(bottom,0,boy,boz,borx,0,0)
-
-        this.cube = new THREE.Group()
-        this.cube.add(front,back,right,left,top,bottom)
-        this.center = this.centerPosition(this.cube)
-
-        this.frtt.rtScene.add(this.cube.clone())
-        this.brtt.rtScene.add(this.cube.clone())
-        this.rrtt.rtScene.add(this.cube.clone())
-        this.lrtt.rtScene.add(this.cube.clone())
-        this.trtt.rtScene.add(this.cube.clone())
-        this.bortt.rtScene.add(this.cube.clone())
-
+        this. frtt.rtCamera = camera.clone()
+        this. frtt.rtScene.add(this.cube)
         }
       
 
-        snapShotFront(){
-            this.frtt.rtCamera.position.z = 1
-            this.frtt.snapShot()
-            this.textuerArray.push(this.frtt.renderTarget.texture)
+        snapShotFront(download=false){
+            let canvases = []
+            this.cube.children[0].children.map((e,i)=>{
+                this.frtt.rtCamera.position.set(...e.position.toArray());
+                this.frtt.snapShot()
+                let fpixels = this.frtt.getPixels()
+                let fcanvas = this.frtt.toImage(fpixels)
+                canvases.push(fcanvas)
+            })
+            let canvas = displayCanvasesInGrid(canvases,this.d)
+            if(download){this.frtt.download(canvas,`f`)}
+            this.textuerArray.push(new THREE.CanvasTexture(canvas))
+            this.frtt.rtCamera.position.set(0,0,0)
+
         }
 
-        snapShotBack(){
-            this.brtt.rtCamera.position.z = -3
-            this.brtt.rtCamera.rotation.set(0,Math.PI,0) 
-            this.brtt.snapShot()
-            this.textuerArray.push(this.brtt.renderTarget.texture)
+        snapShotBack(download=false){
+            let p = new THREE.Vector3()
+            let canvases = []
+            this.cube.children[1].children.map((e,i)=>{
+                var cp = p.clone()
+                e.getWorldPosition(cp)
+                this.frtt.rtCamera.position.set(...cp.toArray());
+                this.frtt.rtCamera.rotation.set(0,Math.PI,0);
+                this.frtt.snapShot()
+                let fpixels = this.frtt.getPixels()
+                let fcanvas = this.frtt.toImage(fpixels)
+                canvases.push(fcanvas)
+            })
+            let canvas = displayCanvasesInGrid(canvases,this.d)
+            if(download){this.frtt.download(canvas,`b`)}
+            this.textuerArray.push(new THREE.CanvasTexture(canvas))
+            this.frtt.rtCamera.position.set(0,0,0)
+            this.frtt.rtCamera.rotation.set(0,0,0)
         }
 
 
-        snapShotRight(){
-            this.rrtt.rtCamera.position.z = -1
-            this.rrtt.rtCamera.position.x = 2
-            this.rrtt.rtCamera.rotation.set(0,Math.PI/2,0) 
-            this.rrtt.snapShot()
-            this.textuerArray.push(this.rrtt.renderTarget.texture)
+        snapShotRight(download=false){
+            let p = new THREE.Vector3()
+            let canvases = []
+            this.cube.children[2].children.map((e,i)=>{
+                var cp = p.clone()
+                e.getWorldPosition(cp)
+                this.frtt.rtCamera.position.set(...cp.toArray());
+                this.frtt.rtCamera.rotation.set(0,Math.PI/2,0);
+                this.frtt.snapShot()
+                let fpixels = this.frtt.getPixels()
+                let fcanvas = this.frtt.toImage(fpixels)
+                canvases.push(fcanvas)
+            })
+            let canvas = displayCanvasesInGrid(canvases,this.d)
+            if(download){this.frtt.download(canvas,`r`)}
+            this.textuerArray.push(new THREE.CanvasTexture(canvas))
+            this.frtt.rtCamera.position.set(0,0,0)
+            this.frtt.rtCamera.rotation.set(0,0,0)
         }
 
-        snapShotLeft(){
-            this.lrtt.rtCamera.position.z = -1
-            this.lrtt.rtCamera.position.x = -2
-            this.lrtt.rtCamera.rotation.set(0,-Math.PI/2,0) 
-            this.lrtt.snapShot()
-            this.textuerArray.push(this.lrtt.renderTarget.texture)
+        snapShotLeft(download=false){
+            let p = new THREE.Vector3()
+            let canvases = []
+            this.cube.children[3].children.map((e,i)=>{
+                var cp = p.clone()
+                e.getWorldPosition(cp)
+                this.frtt.rtCamera.position.set(...cp.toArray());
+                this.frtt.rtCamera.rotation.set(0,-Math.PI/2,0);
+                this.frtt.snapShot()
+                let fpixels = this.frtt.getPixels()
+                let fcanvas = this.frtt.toImage(fpixels)
+                canvases.push(fcanvas)
+            })
+            let canvas = displayCanvasesInGrid(canvases,this.d)
+            if(download){this.frtt.download(canvas,`l`)}
+            this.textuerArray.push( new THREE.CanvasTexture(canvas))
+            this.frtt.rtCamera.position.set(0,0,0)
+            this.frtt.rtCamera.rotation.set(0,0,0)
         }
 
-        snapShotTop(){
-            this.trtt.rtCamera.position.z = -1
-            this.trtt.rtCamera.position.y = 2
-            this.trtt.rtCamera.rotation.set(-Math.PI/2,0,0) 
-            this.trtt.snapShot()
-            this.textuerArray.push(this.trtt.renderTarget.texture)
+        snapShotTop(download=false){
+            let p = new THREE.Vector3()
+            let canvases = []
+            this.cube.children[4].children.map((e,i)=>{
+                var cp = p.clone()
+                e.getWorldPosition(cp)
+                this.frtt.rtCamera.position.set(...cp.toArray());
+                this.frtt.rtCamera.rotation.set(-Math.PI/2,0,0);
+                this.frtt.snapShot()
+                let fpixels = this.frtt.getPixels()
+                let fcanvas = this.frtt.toImage(fpixels)
+                canvases.push(fcanvas)
+            })
+            let canvas = displayCanvasesInGrid(canvases,this.d)
+            if(download){this.frtt.download(canvas,`t`)}
+            this.textuerArray.push( new THREE.CanvasTexture(canvas))
+            this.frtt.rtCamera.position.set(0,0,0)
+            this.frtt.rtCamera.rotation.set(0,0,0)
         }
 
-        snapShotbottom(){
-            this.bortt.rtCamera.position.z = -1
-            this.bortt.rtCamera.position.y = -2
-            this.bortt.rtCamera.rotation.set(Math.PI/2,0,0) 
-            this.bortt.snapShot()
-            this.textuerArray.push(this.bortt.renderTarget.texture)
+        snapShotbottom(download=false){
+            let p = new THREE.Vector3()
+            let canvases = []
+            this.cube.children[5].children.map((e,i)=>{
+                var cp = p.clone()
+                e.getWorldPosition(cp)
+                this.frtt.rtCamera.position.set(...cp.toArray());
+                this.frtt.rtCamera.rotation.set(Math.PI/2,0,0);
+                this.frtt.snapShot()
+                let fpixels = this.frtt.getPixels()
+                let fcanvas = this.frtt.toImage(fpixels)
+                canvases.push(fcanvas)
+            })
+            let canvas = displayCanvasesInGrid(canvases,this.d)
+            if(download){this.frtt.download(canvas,`bo`)}
+            this.textuerArray.push(new THREE.CanvasTexture(canvas))
+            this.frtt.rtCamera.position.set(0,0,0)
+            this.frtt.rtCamera.rotation.set(0,0,0)
         }
 
 
         snapShot(download=false){
-          this.snapShotFront()
-          this.snapShotBack()
-          this.snapShotRight()
-          this.snapShotLeft()
-          this.snapShotTop()
-          this.snapShotbottom()
-          if(download){
-            let fpixels = this.frtt.getPixels()
-            let fcanvas = this.frtt.toImage(fpixels)
-            this.frtt.download(fcanvas,'f')
-            let f = this.cube.children[0]
-            var exporter = new OBJExporter();
-            var data = exporter.parse(f);
-            downloadFile(data,'f');
-
-            let bpixels = this.brtt.getPixels()
-            let bcanvas = this.brtt.toImage(bpixels)
-            this.brtt.download(bcanvas,'b')
-            let b = this.cube.children[1]
-            var exporter = new OBJExporter();
-            var data = exporter.parse(b);
-            downloadFile(data,'b');
-
-            let rpixels = this.rrtt.getPixels()
-            let rcanvas = this.rrtt.toImage(rpixels)
-            this.rrtt.download(rcanvas,'r')
-            let r = this.cube.children[2]
-            var exporter = new OBJExporter();
-            var data = exporter.parse(r);
-            downloadFile(data,'r');
-
-            let lpixels = this.lrtt.getPixels()
-            let lcanvas = this.lrtt.toImage(lpixels)
-            this.lrtt.download(lcanvas,'l')
-            let l = this.cube.children[3]
-            var exporter = new OBJExporter();
-            var data = exporter.parse(l);
-            downloadFile(data,'l');
-
-            let tpixels = this.trtt.getPixels()
-            let tcanvas = this.trtt.toImage(tpixels)
-            this.trtt.download(tcanvas,'t')
-            let t = this.cube.children[4]
-            var exporter = new OBJExporter();
-            var data = exporter.parse(t);
-            downloadFile(data,'t');
-
-            let bopixels = this.bortt.getPixels()
-            let bocanvas = this.bortt.toImage(bopixels)
-            this.bortt.download(bocanvas,'bo')
-            let bo = this.cube.children[5]
-            var exporter = new OBJExporter();
-            var data = exporter.parse(bo);
-            downloadFile(data,'bo');
-          }
+          this.snapShotFront(download)
+          this.snapShotBack(download)
+          this.snapShotRight(download)
+          this.snapShotLeft(download)
+          this.snapShotTop(download)
+          this.snapShotbottom(download)
         }
     
 }

@@ -1,4 +1,4 @@
-⚠️ **Disclaimer:** PlanetTechJS is currently in its alpha version and is being developed by a single developer. As a result, it's important to keep in mind that there may be bugs, spelling errors,no tests, and occasional inconsistencies in the library. While every effort is being made to provide a stable and enjoyable experience, please approach the library with the understanding that it's a work in progress. Your feedback, bug reports, and contributions are highly appreciated as they play a crucial role in improving the library and ensuring its quality.
+⚠️ **Disclaimer:** PlanetTechJS is currently in its alpha version and is being developed by a single developer. Consequently, it's important to keep in mind that there may be bugs, spelling errors, lack of tests, and occasional inconsistencies in the library. While every effort is being made to provide a stable and enjoyable experience, please approach the library with the understanding that it's a work in progress. Your feedback, bug reports, and contributions are highly appreciated as they play a crucial role in improving the library and ensuring its quality.
 
 
 # PlanetTechJS (ALPHA V0.0) 
@@ -10,9 +10,9 @@
 
 
 **GOAL:**
-PlanetTechJS is an open-source JavaScript library built using vanilla THREE.js, accompanied by a React UI, aimed at generating procedural planets and terrains. The goal of this project isn't to replicate titles like Star Citizen or No Man's Sky, but rather to provide a toolkit that emulates the tools they might utilize for planet creation. The focus is solely on crafting planets, offering a straightforward and adaptable approach to designing realistic and visually captivating 3D planets on a grand scale. This includes customizable features such as terrain height, textures, ground physics, atmospheric effects, and more. So, it does not encompass spaceship, weapons, player dynamics, etc. Only planet generating.
+PlanetTechJS is an open-source JavaScript library built using vanilla THREE.js, accompanied by a React UI. Its purpose is to generate procedural planets and terrains. The goal of this project is not to replicate titles like Star Citizen or No Man's Sky, but rather to provide a toolkit that emulates the tools they might utilize for planet creation. The focus is solely on crafting planets, offering a straightforward and adaptable approach to designing realistic and visually captivating 3D planets on a grand scale. This includes customizable features such as terrain height, textures, ground physics, atmospheric effects, and more. Thus, it does not encompass spaceships, weapons, player dynamics, etc. Only planet generation.
 
-What sets this library apart is its utilization of the GPU for all tasks. From generating textures for each facet to performing displacement and shaping PlaneGeometries into spherical forms, the entire process occurs on the GPU. As such, there is no need for WebWorkers at this stage
+What sets this library apart is its utilization of the GPU for all tasks. This includes generating textures for each facet, performing displacement, and shaping PlaneGeometries into spherical forms; the entire process occurs on the GPU. As such, there is no need for WebWorkers at this stage.
 
 ## Features
 - Procedural planet generation: Create unique and realistic planets using procedural algorithms.
@@ -33,8 +33,8 @@ What sets this library apart is its utilization of the GPU for all tasks. From g
 - assets.  (coming soon)
 - foliage. (coming soon)
 
-**Specs**
-- Recommended GPU is GTX 1060 and above
+## Specs
+- Recommended GPU is GTX 1060 and above.
 
 ## How It Works
 Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.

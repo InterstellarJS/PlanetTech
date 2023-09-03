@@ -41,22 +41,36 @@ initQuad(tex) {
 initPlanet() {
 
 
-  const cm = new CubeMap(2000,15)
-  const download = false
-  cm.build()
-  cm.simplexNoise( )
-  cm.snapShot(download)
-  let t = cm.textuerArray
+
+
+
+  let N = [
+    new THREE.TextureLoader().load('./planet/nf_image.png'),
+    new THREE.TextureLoader().load('./planet/nb_image.png'),
+    new THREE.TextureLoader().load('./planet/nr_image.png'),
+    new THREE.TextureLoader().load('./planet/nl_image.png'),
+    new THREE.TextureLoader().load('./planet/nt_image.png'),
+    new THREE.TextureLoader().load('./planet/nbo_image.png'),
+  ]
+
+  let D = [
+    new THREE.TextureLoader().load('./planet/f_image.png'),
+    new THREE.TextureLoader().load('./planet/b_image.png'),
+    new THREE.TextureLoader().load('./planet/r_image.png'),
+    new THREE.TextureLoader().load('./planet/l_image.png'),
+    new THREE.TextureLoader().load('./planet/t_image.png'),
+    new THREE.TextureLoader().load('./planet/bo_image.png'),
+  ]
 
   const params = {
     width: 10000,
     height: 10000,
-    widthSegment: 350,
-    heightSegment:350,
+    widthSegment: 500,
+    heightSegment:500,
     quadTreeDimensions: 1,
     levels: 1,
     radius: 10000,
-    displacmentScale:50,
+    displacmentScale:60,
  }
 
  this. s = new Sphere(
@@ -72,12 +86,19 @@ initPlanet() {
     params.radius,
     params.displacmentScale,
   )
-  this.s.front.addTexture  ([t[0],t[0]], params.displacmentScale)
-  this.s.back.addTexture   ([t[1],t[1]], params.displacmentScale)
-  this.s.right.addTexture  ([t[2],t[2]], params.displacmentScale)
-  this.s.left.addTexture   ([t[3],t[3]], params.displacmentScale)
-  this.s.top.addTexture    ([t[4],t[4]], params.displacmentScale)
-  this.s.bottom.addTexture ([t[5],t[5]], params.displacmentScale)
+  this.s.front.addTexture  ([N[0],D[0]], params.displacmentScale)
+  this.s.back.addTexture   ([N[1],D[1]], params.displacmentScale)
+  this.s.right.addTexture  ([N[2],D[2]], params.displacmentScale)
+  this.s.left.addTexture   ([N[3],D[3]], params.displacmentScale)
+  this.s.top.addTexture    ([N[4],D[4]], params.displacmentScale)
+  this.s.bottom.addTexture ([N[5],D[5]], params.displacmentScale)
+
+  this.s.front.lighting    (NODE.vec3(0,0,0))
+  this.s.back.lighting     (NODE.vec3(0,0,0))
+  this.s.right.lighting    (NODE.vec3(0,0,0))
+  this.s.left.lighting     (NODE.vec3(0,0,0))
+  this.s.top.lighting      (NODE.vec3(0,0,0))
+  this.s.bottom.lighting   (NODE.vec3(0,0,0))
 
 
 
@@ -99,7 +120,6 @@ initPlanet() {
     ...this.s.top.instances,
     ...this.s.bottom.instances,
   ]
-
 
   this.rend.scene_.add( this.s.sphere);
 }

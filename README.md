@@ -178,9 +178,9 @@ Next, we call one of the noise methods with the following parameters. Finally, w
 
 
 <p align="center">
-  Here is a star citizen planet using there planet tech.
+  Here is a Star Citizen planet using there planet tech.
   <img src="./public/readmeImg/sc.png"    />
-  and Here his PlanetTechJS trying to replicate the same look
+  And here his PlanetTechJS along with CubeMapJS trying to replicate the same look and scale for the terrain.
   <img src="./public/readmeImg/img9.png" />
   <img src="./public/readmeImg/img10.png" />
 </p>

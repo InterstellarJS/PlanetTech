@@ -31,7 +31,7 @@ Here, we initialize a CubeMap, setting the width and height of the noise space t
     scaleHeightOutput:   .6,
     seed:              6.15,
     normalScale:        .01,
-    redistribution:      4.,
+    redistribution:      1.,
     persistance:         .4,
     lacunarity:          2.,
     iteration:           12,
@@ -39,19 +39,20 @@ Here, we initialize a CubeMap, setting the width and height of the noise space t
     ridge:            false,
   })
   cm.snapShot(download)
-  let t = cm.textuerArray
+  let t = cm.textuerArray 
 ```
+`cm.textuerArray` is array of images. Doesnt matter if download is set to true or false for the snapShot method. the order of each face is [front,back,right,left,top,bottom].
 
-`cm.snapShot` will take a long time if a higher resolution is set. For a faster workflow, you can validate and download each face separately. Calling each method one at a time will make the workload easier on your computer.
+`cm.snapShot` will take a long time if a higher resolution is set. For a faster workflow, you can validate and download each face separately. Calling each method one at a time after the previous method is completed will make the workload easier on your computer.
 
 ```javaScript 
 const download = true
-cm.snapShotFront (download)
-cm.snapShotBack  (download)
-cm.snapShotRight (download)
-cm.snapShotLeft  (download)
-cm.snapShotTop   (download)
-cm.snapShotBottom(download)
+cm.snapShotFront   (download)
+//cm.snapShotBack  (download)
+//cm.snapShotRight (download)
+//cm.snapShotLeft  (download)
+//cm.snapShotTop   (download)
+//cm.snapShotBottom(download)
 
 ``` 
 

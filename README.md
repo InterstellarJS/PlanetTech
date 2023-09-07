@@ -156,7 +156,7 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
   let t = cm.textuerArray
 ```
 
-Here we initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 2x2 grid with a displacement map (set to true). We then call the build method, creating the cube with the specified resolution (512*2).
+Here we initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 2x2 grid with a `mapType` set to `false` for displacement map. We then call the build method, creating the cube with the specified resolution (512*2).
 Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The .textureArray variable holds the images in memory.
 
 ⚠️ **Disclaimer:** CubeMap isn't optimized yet; increasing the grid size to a large amount can cause WebGL to crash and may result in a lost context. Additionally, in some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. In most cases, the seams can be ignored because they are negligible.
@@ -177,6 +177,13 @@ Next, we call one of the noise methods with the following parameters. Finally, w
 </p>
 
 
+<p align="center">
+  Here is a star citizen planet using there planet tech.
+  <img src="./public/readmeImg/sc.png"    />
+  and Here his PlanetTechJS trying to replicate the same look
+  <img src="./public/readmeImg/img9.png" />
+  <img src="./public/readmeImg/img10.png" />
+</p>
 
 
 ## Contributing

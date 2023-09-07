@@ -18,7 +18,7 @@ CubeMapJS allows users to create procedurally generated cube textures that retur
 - Three.js
 
 ## Examples
-Here, we initialize a CubeMap, setting the width and height of the noise space to 2000 and specifying that we want a 5x5 grid (tiles) with a displacement map set to true. We then call the build method, creating the cube with the specified resolution (512*2) for each tile. Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory. It's important to note that working with high-resolution tiles can be computationally intensive, requiring more processing power and storage capacity.
+Here, we initialize a CubeMap, setting the width and height of the noise space to 2000 and specifying that we want a 5x5 grid (tiles) with `mapType` set to `true` for normal map. We then call the build method, creating the cube with the specified resolution (512*2) for each tile. Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory. It's important to note that working with high-resolution tiles can be computationally intensive, requiring more processing power and storage capacity.
 
 ```javaScript
   const cm = new CubeMap(2000,5,true)

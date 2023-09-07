@@ -132,16 +132,34 @@ Notice we dont need the color anymore. And all we added was a THREE.TextureLoade
   <img src="./public/readmeImg/img8.png" width="500" />
 </p>
 
-PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows a user to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps.
+PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows users to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMapJS works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
+
 ```javaScript
-  const cm = new CubeMap(1000,10)
-  cm.build()
-  cm.simplexNoise()
-  cm.snapShot()
+  const cm = new CubeMap(2000,2,false) 
+  const download = true
+  cm.build(512*2)
+  cm.simplexNoiseFbm({
+    inScale:            0.2,
+    scale:              0.5,
+    radius:             100,
+    scaleHeightOutput:   .6,
+    seed:              6.15,
+    normalScale:        .01,
+    redistribution:      4.,
+    persistance:         .4,
+    lacunarity:          2.,
+    iteration:           12,
+    terbulance:       false,
+    ridge:            false,
+  })
+  cm.snapShot(download)
   let t = cm.textuerArray
 ```
 
-⚠️ **Disclaimer:** In some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. In most case the seam can be ignored because they are negligible. 
+Here we initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 2x2 grid with a displacement map (set to true). We then call the build method, creating the cube with the specified resolution (512*2).
+Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The .textureArray variable holds the images in memory.
+
+⚠️ **Disclaimer:** CubeMap isn't optimized yet; increasing the grid size to a large amount can cause WebGL to crash and may result in a lost context. Additionally, in some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. In most cases, the seams can be ignored because they are negligible.
 
 
 <p align="center">
@@ -157,6 +175,8 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
   tangent space normal with light:
   <img  src="./public/readmeImg/tanSS.png" />
 </p>
+
+
 
 
 ## Contributing

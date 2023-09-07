@@ -1,12 +1,15 @@
-import * as THREE          from 'three';
-import {norm}              from './utils'
-import * as NODE from 'three/nodes';
+import * as THREE  from 'three';
+import {norm}      from './utils'
+import * as NODE   from 'three/nodes';
+import { lightv2 } from '../shaders/analyticalNormals';
 
-var lighting = NODE.func(`
-float light_(vec4 n, vec3 ld, vec3 cp ) {
-  return dot(n.xyz,vec3(.57,.57,.57));
+
+var lighting =  NODE.func(`
+vec3 light_(vec4 n, vec3 ld,vec3 cp) {
+  float l = lightv2(n,ld,cp);
+  return vec3(l);
 }
-`,[])
+`,[lightv2])
 
 
 
@@ -24,14 +27,15 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNode = NODE.texture( obj.texture,newUV)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt.clone()
     p.worldToLocal(cnt)
-    const displace = textureNode.w.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
-    p.material.colorNode = textureNode.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(100.,100.,100.),cp:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = textureNodeN.xyz
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
   }  
 
 
@@ -49,14 +53,15 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNode = NODE.texture( obj.texture,newUV)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt
     p.worldToLocal(obj.cnt)
-    const displace = textureNode.w.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
-    p.material.colorNode = textureNode.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(100.,100.,100.),cp:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = textureNodeN.xyz
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
   }
   
   
@@ -75,14 +80,15 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNode = NODE.texture( obj.texture,newUV)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt
     p.worldToLocal(obj.cnt)
-    const displace = textureNode.w.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
-    p.material.colorNode = textureNode.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(100.,100.,100.),cp:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = textureNodeN.xyz
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
   } 
   
   
@@ -101,14 +107,15 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNode = NODE.texture( obj.texture,newUV)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt
     p.worldToLocal(obj.cnt)
-    const displace = textureNode.w.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
-    p.material.colorNode = textureNode.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(100.,100.,100.),cp:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = textureNodeN.xyz
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
   } 
   
   
@@ -127,13 +134,14 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNode = NODE.texture( obj.texture,newUV)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt
     p.worldToLocal(obj.cnt)
-    const displace = textureNode.w.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
-    p.material.colorNode = textureNode.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(100.,100.,100.),cp:NODE.vec3(0.,0.,0.)})
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.colorNode = textureNodeN.xyz
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
     var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     p.material.positionNode = newP.add( displace );
   } 
@@ -153,13 +161,14 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNode = NODE.texture( obj.texture,newUV)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt
     p.worldToLocal(obj.cnt)
-    const displace = textureNode.w.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
-    p.material.colorNode = textureNode.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(100.,100.,100.),cp:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = textureNodeN.xyz
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
   }
 

@@ -3,7 +3,7 @@ import * as THREE  from 'three'
 import { OBJExporter } from 'three/addons/exporters/OBJExporter.js';
 import {RtTexture} from './../rTtexture'
 import * as NODE   from 'three/nodes';
-import {snoise3D,fbmNoise,displacementNormalNoiseFBM,displacementFBM}  from  './../../shaders/glslFunctions'
+import {snoise3D,fbmNoise,displacementNormalNoiseFBM,displacementFBM,displacementNormalNoiseFBMWarp,displacementNoiseFBMWarp}  from  './../../shaders/glslFunctions'
 import {snoise,normals, sdfbm2,} from '../../shaders/analyticalNormals';
 import Quad from '../../sphere/quad';
 import { displayCanvasesInGrid } from './utils';
@@ -43,6 +43,8 @@ export class CubeMap{
       }
 
       simplexNoise(params){
+        params.vn = NODE.normalLocal 
+        params.tangent = NODE.tangentLocal
         this.mainCubeSides.map((p)=>{
             var cnt_ = this.center.clone()
             var newPostion = NODE.float(params.radius).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
@@ -52,6 +54,8 @@ export class CubeMap{
     }
   
     simplexNoiseFbm(params){
+        params.vn = NODE.normalLocal
+        params.tangent = NODE.tangentLocal
         this.mainCubeSides.map((p)=>{
             var cnt_ = this.center.clone()
             var newPostion = NODE.float(params.radius).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
@@ -63,6 +67,24 @@ export class CubeMap{
                 p.material.colorNode = displacementNormalNoiseFBM.call(params).mul(.5).add(.5)
             }else{
                 p.material.colorNode = displacementFBM.call(params).add(params.scaleHeightOutput)
+            }
+        })
+    }
+
+    simplexNoiseFbmWarp(params){
+        params.vn = NODE.normalLocal
+        params.tangent = NODE.tangentLocal
+        this.mainCubeSides.map((p)=>{
+            var cnt_ = this.center.clone()
+            var newPostion = NODE.float(params.radius).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
+            var wp = newPostion;
+            if (!params.hasOwnProperty('wp')) {
+                params.wp = wp.mul(params.inScale);
+              }
+            if(this.mapType){
+                p.material.colorNode = displacementNormalNoiseFBMWarp.call(params).mul(.5).add(.5)
+            }else{
+                p.material.colorNode = displacementNoiseFBMWarp.call(params).add(params.scaleHeightOutput)
             }
         })
     }
@@ -306,7 +328,7 @@ export class CubeMap{
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-    snapShotbottom(download=false){
+    snapShotBottom(download=false){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[5].children.map((e,i)=>{
@@ -339,7 +361,7 @@ export class CubeMap{
         this.snapShotRight (download)
         this.snapShotLeft  (download)
         this.snapShotTop   (download)
-        this.snapShotbottom(download)
+        this.snapShotBottom(download)
     }
 
 }

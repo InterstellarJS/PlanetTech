@@ -19,7 +19,7 @@ this.rend.webglRenderer(canvasViewPort);
 this.rend.scene();
 this.rend.stats();
 this.rend.camera();
-this.rend.updateCamera(0,0,10000*2)
+this.rend.updateCamera(0,0,10000)
 this.rend.orbitControls()
 }
 
@@ -39,10 +39,68 @@ initQuad(tex) {
 }
 
 initPlanet() {
+  /*
+  const cm = new CubeMap(2000,5,true)
+  const download = false
+  cm.build(2*512)
+  cm.simplexNoiseFbmWarp({
+    inScale:            0.03,
+    scale:              0.05,
+    radius:             200,
+    scaleHeightOutput:   0.015,
+    seed:              1.15,
+    normalScale:        .009,
+    redistribution:      2.,
+    persistance:         .4,
+    lacunarity:          2.5,
+    iteration:           8,
+    terbulance:       false,
+    ridge:            false,
+  })
+  cm.snapShotLeft (download)
+  cm.snapShotBottom  (download)
+  cm.snapShotTop (download)
 
+  let t = cm.textuerArray
 
+  const params = {
+    width: 10000,
+    height: 10000,
+    widthSegment: 1,
+    heightSegment:1,
+    quadTreeDimensions: 1,
+    levels: 1,
+    radius: 10000,
+    displacmentScale:60,
+ }
 
+ this. s = new Sphere(
+    params.width,
+    params.height,
+    params.widthSegment,
+    params.heightSegment,
+    params.quadTreeDimensions
+    )
 
+  this.s.build(
+    params.levels,
+    params.radius,
+    params.displacmentScale,
+  )
+
+  this.s.front.addTexture  ([t[0],t[0]], params.displacmentScale)
+
+  this.s.front.lighting    (NODE.vec3(0,2.5,10.5))
+
+  this.allp = [
+    ...this.s.front.instances,
+    ...this.s.back.instances,
+    ...this.s.right.instances,
+    ...this.s.left.instances,
+    ...this.s.top.instances,
+    ...this.s.bottom.instances,
+  ]
+*/
 
   let N = [
     new THREE.TextureLoader().load('./planet/nf_image.png'),
@@ -65,12 +123,13 @@ initPlanet() {
   const params = {
     width: 10000,
     height: 10000,
-    widthSegment: 500,
-    heightSegment:500,
+    widthSegment: 50,
+    heightSegment:50,
     quadTreeDimensions: 1,
-    levels: 1,
+    levels: 5,
     radius: 10000,
-    displacmentScale:60,
+    displacmentScale:0,
+    color: () => NODE.vec3(...hexToRgbA(getRandomColor()))
  }
 
  this. s = new Sphere(
@@ -85,32 +144,8 @@ initPlanet() {
     params.levels,
     params.radius,
     params.displacmentScale,
+    params.color,
   )
-  this.s.front.addTexture  ([N[0],D[0]], params.displacmentScale)
-  this.s.back.addTexture   ([N[1],D[1]], params.displacmentScale)
-  this.s.right.addTexture  ([N[2],D[2]], params.displacmentScale)
-  this.s.left.addTexture   ([N[3],D[3]], params.displacmentScale)
-  this.s.top.addTexture    ([N[4],D[4]], params.displacmentScale)
-  this.s.bottom.addTexture ([N[5],D[5]], params.displacmentScale)
-
-  this.s.front.lighting    (NODE.vec3(0,0,0))
-  this.s.back.lighting     (NODE.vec3(0,0,0))
-  this.s.right.lighting    (NODE.vec3(0,0,0))
-  this.s.left.lighting     (NODE.vec3(0,0,0))
-  this.s.top.lighting      (NODE.vec3(0,0,0))
-  this.s.bottom.lighting   (NODE.vec3(0,0,0))
-
-
-
-/*
-  this.s.front.lighting    (NODE.vec3(0,0,0))
-  this.s.back.lighting     (NODE.vec3(0,0,0))
-  this.s.right.lighting    (NODE.vec3(0,0,0))
-  this.s.left.lighting     (NODE.vec3(0,0,0))
-  this.s.top.lighting      (NODE.vec3(0,0,0))
-  this.s.bottom.lighting   (NODE.vec3(0,0,0))
-*/
-
 
   this.allp = [
     ...this.s.front.instances,
@@ -130,7 +165,7 @@ var boxMaterial        = new THREE.MeshBasicMaterial({color:'red'});
 this.player            = new THREE.Mesh( boxGeometry, boxMaterial );
 this.player.position.z = this.rend.camera_.position.z
 this.controls               = new FirstPersonControls( this.player, document.body );
-this.controls.movementSpeed = 30
+this.controls.movementSpeed = 100
 this.controls.lookSpeed     = 0
 this.clock = new THREE.Clock();
 this.rend.scene_.add(this.player)
@@ -157,7 +192,7 @@ update(t) {
 if(this.s){
   this.controls.update(this.clock.getDelta())
   for (var i = 0; i < this.allp.length; i++) {
-   //this.allp[i].update(this.player)
+   this.allp[i].update(this.player)
   }
 }
 

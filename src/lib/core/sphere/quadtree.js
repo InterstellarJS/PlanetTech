@@ -84,7 +84,7 @@ class QuadTreeLoDCore  {
     quad.active(true)
     const wp = new THREE.Vector3(0, 0, 0);
     quad.plane.getWorldPosition(wp)
-    var distance = wp.distanceTo(player.position)
+    var distance = wp.distanceTo(player.position)/2
     if ( (distance) < (quad.quadData.width) &&  quad.quadData.width > this.config.minLevelSize ){
       let childw         =  Math.floor(quad.quadData.width/2)
       let childh         =  Math.floor(quad.quadData.height/2)

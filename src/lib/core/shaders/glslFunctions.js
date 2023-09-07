@@ -152,6 +152,56 @@ export const snoise3D = NODE.func(
   
     `,[fbmNoise])
 
+    
+    export  const  pattern = NODE.func(` 
+    float pattern(vec3 wp, float seed, float scale,  float persistance,float lacunarity,float redistribution,  int iteration,bool terbulance, bool ridge){
+          float p1 = fbm( wp+ vec3(2.0,8.0,0.0),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+          float p2 = fbm( wp+ vec3(5.2,1.3,3.2),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+          float p3 = fbm( wp+ vec3(3.2,4.3,2.6),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+
+          vec3 q = vec3( p1 , p2, p3);
+
+          float p1r = fbm( wp+ 4.0*q +vec3(1.7,9.2,0.0),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+          float p2r = fbm( wp+ 4.0*q +vec3(2.3,2.8,3.2),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+          float p3r = fbm( wp+ 4.0*q +vec3(5.2,9.3,5.6),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+
+          vec3 r = vec3( p1r , p2r, p3r);
+
+        return fbm( (wp + 4.0 * r),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+      }
+    
+      `,[fbmNoise])
+
+    export  const  displacementNormalNoiseFBMWarp = NODE.func(` 
+    vec3 displacementNormalNoiseFBM(
+        vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float normalScale, float persistance,float lacunarity,float redistribution,  int iteration,bool terbulance, bool ridge){
+        float n = pattern(wp,  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge);  
+        vec3 displacedPosition = wp + vn * n;
+        float offset = normalScale;
+        vec3 tangent_ = tangent.xyz;
+        vec3 bitangent = normalize(cross(vn, tangent_));
+        vec3 neighbour1 = wp + tangent_ * offset;
+        vec3 neighbour2 = wp + bitangent * offset;
+        vec3 displacedNeighbour1 = neighbour1 + vn * pattern(neighbour1,  seed,  scale, persistance, lacunarity, redistribution,   iteration, terbulance,  ridge );
+        vec3 displacedNeighbour2 = neighbour2 + vn * pattern(neighbour2,  seed,  scale, persistance, lacunarity, redistribution,   iteration, terbulance,  ridge );
+        vec3 displacedTangent = displacedNeighbour1 - displacedPosition;
+        vec3 displacedBitangent = displacedNeighbour2 - displacedPosition;
+        vec3 displacedNormal = normalize(cross(displacedTangent, displacedBitangent));
+        return displacedNormal;
+      }
+    
+      `,[pattern])
+
+
+      export  const  displacementNoiseFBMWarp = NODE.func(` 
+      float displacementNormalNoiseFBM(
+          vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float normalScale, float persistance,float lacunarity,float redistribution,  int iteration,bool terbulance, bool ridge){
+          float n = pattern(wp,  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge);  
+          return n;
+        }
+      
+        `,[pattern])
+
 
     export const heightMapNormal = function heightMapNormal(tex,vUv,tan){
 

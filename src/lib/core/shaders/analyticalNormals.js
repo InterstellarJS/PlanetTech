@@ -127,7 +127,7 @@ float lightv2(vec4 normalMap, vec3 lightPosition, vec3 cP) {
 vec3 lightDirection = normalize(lightPosition - normalMap.xyz);
 vec3 viewDirection  = normalize(cP - normalMap.xyz);
 vec3 ambientColor   = vec3(0.0, 0.0, 0.0);  // Ambient light color
-vec3 diffuseColor   = vec3(0.2, 0.2, 0.2);  // Diffuse light color
+vec3 diffuseColor   = vec3(0.5, 0.5, 0.5);  // Diffuse light color
 vec3 specularColor  = vec3(0.0, 0.0, 0.0); // Specular light color
 float shininess     = 0.0;  // Material shininess factor
 

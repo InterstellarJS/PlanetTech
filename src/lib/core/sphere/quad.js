@@ -61,7 +61,7 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
         var newUV   = NODE.uv().mul(testscaling).add(offSets)
         var cnt = this.quadTreeconfig.config.cnt.clone()
         p.worldToLocal(cnt)
-        var textureNodeN = NODE.texture(texture_[0],newUV)
+        var textureNodeN = NODE.texture(texture_[0],newUV).mul(2).sub(1)
         var textureNodeD = NODE.texture(texture_[1],newUV).r
         if(p.material.positionNode){
           p.material.colorNode = textureNodeN
@@ -95,7 +95,7 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
           var p = this.instances[i].plane
           p.material.colorNode = fn.call({
             n:p.material.colorNode,
-            ld:NODE.vec3(10.,10.,10.0),
+            ld:ld,
             cp:NODE.vec3(0.,0.,0.)
           })
         }
@@ -149,7 +149,6 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
       this.side = sideName
       const w = this.quadData.width
       const d = this.quadData.dimensions
-      const shardedGeometry = this.quadTreeconfig.config.arrybuffers[w]
       for (var i = 0; i < d; i++) {
         var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
         for (var j = 0; j < d; j++) {

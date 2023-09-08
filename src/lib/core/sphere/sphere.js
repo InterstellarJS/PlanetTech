@@ -142,7 +142,9 @@ export default class Sphere{
 
           }
 
-
+    log(){
+      return this.quadTreeconfig.shardedData
+    }
 
     centerPosition() {
         this.bbox.expandByObject(this.sphere);

@@ -284,6 +284,26 @@ this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
 }
 
 ```
+## Additional featuers
+Calling s.log() returns an object that contains all the important data for the planet engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
+
+<p align="center">
+  <img src="./public/readmeImg/log.png" width="400"/>
+</p>
+
+- `arrayBuffers` contains all the geometry for each level, with the key being the dimensions of the mesh.
+- `cnt` represents the center of our sphere.
+- `color` is the default color.
+- `dataTransfer` holds our textures for each face of the planet.
+- `dimensions` is the number of dimensions for each face.
+- `displacementScale` for our texture.
+- `levels` holds `levelsArray`, with each item representing the dimensions of the mesh at each level. `polyPerLevel` tells you the polygon count of the mesh at each level.
+- `maxLevelSize` represents the largest mesh size.
+- `minLevelSize` represents the smallest mesh size.
+- `minPolyCount` represents the smallest polygon count.
+- `position` is the position of the planet.
+- `radius` is the radius of the planet.
+- `scale` is the scale of the planet.
 
 <p align="center">
   <img src="./public/readmeImg/w.png"/>

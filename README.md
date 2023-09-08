@@ -288,7 +288,7 @@ this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
 Calling s.log() returns an object that contains all the important data for the planet engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
 
 <p align="center">
-  <img src="./public/readmeImg/log.png" width="400"/>
+  <img src="./public/readmeImg/log.png" />
 </p>
 
 - `arrayBuffers` contains all the geometry for each level, with the key being the dimensions of the mesh.

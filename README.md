@@ -264,6 +264,21 @@ this.allp = [
 ]
 
 this.rend.scene_.add(s.sphere);
+
+```
+In our update loop we need to add this chunk of code to actiavte the quadtree
+
+```javascript
+update(t) {
+  if(this.s){
+    for (var i = 0; i < this.allp.length; i++) {
+      this.allp[i].update(/*player or camera object*/)
+    }
+}
+requestAnimationFrame(this.update.bind(this));
+nodeFrame.update();
+this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
+}
 ```
 <p align="center">
   <img src="./public/readmeImg/w.png"/>

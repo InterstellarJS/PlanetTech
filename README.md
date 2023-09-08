@@ -161,12 +161,11 @@ Next, we call one of the noise methods with the following parameters. Finally, w
 
 ⚠️ **Disclaimer:** CubeMap isn't optimized yet; increasing the grid size to a large amount can cause WebGL to crash and may result in a lost context. Additionally, in some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. In most cases, the seams can be ignored because they are negligible.
 
+ Here we have a tangent space normal map, displacment map, All textures added to the sphere to create a planet.
+  
 <p align="center">
-  Tangent space normal map:
   <img src="./public/readmeImg/nss1.png" width="400" />
-  Displacment map:
   <img src="./public/readmeImg/dss1.png" width="400" />
-  All textured added to the sphere to create a planet: 
   <img src="./public/readmeImg/w.png"    width="400" />
 </p>
 

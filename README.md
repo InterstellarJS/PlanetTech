@@ -168,9 +168,7 @@ The first image we visualize tangent space normal map, second image is the displ
 </p>
 
 
-<video width="320" height="240" controls>
-  <source src="./public/readmeImg/demo.mp4" >
-</video>
+./public/readmeImg/demo.mp4
 
 ⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size to a large amount can cause WebGL to crash and may result in a lost context. Additionally, in some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. Sometimes the seams can be ignored because they are negligible.
 

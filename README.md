@@ -253,7 +253,7 @@ s.left.  addTexture([N[3],D[3]], params.displacmentScale)
 s.top.   addTexture([N[4],D[4]], params.displacmentScale)
 s.bottom.addTexture([N[5],D[5]], params.displacmentScale)
 
-const ld = NODE.vec3(0.0,100.0,100.0)
+const ld = NODE.vec3(0.0,50.0,50.0)
 
 s.front. lighting(ld)
 s.back.  lighting(ld)

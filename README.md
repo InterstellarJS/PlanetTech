@@ -285,6 +285,15 @@ this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
 }
 
 ```
+
+<p align="center">
+  <img src="./public/readmeImg/w.png"/>
+</p>
+
+Here is a video of our planet. The 1 meter red cube is used to visualize the scale/percision of the height map.
+
+https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/b6ad90b5-5664-4a3a-b535-d3bcbc542d35
+
 ## Additional features
 Calling `s.log()` returns an object that contains all the important data for the planet engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
 
@@ -305,14 +314,6 @@ Calling `s.log()` returns an object that contains all the important data for the
 - `position` is the position of the planet.
 - `radius` is the radius of the planet.
 - `scale` is the scale of the planet.
-
-<p align="center">
-  <img src="./public/readmeImg/w.png"/>
-</p>
-
-Here is a video of our planet. The 1 meter red cube is used to visualize the scale/percision of the height map.
-
-https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/b6ad90b5-5664-4a3a-b535-d3bcbc542d35
 
 ⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size or resolution to a large amount can cause WebGL to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
 

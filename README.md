@@ -179,7 +179,7 @@ We initialize a cube map, setting the width and height of the noise space to 200
 
 Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory. The order that the textuers are in is `[front,back,right,left,top,bottom]`.
 
-You can load in the images using `THREE.TextureLoader()`.
+Load the images using `THREE.TextureLoader()`.
 
 ```javaScript
 let N = [
@@ -199,7 +199,6 @@ let D = [
   new THREE.TextureLoader().load('./planet/t_image.png'),
   new THREE.TextureLoader().load('./planet/bo_image.png'),
 ]
-
 ```
 
  The normal displacment map and for the front face.
@@ -237,10 +236,10 @@ this.allp = [
   ...s.bottom.instances,
 ]
 
-  this.rend.scene_.add(s.sphere);
+this.rend.scene_.add(s.sphere);
 ```
 <p align="center">
-  <img src="./public/readmeImg/w.png"    width="400" />
+  <img src="./public/readmeImg/w.png"/>
 </p>
 
 Here is a video of our planet. The 1 meter red cube is used to visualize the scale/percision of the height map.

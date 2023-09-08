@@ -39,27 +39,26 @@ initQuad(tex) {
 }
 
 initPlanet() {
-  /*
-  const cm = new CubeMap(2000,3,false)
+ /*
+  const cm = new CubeMap(2000,3,true)
   const download = false
-  cm.build(3512)
+  cm.build(2512)
   cm.simplexNoiseFbm({
     inScale:            2.5,
-    scale:              0.2,
+    scale:              0.3,
     radius:             100,
     scaleHeightOutput:   0.1,
     seed:              0.0,
     normalScale:        .01,
     redistribution:      2.,
-    persistance:         .35,
+    persistance:         .3,
     lacunarity:          2.,
     iteration:           5,
     terbulance:       false,
     ridge:            false,
   })
   cm.snapShotFront (download)
-  cm.snapShotTop (download)
-  cm.snapShotRight (download)
+
 
   let t = cm.textuerArray
 
@@ -90,7 +89,7 @@ initPlanet() {
 
   this.s.front.addTexture  ([t[0],t[0]], params.displacmentScale)
 
-  this.s.front.lighting    (NODE.vec3(50.0,50.0,50.0))
+  this.s.front.lighting    (NODE.vec3(0.0,50.0,50.0))
 
   this.allp = [
     ...this.s.front.instances,
@@ -101,7 +100,6 @@ initPlanet() {
     ...this.s.bottom.instances,
   ]
 */
-
 
 
 let N = [
@@ -123,14 +121,14 @@ let D = [
 ]
 
 const params = {
-  width: 10000,
-  height: 10000,
-  widthSegment: 800,
-  heightSegment:800,
+  width:          10000,
+  height:         10000,
+  widthSegment:     50,
+  heightSegment:    50,
   quadTreeDimensions: 1,
-  levels: 5,
-  radius: 10000,
-  displacmentScale:30,
+  levels:             5,
+  radius:         10000,
+  displacmentScale:  30,
 }
 
 this. s = new Sphere(
@@ -153,7 +151,7 @@ this.s.left.addTexture   ([N[3],D[3]], params.displacmentScale)
 this.s.top.addTexture    ([N[4],D[4]], params.displacmentScale)
 this.s.bottom.addTexture ([N[5],D[5]], params.displacmentScale)
 
-const ld = NODE.vec3(100.0,100.0,100.0)
+const ld = NODE.vec3(0.0,100.0,100.0)
 
 this.s.front.lighting    (ld)
 this.s.back.lighting     (ld)
@@ -207,7 +205,7 @@ update(t) {
 if(this.s){
   this.controls.update(this.clock.getDelta())
   for (var i = 0; i < this.allp.length; i++) {
-  //this.allp[i].update(this.player)
+    this.allp[i].update(this.player)
   }
 }
 

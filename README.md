@@ -32,6 +32,7 @@ What sets this library apart is its utilization of the GPU for all tasks. This i
 - Physics. (coming soon)
 - assets.  (coming soon)
 - foliage. (coming soon)
+- ability to switch from WebGL to WebGPU backended (coming soon)
 
 ## Specs
 - Recommended GPU is GTX 1060 and above.

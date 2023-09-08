@@ -55,8 +55,6 @@ import { getRandomColor,hexToRgbA } from './core/sphere/utils'
     color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
  }
 
-
-
  let s = new Sphere(
     params.width,
     params.height,
@@ -84,7 +82,7 @@ To get a better understanding of the `levels` parameter, let's take a look at a 
 ![quad Sphere](./public/readmeImg/img4.jpg)
 
 Now lets say we want to add a texture to our sphere and start making it look like a planet.
-the code will be the same as before except now we are using `addTexture` method.
+The code will be the same as before except now we are using `addTexture` method.
 ```javascript
   const params = {
     width: 100,
@@ -177,7 +175,7 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
 
 ```
 
-We initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 3x3 grid with a `mapType` set to `false` for normal map and displacement map. We then call the build method, creating the cube with the specified resolution of 3512 for this displament map and 2512 for the normal map.
+We initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 3x3 grid with a `mapType` set to `false` for displacement map and `true` for normal map. We then call the build method, creating the cube with the specified resolution of 3512 for this displament map and 2512 for the normal map.
 
 Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory. The order that the textuers are in is `[front,back,right,left,top,bottom]`.
 
@@ -204,31 +202,31 @@ let D = [
 
 ```
 
- The first and sceond image we visualize the normal displacment map and for the front face.
+ The normal displacment map and for the front face.
 <p align="center">
   <img src="./public/readmeImg/nss1.png" width="400" />
   <img src="./public/readmeImg/dss1.png" width="400" />
 </p>
 
 
-As show previously, we can then add our textures to each face of the sphere creating a planet. we then set a light direction for each face and finally add our planet to the scene.
+As show previously, We can then add our textures to each face of the sphere creating a planet. we then set a light direction for each face and finally add our planet to the scene.
 
 ```javascript
-s.front.addTexture  ([N[0],D[0]], params.displacmentScale)
-s.back.addTexture   ([N[1],D[1]], params.displacmentScale)
-s.right.addTexture  ([N[2],D[2]], params.displacmentScale)
-s.left.addTexture   ([N[3],D[3]], params.displacmentScale)
-s.top.addTexture    ([N[4],D[4]], params.displacmentScale)
-s.bottom.addTexture ([N[5],D[5]], params.displacmentScale)
+s.front. addTexture([N[0],D[0]], params.displacmentScale)
+s.back.  addTexture([N[1],D[1]], params.displacmentScale)
+s.right. addTexture([N[2],D[2]], params.displacmentScale)
+s.left.  addTexture([N[3],D[3]], params.displacmentScale)
+s.top.   addTexture([N[4],D[4]], params.displacmentScale)
+s.bottom.addTexture([N[5],D[5]], params.displacmentScale)
 
 const ld = NODE.vec3(100.0,100.0,100.0)
 
-s.front.lighting    (ld)
-s.back.lighting     (ld)
-s.right.lighting    (ld)
-s.left.lighting     (ld)
-s.top.lighting      (ld)
-s.bottom.lighting   (ld)
+s.front. lighting(ld)
+s.back.  lighting(ld)
+s.right. lighting(ld)
+s.left.  lighting(ld)
+s.top.   lighting(ld)
+s.bottom.lighting(ld)
 
 this.allp = [
   ...s.front .instances,

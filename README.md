@@ -151,7 +151,7 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
     ridge:            false,
   })
   displacmentMaps.snapShot(download)
-  let t = displacmentMaps.textuerArray
+  let dt = displacmentMaps.textuerArray
 
   const normalMap = new CubeMap(2000,3,true)
   const download = false
@@ -171,7 +171,7 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
     ridge:            false,
   })
   normalMap.snapShot(download)
-  let t = normalMap.textuerArray
+  let nt = normalMap.textuerArray
 
 ```
 

@@ -44,14 +44,14 @@ import Sphere from './core/sphere/sphere'
 import { getRandomColor,hexToRgbA } from './core/sphere/utils'
 
   const params = {
-    width: 100,
-    height: 100,
-    widthSegment: 50,
-    heightSegment: 50,
+    width:            100,
+    height:           100,
+    widthSegment:      50,
+    heightSegment:     50,
     quadTreeDimensions: 1,
-    levels: 2,
-    radius: 100,
-    displacmentScale:1,
+    levels:             2,
+    radius:           100,
+    displacmentScale:   1,
     color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
  }
 
@@ -85,14 +85,14 @@ Now lets say we want to add a texture to our sphere and start making it look lik
 The code will be the same as before except now we are using `addTexture` method.
 ```javascript
   const params = {
-    width: 100,
-    height: 100,
-    widthSegment: 50,
-    heightSegment: 50,
+    width:            100,
+    height:           100,
+    widthSegment:      50,
+    heightSegment:     50,
     quadTreeDimensions: 3,
-    levels: 2,
-    radius: 100,
-    displacmentScale:5,
+    levels:             2,
+    radius:           100,
+    displacmentScale:   5,
  }
 
  var s = new Sphere(

@@ -125,8 +125,8 @@ let D = [
 const params = {
   width: 10000,
   height: 10000,
-  widthSegment: 50,
-  heightSegment:50,
+  widthSegment: 800,
+  heightSegment:800,
   quadTreeDimensions: 1,
   levels: 5,
   radius: 10000,
@@ -207,7 +207,7 @@ update(t) {
 if(this.s){
   this.controls.update(this.clock.getDelta())
   for (var i = 0; i < this.allp.length; i++) {
-  this.allp[i].update(this.player)
+  //this.allp[i].update(this.player)
   }
 }
 

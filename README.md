@@ -156,18 +156,20 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
   let t = cm.textuerArray
 ```
 
-Here we initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 3x3 grid with a `mapType` set to `false` for displacement map. We then call the build method, creating the cube with the specified resolution (3512).
+We initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 3x3 grid with a `mapType` set to `false` for displacement map. We then call the build method, creating the cube with the specified resolution (3512).
 Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory.
 
-⚠️ **Disclaimer:** CubeMap isn't optimized yet; increasing the grid size to a large amount can cause WebGL to crash and may result in a lost context. Additionally, in some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. In most cases, the seams can be ignored because they are negligible.
+The first image we visualize tangent space normal map, second image is the displacment map, and third image is all textures added to the sphere to create a planet.
 
- Here we have a tangent space normal map, displacment map, All textures added to the sphere to create a planet.
-  
 <p align="center">
   <img src="./public/readmeImg/nss1.png" width="400" />
   <img src="./public/readmeImg/dss1.png" width="400" />
   <img src="./public/readmeImg/w.png"    width="400" />
 </p>
+
+[demo](https://youtu.be/o9aI9zGa94A)
+
+⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size to a large amount can cause WebGL to crash and may result in a lost context. Additionally, in some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. The seams can be ignored because they are negligible.
 
 
 <p align="center">

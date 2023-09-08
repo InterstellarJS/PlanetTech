@@ -17,7 +17,7 @@ What sets this library apart is its utilization of the GPU for all tasks. This i
 ## Getting Started
 Download and run the project. Go to http://localhost:3001/. The file for the demo is located at src/lib/viewGL.js. If things aren't working, open an issue, and I will try to correct any problems.
 
-⚠️ **Disclaimer:** Because this is in alpha and I haven't fully implemented good FPS controls yet, in the demo, you need to find a spot on the front face of the planet. Make sure to orient and rotate the camera to your liking. Hold down the right mouse key to move the red cube; this is currently how I activate the quadtree. Finding the cube can be challenging due to the scale of the planet. However, holding down the right mouse clicker activates the quadtree. I plan to implement basic character controls, but for now, this is the method I'm using.
+⚠️ **Disclaimer:** Because this is in alpha and I haven't fully implemented good first person controls yet, in the demo, you need to find a spot on the front face of the planet. Make sure to orient and rotate the camera to your liking. Hold down the right mouse key to move the red cube; this is currently how I activate the quadtree. Finding the cube can be challenging due to the scale of the planet. However, holding down the right mouse clicker activates the quadtree. I plan to implement basic character controls, but for now, this is the method I'm using.
 
 ## Features/Ideas
 - Procedural planet generation: Create unique and realistic planets using procedural algorithms.

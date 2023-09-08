@@ -10,9 +10,9 @@
 
 
 **GOAL:**
-PlanetTechJS is an open-source JavaScript library built using vanilla THREE.js, accompanied by a React UI for editing planets. Its purpose is to generate procedural planets and terrains using a quadtree LOD approach. The goal of this project is not to replicate titles like Star Citizen or No Man's Sky, but rather to provide a toolkit that emulates the tools they might utilize for planet creation. The focus is solely on crafting planets, offering a straightforward and adaptable approach to designing realistic and visually captivating 3D planets on a grand scale. The key for this project to work is **scale**, meaning the ability to transition from sky to ground with good resolution. PlanetTechJS will include customizable features such as terrain textures, ground physics, atmospheric effects, and more. Thus, it does not encompass spaceships, weapons, player dynamics, etc., only planet generation.
+GOAL: PlanetTechJS is an open-source JavaScript library built using vanilla THREE.js, accompanied by a React UI for editing planets. Its primary purpose is to generate procedural planets and terrains using a quadtree LOD approach. The aim of this project is not to replicate titles like Star Citizen or No Man's Sky, but rather to provide a toolkit that emulates the tools they might employ for planet creation. The sole focus is on crafting planets, offering a straightforward and adaptable approach to designing realistic and visually captivating 3D planets on a grand scale. The key to the success of this project lies in its ability to handle **scale**, allowing for seamless transitions from the sky to the ground with high resolution. PlanetTechJS will include customizable features such as terrain textures, ground physics, atmospheric effects, and more. Thus, it does not encompass spaceships, weapons, player dynamics, etc.; its sole focus is planet generation.
 
-What sets this library apart is its utilization of the GPU for all tasks. This includes generating textures for each facet, performing displacement, and shaping PlaneGeometries into spherical forms; the entire process occurs on the GPU. As such, there is no need for WebWorkers at this stage.
+What sets this library apart is its utilization of the GPU for all tasks. This includes generating textures for each facet, performing displacement, and shaping PlaneGeometries into spherical forms; the entire process occurs on the GPU. Consequently, there is no need for WebWorkers at this stage.
 
 ## Features
 - Procedural planet generation: Create unique and realistic planets using procedural algorithms.
@@ -126,7 +126,7 @@ The code will be the same as before except now we are using `addTexture` method.
 
 ```
 Notice we dont need the color anymore. And all we added was a THREE.TextureLoader for loading a texture for each face of the planet, increase `quadTreeDimensions` to 3 and increase `displacmentScale` to 5.
-`addTexture` method first argument takes an array. The first item in that arry is a texture to be drawn the second item is a texture for displacement.
+`addTexture` method first argument takes an array. The first item in that array is a texture to be drawn the second item is a texture for displacement.
 <p align="center">
   <img src="./public/readmeImg/img8.png" width="500" />
 </p>
@@ -176,9 +176,9 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
 
 ```
 
-We initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 3x3 grid with a `mapType` set to `false` for displacement map and `true` for normal map. We then call the build method, creating the cube with the specified resolution of 3512 for this displament map and 2512 for the normal map.
+We initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 3x3 grid with a `mapType` set to `false` for displacement map and `true` for normal map. We then call the build method, creating the cube with the specified resolution of 3512 for this displacement map and 2512 for the normal map.
 
-Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory. The order that the textuers are in is `[front,back,right,left,top,bottom]`.
+Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory. The order that the textures are in is `[front,back,right,left,top,bottom]`.
 
 Load the images using `THREE.TextureLoader()`.
 
@@ -202,16 +202,42 @@ let D = [
 ]
 ```
 
- The normal displacment map and for the front face.
+ The normal and displacement map and for the front face.
 <p align="center">
   <img src="./public/readmeImg/nss1.png" width="400" />
   <img src="./public/readmeImg/dss1.png" width="400" />
 </p>
 
 
-As show previously, We can then add our textures to each face of the sphere creating a planet. we then set a light direction for each face and finally add our planet to the scene.
+As shown previously, we set our parameters and then add our textures to each face of the sphere creating a planet. We then set a light direction for each face and finally add our planet to the scene.
 
 ```javascript
+
+const params = {
+  width:          10000,
+  height:         10000,
+  widthSegment:     50,
+  heightSegment:    50,
+  quadTreeDimensions: 1,
+  levels:             5,
+  radius:         10000,
+  displacmentScale:  30,
+}
+
+let s = new Sphere(
+  params.width,
+  params.height,
+  params.widthSegment,
+  params.heightSegment,
+  params.quadTreeDimensions
+  )
+
+s.build(
+  params.levels,
+  params.radius,
+  params.displacmentScale,
+)
+
 s.front. addTexture([N[0],D[0]], params.displacmentScale)
 s.back.  addTexture([N[1],D[1]], params.displacmentScale)
 s.right. addTexture([N[2],D[2]], params.displacmentScale)
@@ -247,7 +273,7 @@ Here is a video of our planet. The 1 meter red cube is used to visualize the sca
 
 https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/020f540d-c0ac-4dda-bce8-13fb295972a6
 
-⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size or resolution to a large amount can cause WebGL to crash and may result in a lost context you have to find a balance between visuale and profomance. Additionally, in some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. Sometimes the seams can be ignored because they are negligible.
+⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size or resolution to a large amount can cause WebGL to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
 
 
 <p align="center">

@@ -208,7 +208,7 @@ let D = [
 ]
 ```
 
- The normal and displacement map and for the front face.
+ The normal and displacement map for the front face.
 <p align="center">
   <img src="./public/readmeImg/nss1.png" width="400" />
   <img src="./public/readmeImg/dss1.png" width="400" />

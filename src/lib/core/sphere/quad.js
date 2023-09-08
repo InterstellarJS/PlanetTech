@@ -85,6 +85,7 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
 
 
       lighting(ld){
+        this.quadTreeconfig.config.light = {ld:ld}
         var fn = NODE.func(`
         vec3 light_(vec4 n, vec3 ld,vec3 cp) {
           float l = lightv2(n,ld,cp);

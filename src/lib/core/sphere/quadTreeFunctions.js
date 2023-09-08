@@ -35,7 +35,7 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:obj.config.light.ld,cp:NODE.vec3(0.,0.,0.)})
   }  
 
 
@@ -61,7 +61,7 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:obj.config.light.ld,cp:NODE.vec3(0.,0.,0.)})
   }
   
   
@@ -88,7 +88,7 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:obj.config.light.ld,cp:NODE.vec3(0.,0.,0.)})
   } 
   
   
@@ -115,7 +115,7 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:obj.config.light.ld,cp:NODE.vec3(0.,0.,0.)})
   } 
   
   
@@ -141,7 +141,7 @@ export function frontsetData(obj){
     p.worldToLocal(obj.cnt)
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:obj.config.light.ld,cp:NODE.vec3(0.,0.,0.)})
     var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     p.material.positionNode = newP.add( displace );
   } 
@@ -169,6 +169,6 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:NODE.vec3(0,2.5,20.5),cp:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = lighting.call({n:p.material.colorNode,ld:obj.config.light.ld,cp:NODE.vec3(0.,0.,0.)})
   }
 

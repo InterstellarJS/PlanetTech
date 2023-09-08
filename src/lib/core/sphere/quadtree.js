@@ -25,7 +25,8 @@ class QuadTreeLoDCore  {
     },
     position:{x:0,y:0,z:0},
     scale: 1,
-    color: NODE.vec3(0,0,0)
+    color: NODE.vec3(0,0,0),
+    light:{}
   }
 
   constructor(config={}) {

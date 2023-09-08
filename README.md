@@ -135,20 +135,20 @@ Notice we dont need the color anymore. And all we added was a THREE.TextureLoade
 PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows users to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMapJS works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
 
 ```javaScript
-  const cm = new CubeMap(2000,2,false) 
-  const download = true
-  cm.build(512*2)
+  const cm = new CubeMap(2000,3,false)
+  const download = false
+  cm.build(3512)
   cm.simplexNoiseFbm({
-    inScale:            0.2,
-    scale:              0.5,
+    inScale:            2.5,
+    scale:              0.2,
     radius:             100,
-    scaleHeightOutput:   .6,
-    seed:              6.15,
+    scaleHeightOutput:  0.1,
+    seed:               0.0,
     normalScale:        .01,
-    redistribution:      4.,
-    persistance:         .4,
+    redistribution:      2.,
+    persistance:        .35,
     lacunarity:          2.,
-    iteration:           12,
+    iteration:            5,
     terbulance:       false,
     ridge:            false,
   })
@@ -156,10 +156,19 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
   let t = cm.textuerArray
 ```
 
-Here we initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 2x2 grid with a `mapType` set to `false` for displacement map. We then call the build method, creating the cube with the specified resolution (512*2).
-Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The .textureArray variable holds the images in memory.
+Here we initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 3x3 grid with a `mapType` set to `false` for displacement map. We then call the build method, creating the cube with the specified resolution (3512).
+Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory.
 
 ⚠️ **Disclaimer:** CubeMap isn't optimized yet; increasing the grid size to a large amount can cause WebGL to crash and may result in a lost context. Additionally, in some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. In most cases, the seams can be ignored because they are negligible.
+
+<p align="center">
+  Tangent space normal map:
+  <img src="./public/readmeImg/nss1.png" width="400" />
+  Displacment map:
+  <img src="./public/readmeImg/dss1.png" width="400" />
+  All textured added to the sphere to create a planet: 
+  <img src="./public/readmeImg/w.png"    width="400" />
+</p>
 
 
 <p align="center">

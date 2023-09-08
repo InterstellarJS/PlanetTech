@@ -169,7 +169,6 @@ this.allp = [
   ...this.s.bottom.instances,
 ]
 
-console.log(this.s.log())
   this.rend.scene_.add( this.s.sphere);
 }
 
@@ -206,7 +205,7 @@ update(t) {
 if(this.s){
   this.controls.update(this.clock.getDelta())
   for (var i = 0; i < this.allp.length; i++) {
-    //this.allp[i].update(this.player)
+    this.allp[i].update(this.player)
   }
 }
 

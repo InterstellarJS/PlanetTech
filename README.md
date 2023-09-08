@@ -264,14 +264,29 @@ this.allp = [
 ]
 
 this.rend.scene_.add(s.sphere);
+
+//In our update loop we need to add this chunk of code to actiavte the quadtree
+
+update(t) {
+  if(s){
+    for (var i = 0; i < this.allp.length; i++) {
+      this.allp[i].update(/*player or camera object*/)
+    }
+}
+requestAnimationFrame(this.update.bind(this));
+nodeFrame.update();
+this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
+}
+
 ```
+
 <p align="center">
   <img src="./public/readmeImg/w.png"/>
 </p>
 
 Here is a video of our planet. The 1 meter red cube is used to visualize the scale/percision of the height map.
 
-https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/020f540d-c0ac-4dda-bce8-13fb295972a6
+https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/b6ad90b5-5664-4a3a-b535-d3bcbc542d35
 
 ⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size or resolution to a large amount can cause WebGL to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
 

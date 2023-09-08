@@ -111,12 +111,12 @@ the code will be the same as before except now we are using `addTexture` method.
     params.displacmentScale,
   )
 
-  const loader1 = new THREE.TextureLoader().load('./worldTextures/front_image.png' );
-  const loader2 = new THREE.TextureLoader().load('./worldTextures/back_image.png'  );
-  const loader3 = new THREE.TextureLoader().load('./worldTextures/right_image.png' );
-  const loader4 = new THREE.TextureLoader().load('./worldTextures/left_image.png'  );
-  const loader5 = new THREE.TextureLoader().load('./worldTextures/top_image.png'   );
-  const loader6 = new THREE.TextureLoader().load('./worldTextures/bottom_image.png');
+  const loader1 = new THREE.TextureLoader().load('./planet/front_image.png' );
+  const loader2 = new THREE.TextureLoader().load('./planet/back_image.png'  );
+  const loader3 = new THREE.TextureLoader().load('./planet/right_image.png' );
+  const loader4 = new THREE.TextureLoader().load('./planet/left_image.png'  );
+  const loader5 = new THREE.TextureLoader().load('./planet/top_image.png'   );
+  const loader6 = new THREE.TextureLoader().load('./planet/bottom_image.png');
 
   s.front .addTexture ([loader1,loader1], params.displacmentScale)
   s.back  .addTexture ([loader2,loader2], params.displacmentScale)
@@ -135,10 +135,10 @@ Notice we dont need the color anymore. And all we added was a THREE.TextureLoade
 PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows users to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMapJS works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
 
 ```javaScript
-  const cm = new CubeMap(2000,3,false)
+  const displacmentMaps = new CubeMap(2000,3,false)
   const download = false
-  cm.build(3512)
-  cm.simplexNoiseFbm({
+  displacmentMaps.build(3512)
+  displacmentMaps.simplexNoiseFbm({
     inScale:            2.5,
     scale:              0.2,
     radius:             100,
@@ -152,15 +152,59 @@ PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/cor
     terbulance:       false,
     ridge:            false,
   })
-  cm.snapShot(download)
-  let t = cm.textuerArray
+  displacmentMaps.snapShot(download)
+  let t = displacmentMaps.textuerArray
+
+  const normalMap = new CubeMap(2000,3,true)
+  const download = false
+  normalMap.build(2512)
+  normalMap.simplexNoiseFbm({
+    inScale:            2.5,
+    scale:              0.2,
+    radius:             100,
+    scaleHeightOutput:  0.1,
+    seed:               0.0,
+    normalScale:        .01,
+    redistribution:      2.,
+    persistance:        .35,
+    lacunarity:          2.,
+    iteration:            5,
+    terbulance:       false,
+    ridge:            false,
+  })
+  normalMap.snapShot(download)
+  let t = normalMap.textuerArray
+
 ```
 
-We initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 3x3 grid with a `mapType` set to `false` for displacement map. We then call the build method, creating the cube with the specified resolution (3512).
-Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory.
+We initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 3x3 grid with a `mapType` set to `false` for normal map and displacement map. We then call the build method, creating the cube with the specified resolution of 3512 for this displament map and 2512 for the normal map.
 
-The first image we visualize tangent space normal map, second image is the displacment map, and third image is all textures added to the sphere to create a planet.
+Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory. The order that the textuers are in is `[front,back,right,left,top,bottom]`.
 
+You can load in the images using `THREE.TextureLoader()`.
+
+```javaScript
+let N = [
+  new THREE.TextureLoader().load('./planet/nf_image.png'),
+  new THREE.TextureLoader().load('./planet/nb_image.png'),
+  new THREE.TextureLoader().load('./planet/nr_image.png'),
+  new THREE.TextureLoader().load('./planet/nl_image.png'),
+  new THREE.TextureLoader().load('./planet/nt_image.png'),
+  new THREE.TextureLoader().load('./planet/nbo_image.png'),
+]
+
+let D = [
+  new THREE.TextureLoader().load('./planet/f_image.png'),
+  new THREE.TextureLoader().load('./planet/b_image.png'),
+  new THREE.TextureLoader().load('./planet/r_image.png'),
+  new THREE.TextureLoader().load('./planet/l_image.png'),
+  new THREE.TextureLoader().load('./planet/t_image.png'),
+  new THREE.TextureLoader().load('./planet/bo_image.png'),
+]
+
+```
+
+ The first and sceond image we visualize the normal displacment map and for the front face.
 <p align="center">
   <img src="./public/readmeImg/nss1.png" width="400" />
   <img src="./public/readmeImg/dss1.png" width="400" />
@@ -168,9 +212,45 @@ The first image we visualize tangent space normal map, second image is the displ
 </p>
 
 
+As show previously, we can then add our textures to each face of the sphere creating a planet. we then set a light direction for each face and finally add our planet to the scene.
+
+```javascript
+s.front.addTexture  ([N[0],D[0]], params.displacmentScale)
+s.back.addTexture   ([N[1],D[1]], params.displacmentScale)
+s.right.addTexture  ([N[2],D[2]], params.displacmentScale)
+s.left.addTexture   ([N[3],D[3]], params.displacmentScale)
+s.top.addTexture    ([N[4],D[4]], params.displacmentScale)
+s.bottom.addTexture ([N[5],D[5]], params.displacmentScale)
+
+const ld = NODE.vec3(100.0,100.0,100.0)
+
+s.front.lighting    (ld)
+s.back.lighting     (ld)
+s.right.lighting    (ld)
+s.left.lighting     (ld)
+s.top.lighting      (ld)
+s.bottom.lighting   (ld)
+
+this.allp = [
+  ...s.front .instances,
+  ...s.back  .instances,
+  ...s.right .instances,
+  ...s.left  .instances,
+  ...s.top   .instances,
+  ...s.bottom.instances,
+]
+
+  this.rend.scene_.add(s.sphere);
+```
+<p align="center">
+  <img src="./public/readmeImg/w.png"    width="400" />
+</p>
+
+Here is a video of our planet. The 1 meter red cube is used to visualize the scale/percision of the height map.
+
 https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/020f540d-c0ac-4dda-bce8-13fb295972a6
 
-⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size to a large amount can cause WebGL to crash and may result in a lost context. Additionally, in some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. Sometimes the seams can be ignored because they are negligible.
+⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size or resolution to a large amount can cause WebGL to crash and may result in a lost context you have to find a balance between visuale and profomance. Additionally, in some cases, the normal map can cause seams between each face of the texture, which can break the immersion for the user. Sometimes the seams can be ignored because they are negligible.
 
 
 <p align="center">

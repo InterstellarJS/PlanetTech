@@ -208,7 +208,6 @@ let D = [
 <p align="center">
   <img src="./public/readmeImg/nss1.png" width="400" />
   <img src="./public/readmeImg/dss1.png" width="400" />
-  <img src="./public/readmeImg/w.png"    width="400" />
 </p>
 
 

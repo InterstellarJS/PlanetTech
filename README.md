@@ -14,25 +14,24 @@ GOAL: PlanetTechJS is an open-source JavaScript library built using vanilla THRE
 
 What sets this library apart is its utilization of the GPU for all tasks. This includes generating textures for each facet, performing displacement, and shaping PlaneGeometries into spherical forms; the entire process occurs on the GPU. Consequently, there is no need for WebWorkers at this stage.
 
-## Features
+## Features/Ideas
 - Procedural planet generation: Create unique and realistic planets using procedural algorithms.
 - flexability and speed.
 - quadtree sphere.
 - cubeMap. (threading and instancing coming soon)
 - Terrain generation: Generate detailed and customizable terrains with different types of landscapes such as mountains, valleys, and plains.
 - Texture mapping: Apply textures to the terrain to enhance visual realism and add visual variety.(coming soon)
-- Gpu generated normal map.(coming soon)
-- Gpu generated displacement map.(coming soon)
-- Atmospheric effects: Simulate atmospheric effects such as clouds, haze, and lighting to create a more immersive environment.(coming soon)
-- User interaction: Allow users to interact with the generated planet by zooming, rotating, and exploring different regions.(coming soon)
+- Gpu generated normal map.
+- Gpu generated displacement map.
+- Atmospheric effects: Simulate atmospheric effects such as clouds, haze, and lighting to create a more immersive environment.(dev complete)
 - Texture editing / terrain editing. (coming soon)
-- Texture Atlas. (coming soon)
-- Texture channel packing.(coming soon)
-- Texture Splat Map.(coming soon)
+- Texture Atlas. (dev complete)
+- Texture channel packing.(dev complete)
+- Texture Splat Map.(dev complete)
 - Physics. (coming soon)
 - assets.  (coming soon)
 - foliage. (coming soon)
-- ability to switch from WebGL to WebGPU backended (coming soon)
+- ability to switch from WebGL to WebGPU backended (dev complete)
 
 ## Specs
 - Recommended GPU is GTX 1060 and above.

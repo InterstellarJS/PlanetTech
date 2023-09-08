@@ -37,7 +37,7 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 - assets.  (coming soon)
 - foliage. (coming soon)
 - ability to switch from WebGL to WebGPU backended. (dev complete)
-- logging. (coming soon)
+- logs.
 
 ## Specs
 - Recommended GPU is GTX 1060 and above.
@@ -138,6 +138,8 @@ Notice we dont need the color anymore. And all we added was a THREE.TextureLoade
 
 ## How To Build A Planet
 To build planet, PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows users to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMapJS works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
+
+**You dont have to use [CubeMapJS](./src/lib/core/textures/cubeMap). You can import your own height map and normal map, the work flow will be the same.**
 
 ```javaScript
   const displacmentMaps = new CubeMap(2000,3,false)
@@ -251,7 +253,7 @@ s.left.  addTexture([N[3],D[3]], params.displacmentScale)
 s.top.   addTexture([N[4],D[4]], params.displacmentScale)
 s.bottom.addTexture([N[5],D[5]], params.displacmentScale)
 
-const ld = NODE.vec3(100.0,100.0,100.0)
+const ld = NODE.vec3(0.0,100.0,100.0)
 
 s.front. lighting(ld)
 s.back.  lighting(ld)
@@ -260,7 +262,7 @@ s.left.  lighting(ld)
 s.top.   lighting(ld)
 s.bottom.lighting(ld)
 
-this.allp = [
+let allp = [
   ...s.front .instances,
   ...s.back  .instances,
   ...s.right .instances,
@@ -269,19 +271,18 @@ this.allp = [
   ...s.bottom.instances,
 ]
 
-this.rend.scene_.add(s.sphere);
+scene_.add(s.sphere);
 
 //In our update loop we need to add this chunk of code to actiavte the quadtree
 
 update(t) {
   if(s){
-    for (var i = 0; i < this.allp.length; i++) {
-      this.allp[i].update(/*player or camera object*/)
+    for (var i = 0; i < allp.length; i++) {
+      allp[i].update(/*player or camera object*/)
     }
 }
-requestAnimationFrame(this.update.bind(this));
 nodeFrame.update();
-this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
+renderer.render(scene_, camera_);
 }
 
 ```

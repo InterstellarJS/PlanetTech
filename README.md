@@ -268,7 +268,7 @@ this.rend.scene_.add(s.sphere);
 //In our update loop we need to add this chunk of code to actiavte the quadtree
 
 update(t) {
-  if(this.s){
+  if(s){
     for (var i = 0; i < this.allp.length; i++) {
       this.allp[i].update(/*player or camera object*/)
     }

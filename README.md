@@ -346,16 +346,16 @@ import { Atmosphere } from './core/shaders/vfx/atmosphereScattering';
 let atmo = new Atmosphere()
 atmo.createcomposer()
 
- update(t) {  
-  if(s){
-    for (var i = 0; i < allp.length; i++) {
-      allp[i].update(/*player or camera object*/)
-    }
+update(t) {  
+if(s){
+  for (var i = 0; i < allp.length; i++) {
+    allp[i].update(/*player or camera object*/)
   }
-  nodeFrame.update();
-  atmo.run()
-  //rend.renderer.render(rend.scene_, rend.camera_); // no longer needed
-  }
+}
+nodeFrame.update();
+atmo.run()
+//rend.renderer.render(rend.scene_, rend.camera_); // no longer needed
+}
   
 ```
 <p align="center">

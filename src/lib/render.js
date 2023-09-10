@@ -45,7 +45,7 @@ camera(x = 0, y = 0, z = 0) {
 this.camera_ = new THREE.PerspectiveCamera(
 75,
 this.container.clientWidth / this.container.clientHeight,
-0.1,
+12,
 6371e3
 );
 }

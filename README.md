@@ -10,7 +10,7 @@
 
 
 **GOAL:**
-GOAL: PlanetTechJS is an open-source JavaScript library built using vanilla THREE.js, accompanied by a React UI for editing planets. Its primary purpose is to generate procedural planets and terrains using a quadtree LOD approach. The aim of this project is not to replicate titles like Star Citizen or No Man's Sky, but rather to provide a toolkit that emulates the tools they might employ for planet creation. The sole focus is on crafting planets, offering a straightforward and adaptable approach to designing realistic and visually captivating 3D planets on a grand scale. The key to the success of this project lies in its ability to handle **scale**, allowing for seamless transitions from the sky to the ground with high resolution. PlanetTechJS will include customizable features such as terrain textures, ground physics, atmospheric effects, and more. Thus, it does not encompass spaceships, weapons, player dynamics, etc.; its sole focus is planet generation.
+PlanetTechJS is an open-source JavaScript library built using vanilla THREE.js, accompanied by a React UI for editing planets. Its primary purpose is to generate procedural planets and terrains using a quadtree LOD approach. The aim of this project is not to replicate titles like Star Citizen or No Man's Sky, but rather to provide a toolkit that emulates the tools they might employ for planet creation. The sole focus is on crafting planets, offering a straightforward and adaptable approach to designing realistic and visually captivating 3D planets on a grand scale. The key to the success of this project lies in its ability to handle **scale**, allowing for seamless transitions from the sky to the ground with high resolution. PlanetTechJS will include customizable features such as terrain textures, ground physics, atmospheric effects, and more. Thus, it does not encompass spaceships, weapons, player dynamics, etc.; its sole focus is planet generation.
 
 What sets this library apart is its utilization of the GPU for all tasks. This includes generating textures for each facet, performing displacement, and shaping PlaneGeometries into spherical forms; the entire process occurs on the GPU. Consequently, there is no need for WebWorkers at this stage.
 
@@ -29,6 +29,8 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 - Gpu generated normal map.
 - Gpu generated displacement map.
 - Atmospheric effects: Simulate atmospheric effects such as clouds, haze, and lighting to create a more immersive environment.(dev complete)
+- day and night cycle.(coming soon)
+- weather simulation.(coming soon)
 - Texture editing / terrain editing. (coming soon)
 - Texture Atlas. (dev complete)
 - Texture channel packing.(dev complete)
@@ -295,8 +297,38 @@ Here is a video of our planet. The 1 meter red cube is used to visualize the sca
 
 https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/b6ad90b5-5664-4a3a-b535-d3bcbc542d35
 
-## Additional features
-Calling `s.log()` returns an object that contains all the important data for the planet engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
+## Atmosphere Scattering
+To add an atmosphere to a planet, you can import the `Atmosphere` post-processing class. This was adapted from a ShaderToy example to work with Three.js. It's still very much a work in progress.
+
+```javascript
+import { Atmosphere } from './core/shaders/vfx/atmosphereScattering';
+
+let atmo = new Atmosphere()
+atmo.createcomposer()
+
+ update(t) {  
+  if(this.s){
+    this.controls.update(this.clock.getDelta())
+     for (var i = 0; i < this.allp.length; i++) {
+      this.allp[i].update(this.player)
+   }
+  }
+  requestAnimationFrame(this.update.bind(this));
+  nodeFrame.update();
+  atmo.run()
+  //this.rend.renderer.render(rend.scene_, rend.camera_);
+  }
+  
+```
+
+<p align="center">
+  <img src="./public/readmeImg/atmo1.png" />
+  <img src="./public/readmeImg/atmo2.png" />
+  <img src="./public/readmeImg/atmo3.png" />
+</p>
+
+## Debugging
+For debugging Calling `s.log()` returns an object that contains all the important data for the planet engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
 
 <p align="center">
   <img src="./public/readmeImg/log.png" />

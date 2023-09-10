@@ -359,10 +359,11 @@ atmo.run()
   
 ```
 <p align="center">
-  Here his PlanetTechJS along with CubeMapJS and Atmosphere.
+  Here is PlanetTechJS using CubeMapJS and Atmosphere.
   <img src="./public/readmeImg/atmo1.png" />
   <img src="./public/readmeImg/atmo2.png" />
   <img src="./public/readmeImg/atmo3.png" />
+  <img src="./public/readmeImg/atmo5.png" />
 </p>
 
 

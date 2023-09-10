@@ -356,7 +356,7 @@ vec4 render_scene(vec3 pos, vec3 dir, vec3 light_dir) {
         color.xyz *= shadow;
         
         // apply skylight
-        color.xyz += clamp(skylight(sample_pos, surface_normal, light_dir, vec3(0.0)) * vec3(0.0, 0.25, 0.05), 0.0, 1.0);
+        color.xyz += clamp(skylight(sample_pos, surface_normal, light_dir, vec3(0.0)) * vec3(0.0, 0.0, 0.0), 0.0, 1.0);
     }
     
 	return color;
@@ -397,7 +397,7 @@ we first get the camera vector and position, as well as the light dir
   
     // get the light direction
     // also base this on the mouse position, that way the time of day can be changed with the mouse
-    vec3 light_dir = 	normalize(vec3(0.0,0.0,1.0));
+    vec3 light_dir = 	normalize(vec3(1.0,0.0,0.0));
   
   
     // get the scene color and depth, color is in xyz, depth in w

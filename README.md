@@ -320,12 +320,18 @@ atmo.createcomposer()
   }
   
 ```
-
 <p align="center">
+  Here is a Star Citizen planet using there planet tech.
+  <img src="./public/readmeImg/sc.png"    />
+  And here his PlanetTechJS along with CubeMapJS trying to replicate the same look and scale for the terrain.
   <img src="./public/readmeImg/atmo1.png" />
   <img src="./public/readmeImg/atmo2.png" />
   <img src="./public/readmeImg/atmo3.png" />
+  No atmosphere.  
+  <img src="./public/readmeImg/img9.png" />
+  <img src="./public/readmeImg/img10.png" />
 </p>
+
 
 ## Debugging
 For debugging Calling `s.log()` returns an object that contains all the important data for the planet engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
@@ -366,13 +372,6 @@ For debugging Calling `s.log()` returns an object that contains all the importan
 </p>
 
 
-<p align="center">
-  Here is a Star Citizen planet using there planet tech.
-  <img src="./public/readmeImg/sc.png"    />
-  And here his PlanetTechJS along with CubeMapJS trying to replicate the same look and scale for the terrain.
-  <img src="./public/readmeImg/img9.png" />
-  <img src="./public/readmeImg/img10.png" />
-</p>
 
 
 ## Contributing

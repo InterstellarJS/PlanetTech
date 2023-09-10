@@ -361,6 +361,7 @@ atmo.createcomposer()
   
 ```
 <p align="center">
+  And here his PlanetTechJS along with CubeMapJS and Atmosphere.
   <img src="./public/readmeImg/atmo1.png" />
   <img src="./public/readmeImg/atmo2.png" />
   <img src="./public/readmeImg/atmo3.png" />
@@ -370,9 +371,6 @@ atmo.createcomposer()
 <p align="center">
   Here is a Star Citizen planet using there planet tech.
   <img src="./public/readmeImg/sc.png"    />
-  And here his PlanetTechJS along with CubeMapJS trying to replicate the same look and scale for the terrain.
-  <img src="./public/readmeImg/img9.png" />
-  <img src="./public/readmeImg/img10.png" />
 </p>
 
 

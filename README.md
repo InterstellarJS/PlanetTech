@@ -347,16 +347,14 @@ let atmo = new Atmosphere()
 atmo.createcomposer()
 
  update(t) {  
-  if(this.s){
-    this.controls.update(this.clock.getDelta())
-     for (var i = 0; i < this.allp.length; i++) {
-      this.allp[i].update(this.player)
-   }
+  if(s){
+    for (var i = 0; i < allp.length; i++) {
+      allp[i].update(/*player or camera object*/)
+    }
   }
-  requestAnimationFrame(this.update.bind(this));
   nodeFrame.update();
   atmo.run()
-  //this.rend.renderer.render(rend.scene_, rend.camera_);
+  //rend.renderer.render(rend.scene_, rend.camera_); // no longer needed
   }
   
 ```

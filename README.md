@@ -338,7 +338,7 @@ For debugging Calling `s.log()` returns an object that contains all the importan
 
 
 ## Atmosphere Scattering
-To add an atmosphere to a planet, you can import the `Atmosphere` post-processing class. This was adapted from a ShaderToy example to work with Three.js. It's still very much a work in progress.
+To add an atmosphere to a planet, you can import the `Atmosphere` post-processing class. This was adapted from this [ShaderToy example](https://www.shadertoy.com/view/wlBXWK) to work with Three.js. It's still very much a work in progress.
 
 ```javascript
 import { Atmosphere } from './core/shaders/vfx/atmosphereScattering';

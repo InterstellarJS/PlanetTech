@@ -297,41 +297,6 @@ Here is a video of our planet. The 1 meter red cube is used to visualize the sca
 
 https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/b6ad90b5-5664-4a3a-b535-d3bcbc542d35
 
-## Atmosphere Scattering
-To add an atmosphere to a planet, you can import the `Atmosphere` post-processing class. This was adapted from a ShaderToy example to work with Three.js. It's still very much a work in progress.
-
-```javascript
-import { Atmosphere } from './core/shaders/vfx/atmosphereScattering';
-
-let atmo = new Atmosphere()
-atmo.createcomposer()
-
- update(t) {  
-  if(this.s){
-    this.controls.update(this.clock.getDelta())
-     for (var i = 0; i < this.allp.length; i++) {
-      this.allp[i].update(this.player)
-   }
-  }
-  requestAnimationFrame(this.update.bind(this));
-  nodeFrame.update();
-  atmo.run()
-  //this.rend.renderer.render(rend.scene_, rend.camera_);
-  }
-  
-```
-<p align="center">
-  Here is a Star Citizen planet using there planet tech.
-  <img src="./public/readmeImg/sc.png"    />
-  And here his PlanetTechJS along with CubeMapJS trying to replicate the same look and scale for the terrain.
-  <img src="./public/readmeImg/atmo1.png" />
-  <img src="./public/readmeImg/atmo2.png" />
-  <img src="./public/readmeImg/atmo3.png" />
-  No atmosphere.  
-  <img src="./public/readmeImg/img9.png" />
-  <img src="./public/readmeImg/img10.png" />
-</p>
-
 
 ## Debugging
 For debugging Calling `s.log()` returns an object that contains all the important data for the planet engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
@@ -372,6 +337,40 @@ For debugging Calling `s.log()` returns an object that contains all the importan
 </p>
 
 
+## Atmosphere Scattering
+To add an atmosphere to a planet, you can import the `Atmosphere` post-processing class. This was adapted from a ShaderToy example to work with Three.js. It's still very much a work in progress.
+
+```javascript
+import { Atmosphere } from './core/shaders/vfx/atmosphereScattering';
+
+let atmo = new Atmosphere()
+atmo.createcomposer()
+
+ update(t) {  
+  if(this.s){
+    this.controls.update(this.clock.getDelta())
+     for (var i = 0; i < this.allp.length; i++) {
+      this.allp[i].update(this.player)
+   }
+  }
+  requestAnimationFrame(this.update.bind(this));
+  nodeFrame.update();
+  atmo.run()
+  //this.rend.renderer.render(rend.scene_, rend.camera_);
+  }
+  
+```
+<p align="center">
+  Here is a Star Citizen planet using there planet tech.
+  <img src="./public/readmeImg/sc.png"    />
+  And here his PlanetTechJS along with CubeMapJS and Atmosphere trying to replicate the same look and scale for the terrain.
+  <img src="./public/readmeImg/atmo1.png" />
+  <img src="./public/readmeImg/atmo2.png" />
+  <img src="./public/readmeImg/atmo3.png" />
+  No atmosphere.  
+  <img src="./public/readmeImg/img9.png" />
+  <img src="./public/readmeImg/img10.png" />
+</p>
 
 
 ## Contributing

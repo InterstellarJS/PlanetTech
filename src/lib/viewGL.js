@@ -42,38 +42,57 @@ class ViewGL {
   }
   
   initPlanet() {
-   /*
-    const cm = new CubeMap(2000,3,true)
+   
+    const cm = new CubeMap(2,1,true)
     const download = false
-    cm.build(2512)
+    cm.build(512)
     cm.simplexNoiseFbm({
-      inScale:            2.5,
-      scale:              0.3,
+      inScale:            1.5,
+      scale:              0.05,
       radius:             100,
       scaleHeightOutput:   0.1,
       seed:              0.0,
-      normalScale:        .01,
+      normalScale:        .1,
       redistribution:      2.,
       persistance:         .3,
-      lacunarity:          2.,
+      lacunarity:          3.,
       iteration:           5,
       terbulance:       false,
       ridge:            false,
     })
-    cm.snapShotFront (download)
-  
-  
+    cm.snapShot(download)
     let t = cm.textuerArray
   
+
+
+    const cmn = new CubeMap(2,1,false)
+    cmn.build(2512)
+    cmn.simplexNoiseFbm({
+      inScale:            1.5,
+      scale:              0.05,
+      radius:             100,
+      scaleHeightOutput:   0.1,
+      seed:              0.0,
+      normalScale:        .1,
+      redistribution:      2.,
+      persistance:         .3,
+      lacunarity:          4.,
+      iteration:           5,
+      terbulance:       false,
+      ridge:            false,
+    })
+    cmn.snapShot(download)
+    let td = cmn.textuerArray
+
     const params = {
       width: 10000,
       height: 10000,
-      widthSegment: 1,
-      heightSegment:1,
+      widthSegment: 50,
+      heightSegment:50,
       quadTreeDimensions: 1,
-      levels: 1,
+      levels: 5,
       radius: 10000,
-      displacmentScale:0,
+      displacmentScale:200,
    }
   
    this. s = new Sphere(
@@ -90,9 +109,21 @@ class ViewGL {
       params.displacmentScale,
     )
   
-    this.s.front.addTexture  ([t[0],t[0]], params.displacmentScale)
-  
-    this.s.front.lighting    (NODE.vec3(0.0,50.0,50.0))
+    this.s.front.addTexture  ([t[0],td[0]], params.displacmentScale)
+    this.s.back.addTexture   ([t[1],td[1]], params.displacmentScale)
+    this.s.right.addTexture  ([t[2],td[2]], params.displacmentScale)
+    this.s.left.addTexture   ([t[3],td[3]], params.displacmentScale)
+    this.s.top.addTexture    ([t[4],td[4]], params.displacmentScale)
+    this.s.bottom.addTexture ([t[5],td[5]], params.displacmentScale)
+
+    const ld = NODE.vec3(0.0,100.0,100.0)
+    
+    this.s.front.lighting    (ld)
+    this.s.back.lighting     (ld)
+    this.s.right.lighting    (ld)
+    this.s.left.lighting     (ld)
+    this.s.top.lighting      (ld)
+    this.s.bottom.lighting   (ld)
   
     this.allp = [
       ...this.s.front.instances,
@@ -102,10 +133,10 @@ class ViewGL {
       ...this.s.top.instances,
       ...this.s.bottom.instances,
     ]
-  */
+ 
+ this.s.position(0,0,10000/2) 
   
-  
-
+/*
     let N = [
       new THREE.TextureLoader().load('./planet/nf_image.png'),
       new THREE.TextureLoader().load('./planet/nb_image.png'),
@@ -172,8 +203,7 @@ class ViewGL {
       ...this.s.top.instances,
       ...this.s.bottom.instances,
     ]
-
-    this.s.position(0,0,10000/2)
+*/
 
   
     this.rend.scene_.add( this.s.sphere);
@@ -211,9 +241,9 @@ class ViewGL {
   
   if(this.s){
     this.controls.update(this.clock.getDelta())
-   // for (var i = 0; i < this.allp.length; i++) {
-      //this.allp[i].update(this.player)
-   // }
+   for (var i = 0; i < this.allp.length; i++) {
+      this.allp[i].update(this.player)
+   }
   }
   
   //this.rend.stats_.end();

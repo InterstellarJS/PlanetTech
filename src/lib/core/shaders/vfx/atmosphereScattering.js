@@ -397,7 +397,7 @@ we first get the camera vector and position, as well as the light dir
   
     // get the light direction
     // also base this on the mouse position, that way the time of day can be changed with the mouse
-    vec3 light_dir = 	normalize(vec3(1.0,0.0,0.0));
+    vec3 light_dir = 	normalize(vec3(0.0,0.0,1.0));
   
   
     // get the scene color and depth, color is in xyz, depth in w
@@ -405,7 +405,7 @@ we first get the camera vector and position, as well as the light dir
     vec4 scene = render_scene(camera_position, camera_vector, light_dir);
     
     // the color of this pixel
-    vec3 col = dif.rgb;//scene.xyz;
+    vec3 col = vec3(0.0);//scene.xyz;
     
     // get the atmosphere color
     col += calculate_scattering(

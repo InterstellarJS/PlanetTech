@@ -17,13 +17,12 @@ class ViewGL {
   render(canvasViewPort) {
   this.rend = renderer;
   this.rend.webglRenderer(canvasViewPort);
+  this.rend.clock()
   this.rend.scene();
   this.rend.stats();
   this.rend.camera();
-  this.rend.updateCamera(0,0,10000)
+  this.rend.updateCamera(0,0,10000*2.0)
   this.rend.orbitControls()
-  this.atmo = new Atmosphere()
-  this.atmo.createcomposer()
   }
   
   initViewPort(canvasViewPort) {
@@ -42,59 +41,60 @@ class ViewGL {
   }
   
   initPlanet() {
-   
-    const cm = new CubeMap(2,1,true)
-    const download = false
-    cm.build(512)
-    cm.simplexNoiseFbm({
+   /*
+    const displacmentMaps = new CubeMap(2000,1,false)
+    const ddownload = false
+    displacmentMaps.build(512)
+    displacmentMaps.simplexNoiseFbm({
       inScale:            1.5,
-      scale:              0.05,
+      scale:              0.2,
       radius:             100,
-      scaleHeightOutput:   0.1,
-      seed:              0.0,
-      normalScale:        .1,
+      scaleHeightOutput:  0.1,
+      seed:               0.0,
+      normalScale:        .01,
       redistribution:      2.,
-      persistance:         .3,
-      lacunarity:          3.,
-      iteration:           5,
+      persistance:        .35,
+      lacunarity:          2.,
+      iteration:            5,
       terbulance:       false,
       ridge:            false,
     })
-    cm.snapShot(download)
-    let t = cm.textuerArray
+    displacmentMaps.snapShot(ddownload)
+    let dt = displacmentMaps.textuerArray
   
-
-
-    const cmn = new CubeMap(2,1,false)
-    cmn.build(2512)
-    cmn.simplexNoiseFbm({
+    const normalMap = new CubeMap(2000,1,true)
+    const ndownload = false
+    normalMap.build(512)
+    normalMap.simplexNoiseFbm({
       inScale:            1.5,
-      scale:              0.05,
+      scale:              0.2,
       radius:             100,
-      scaleHeightOutput:   0.1,
-      seed:              0.0,
-      normalScale:        .1,
+      scaleHeightOutput:  0.1,
+      seed:               0.0,
+      normalScale:        .01,
       redistribution:      2.,
-      persistance:         .3,
-      lacunarity:          4.,
-      iteration:           5,
+      persistance:        .35,
+      lacunarity:          2.,
+      iteration:            5,
       terbulance:       false,
       ridge:            false,
     })
-    cmn.snapShot(download)
-    let td = cmn.textuerArray
+    normalMap.snapShot(ndownload)
+    let nt = normalMap.textuerArray
 
     const params = {
-      width: 10000,
+      width:  10000,
       height: 10000,
-      widthSegment: 50,
-      heightSegment:50,
-      quadTreeDimensions: 1,
-      levels: 5,
       radius: 10000,
-      displacmentScale:200,
+      widthSegment: 500,
+      heightSegment:500,
+      displacmentScale:30.,
+      quadTreeDimensions: 1,
+      levels: 1,
    }
   
+
+
    this. s = new Sphere(
       params.width,
       params.height,
@@ -109,12 +109,12 @@ class ViewGL {
       params.displacmentScale,
     )
   
-    this.s.front.addTexture  ([t[0],td[0]], params.displacmentScale)
-    this.s.back.addTexture   ([t[1],td[1]], params.displacmentScale)
-    this.s.right.addTexture  ([t[2],td[2]], params.displacmentScale)
-    this.s.left.addTexture   ([t[3],td[3]], params.displacmentScale)
-    this.s.top.addTexture    ([t[4],td[4]], params.displacmentScale)
-    this.s.bottom.addTexture ([t[5],td[5]], params.displacmentScale)
+    this.s.front.addTexture  ([nt[0],dt[0]], params.displacmentScale)
+    this.s.back.addTexture   ([nt[1],dt[1]], params.displacmentScale)
+    this.s.right.addTexture  ([nt[2],dt[2]], params.displacmentScale)
+    this.s.left.addTexture   ([nt[3],dt[3]], params.displacmentScale)
+    this.s.top.addTexture    ([nt[4],dt[4]], params.displacmentScale)
+    this.s.bottom.addTexture ([nt[5],dt[5]], params.displacmentScale)
 
     const ld = NODE.vec3(0.0,100.0,100.0)
     
@@ -133,10 +133,8 @@ class ViewGL {
       ...this.s.top.instances,
       ...this.s.bottom.instances,
     ]
- 
- this.s.position(0,0,10000/2) 
-  
-/*
+ */
+
     let N = [
       new THREE.TextureLoader().load('./planet/nf_image.png'),
       new THREE.TextureLoader().load('./planet/nb_image.png'),
@@ -158,12 +156,12 @@ class ViewGL {
     const params = {
       width:          10000,
       height:         10000,
-      widthSegment:     50,
-      heightSegment:    50,
+      widthSegment:     500,
+      heightSegment:    500,
       quadTreeDimensions: 1,
-      levels:             5,
+      levels:             1,
       radius:         10000,
-      displacmentScale:  0,
+      displacmentScale:  30,
     }
     
     this. s = new Sphere(
@@ -203,10 +201,12 @@ class ViewGL {
       ...this.s.top.instances,
       ...this.s.bottom.instances,
     ]
-*/
 
-  
-    this.rend.scene_.add( this.s.sphere);
+
+
+this.atmo = new Atmosphere()
+this.atmo.createcomposer(params.radius,this.s.log().cnt,11000)
+this.rend.scene_.add( this.s.sphere);
   }
   
   initPlayer(){
@@ -218,7 +218,7 @@ class ViewGL {
   this.controls.movementSpeed = 100
   this.controls.lookSpeed     = 0
   this.clock = new THREE.Clock();
-  this.rend.scene_.add(this.player)
+  //this.rend.scene_.add(this.player)
   }
   
   start() {
@@ -238,18 +238,19 @@ class ViewGL {
   
   update(t) {
   //this.rend.stats_.begin();
-  
+  this.rend.controls.update(this.rend.clock_.getDelta())
+
   if(this.s){
-    this.controls.update(this.clock.getDelta())
+    this.atmo.run()
+    //this.controls.update(this.clock.getDelta())
    for (var i = 0; i < this.allp.length; i++) {
-      this.allp[i].update(this.player)
+      //this.allp[i].update(this.player)
    }
   }
   
   //this.rend.stats_.end();
   requestAnimationFrame(this.update.bind(this));
   nodeFrame.update();
-  this.atmo.run()
   //this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
   }
   }

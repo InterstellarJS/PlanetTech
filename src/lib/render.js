@@ -14,10 +14,11 @@ constructor() {}
 
 webglRenderer(canvasRef) {
 this.renderer = new THREE.WebGLRenderer({
+powerPreference: "high-performance",
 canvas: canvasRef,
-antialias: true,
+logarithmicDepthBuffer: true,
 });
-this.renderer.setClearColor('white');
+this.renderer.setClearColor('black');
 this.container = document.getElementById('canvasContainer');
 this.renderer.setSize(
 this.container.clientWidth,
@@ -45,9 +46,10 @@ camera(x = 0, y = 0, z = 0) {
 this.camera_ = new THREE.PerspectiveCamera(
 75,
 this.container.clientWidth / this.container.clientHeight,
-1.,
-6371e3
+0.01,
+Number.MAX_SAFE_INTEGER
 );
+console.log(this.container.clientWidth , this.container.clientHeight)
 }
 
 
@@ -63,7 +65,9 @@ scene() {
 this.scene_ = new THREE.Scene();
 }
 
-clock() {}
+clock() {
+  this.clock_ = new THREE.Clock();
+}
 
 light() {
 const ambientLight     = new THREE.AmbientLight( 0x404040 ); // soft white light
@@ -78,7 +82,12 @@ orbitControls(){
   }
 
 
-FPSControls() {}
+FPControls() {
+  this.controls = new FirstPersonControls(this.camera_, this.renderer.domElement);
+  this.controls.enableDamping = true; // <--- add this line
+  this.controls.movementSpeed = 50000
+  this.controls.lookSpeed = 0.005
+}
 
 updateControlsSpeed(movementSpeed, lookSpeed) {}
 

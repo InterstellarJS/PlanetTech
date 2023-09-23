@@ -19,28 +19,6 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 
 ⚠️ **Disclaimer:** Because this is in alpha, and I haven't fully implemented good first-person controls yet, in the demo, you need to find a spot on the front face of the planet. Make sure to orient and rotate the camera to your liking. Hold down the right mouse key to move the red cube; this is currently how I activate the quadtree. Finding the cube can be challenging due to the scale of the planet. However, holding down the right mouse clicker activates the quadtree. I plan to implement basic character controls, but for now, this is the method I'm using. Alternatively, you can adjust the scale or speed of the cube. It's located in the initPlayer method in src/lib/viewGL.js
 
-## Features/Ideas
-- Procedural planet generation: Create unique and realistic planets using procedural algorithms.
-- flexability and speed.
-- quadtree sphere.
-- cubeMap. (threading and instancing coming soon)
-- Terrain generation: Generate detailed and customizable terrains with different types of landscapes such as mountains, valleys, and plains.
-- Texture mapping: Apply textures to the terrain to enhance visual realism and add visual variety.(coming soon)
-- Gpu generated normal map.
-- Gpu generated displacement map.
-- Atmospheric effects: Simulate atmospheric effects such as clouds, haze, and lighting to create a more immersive environment.(dev complete)
-- day and night cycle.(coming soon)
-- weather simulation.(coming soon)
-- Texture editing / terrain editing. (coming soon)
-- Texture Atlas. (dev complete)
-- Texture channel packing.(dev complete)
-- Texture Splat Map.(dev complete)
-- Physics. (coming soon)
-- assets.  (coming soon)
-- foliage. (coming soon)
-- ability to switch from WebGL to WebGPU backended. (dev complete)
-- logs.
-
 ## Specs
 - Recommended GPU is GTX 1060 and above.
 

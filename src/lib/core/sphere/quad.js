@@ -66,7 +66,7 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
         if(p.material.positionNode){
           p.material.colorNode = textureNodeN
           const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
-          p.material.positionNode =  p.material.positionNode.add( displace );
+          //p.material.positionNode =  p.material.positionNode.add( displace );
         }else{
           //var mouse = p.material.uniforms[`displacementScale_${this.count}`]
           //var ld    = p.material.uniforms[`lightDirection_${this.count}`]
@@ -112,6 +112,13 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
       const material = new NODE.MeshBasicNodeMaterial();
       const quad     = new Quad(width,height,widthSegments,heightSegments)
       quad.plane     = new THREE.Mesh( shardedGeometry, material );
+
+      let color = new THREE.Color( 0xffffff );
+      color.setHex( Math.random() * 0xffffff );
+
+      quad.CPUplane  = new THREE.Mesh( new THREE.PlaneGeometry( width, height,1,1 ),
+                                       new THREE.MeshBasicMaterial({color:color,visible:true}) 
+                                       );
       quad.plane.frustumCulled = false
       return quad
       }
@@ -167,14 +174,19 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
       this.plane.updateMatrixWorld(true)
       if       (quadrent=='NW')  {
         this.plane.position.set(-params[0]/2,  params[1]/2, 0)
+        this.CPUplane.position.set(-params[0]/2,  params[1]/2, 0)
       }else if (quadrent=='NE') {
         this.plane.position.set( params[0]/2,  params[1]/2, 0)
+        this.CPUplane.position.set(params[0]/2,  params[1]/2, 0)
       }else if (quadrent=='SE') {
         this.plane.position.set( params[0]/2, -params[1]/2, 0)
+        this.CPUplane.position.set(params[0]/2, -params[1]/2, 0)
       }else if (quadrent=='SW') {
         this.plane.position.set(-params[0]/2, -params[1]/2, 0)
+        this.CPUplane.position.set(-params[0]/2, -params[1]/2, 0)
       }else if (quadrent=='dimensions') {
         this.plane.position.set(...params)
+        this.CPUplane.position.set(...params)
       }
       return this
     }
@@ -196,25 +208,3 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
       }
   
   }
-  
-  /*
-  
-var cbt = new CubeTexture()
-var t = cbt.get(this.rend)
-console.log(t)
-
-this. q = new Quad(50,50,250,250,2)
-this. q.createQuadTree(2)
-this. q.createDimensions()
-this. q.addTexture  (t[0])
-this. q.lighting    (NODE.vec3(0,0,0))
-this.rend.scene.add( ...this. q.instances.map(x=>x.plane) );
-
-  if(this.q){
-    this.controls.update(this.clock.getDelta())
-    for (var i = 0; i < this.q.instances.length; i++) {
-      this.q.instances[i].update(this.player)
-    }
-}
-
-  */

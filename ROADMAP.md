@@ -1,0 +1,22 @@
+## Road Map
+- ability to switch from WebGL to WebGPU backended. (dev complete)
+- Procedural planet generation: Create unique and realistic planets using procedural algorithms.
+- flexability and speed.
+- quadtree sphere.
+- cubeMap. (threading and instancing coming soon)
+- Terrain generation: Generate detailed and customizable terrains with different types of landscapes such as mountains, valleys, and plains.
+- Texture mapping: Apply textures to the terrain to enhance visual realism and add visual variety.(coming soon)
+- Gpu generated normal map.
+- Gpu generated displacement map.
+- Atmospheric effects: Simulate atmospheric effects such as clouds, haze, and lighting to create a more immersive environment.(dev complete)
+- day and night cycle.(coming soon)
+- weather simulation.(coming soon)
+- Texture editing / terrain editing. (coming soon)
+- Texture Atlas. (dev complete)
+- Texture channel packing.(dev complete)
+- Texture Splat Map.(dev complete)
+- Physics. (coming soon)
+- assets.  (coming soon)
+- foliage. (coming soon)
+- logs.
+- custom culling.

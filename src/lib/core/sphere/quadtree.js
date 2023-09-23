@@ -68,11 +68,7 @@ class QuadTreeLoDCore  {
 }
 
 
-
-
-
- class QuadTreeLoD extends QuadTreeLoDCore {
-
+class QuadTreeLoD extends QuadTreeLoDCore {
   constructor() {
     super()
     }
@@ -84,9 +80,10 @@ class QuadTreeLoDCore  {
   insert(player,quad){
     quad.active(true)
     const wp = new THREE.Vector3(0, 0, 0);
-    quad.plane.getWorldPosition(wp)
-    var distance = wp.distanceTo(player.position)/2
-    if ( (distance) < (quad.quadData.width) &&  quad.quadData.width > this.config.minLevelSize ){
+    quad.CPUplane.getWorldPosition(wp)
+    var distance = wp.distanceTo(player.position)
+    console.log(distance)
+    if ((distance) < (quad.quadData.width) && quad.quadData.width > this.config.minLevelSize ){
       let childw         =  Math.floor(quad.quadData.width/2)
       let childh         =  Math.floor(quad.quadData.height/2)
       let widthSegments  =  quad.quadData.widthSegments*2
@@ -98,12 +95,32 @@ class QuadTreeLoDCore  {
       }
     }
 
-
+  setCPUplaneData(child){
+    let CPUplane = child.CPUplane
+    let v3 = new THREE.Vector3();
+    let localCenter = new THREE.Vector3();
+    CPUplane.worldToLocal(localCenter.copy(this.config.cnt.clone()));
+    let pos = CPUplane.geometry.attributes.position;
+    for(let i = 0; i < pos.count; i++){
+      v3.fromBufferAttribute(pos, i);
+      v3.sub(localCenter);
+      v3.setLength(this.config.radius).add(localCenter);
+      pos.setXYZ(i, v3.x, v3.y, v3.z);
+    }
+    CPUplane.geometry.computeVertexNormals();
+    pos.needsUpdate = true;
+    let wp = new THREE.Vector3()
+    let wq = new THREE.Quaternion()
+    child.plane.getWorldPosition(wp)
+    child.plane.getWorldQuaternion(wq);
+    CPUplane.position.copy(wp)
+    CPUplane.quaternion.copy(wq)
+  }
   
   front(w,h,rw,rh,quad){
     var side  = quad.side
     var cnt   = this.config.cnt
-    var textures    = this.config.dataTransfer[side].textuers
+    var textures = this.config.dataTransfer[side].textuers
     var shardedGeometry = this.config.arrybuffers[w] 
     var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
     var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
@@ -120,7 +137,12 @@ class QuadTreeLoDCore  {
     var starting  = this.config.maxLevelSize*this.config.dimensions
     var scaling   = w / starting
     var halfScale = scaling/2
-
+    //--------
+    this.setCPUplaneData(child1)
+    this.setCPUplaneData(child2)
+    this.setCPUplaneData(child3)
+    this.setCPUplaneData(child4)
+    //--------
     var cnt = this.config.cnt.clone()
     child1.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)

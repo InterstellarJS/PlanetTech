@@ -2,11 +2,9 @@ import * as NODE     from 'three/nodes';
 import * as THREE    from 'three';
 import renderer      from './render';
 import Sphere        from './core/sphere/sphere'
-import { nodeFrame } from 'three/addons/renderers/webgl/nodes/WebGLNodes.js';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA } from './core/sphere/utils'
-import { CubeMap, CubeMapTexture } from './core/textures/cubeMap/cubeMap.js';
-import { Atmosphere } from './core/shaders/vfx/atmosphereScattering';
+
 
 
 class ViewGL {
@@ -16,113 +14,22 @@ class ViewGL {
   
   render(canvasViewPort) {
   this.rend = renderer;
-  this.rend.webglRenderer(canvasViewPort);
+  this.rend.webGPURenderer(canvasViewPort);
   this.rend.scene();
   this.rend.stats();
   this.rend.camera();
-  this.rend.updateCamera(0,0,10000)
+  this.rend.updateCamera(0,0,10000*3)
   this.rend.orbitControls()
-  this.atmo = new Atmosphere()
-  this.atmo.createcomposer()
   }
   
   initViewPort(canvasViewPort) {
   this.canvasViewPort = canvasViewPort;
   }
   
-  initQuad(tex) {
-    /*
-    const loader1 = new THREE.TextureLoader().load('./hm4.png');
-    this.q = new Quad(100,100,50,50,2)
-    this.q.createQuadTree(3)
-    this.q.createDimensions()
-    this.q.addTexture  (loader1)
-    this.rend.scene_.add( ...this.q.instances.map(x=>x.plane));
-    */
-  }
+
   
   initPlanet() {
-   /*
-    const cm = new CubeMap(2000,3,true)
-    const download = false
-    cm.build(2512)
-    cm.simplexNoiseFbm({
-      inScale:            2.5,
-      scale:              0.3,
-      radius:             100,
-      scaleHeightOutput:   0.1,
-      seed:              0.0,
-      normalScale:        .01,
-      redistribution:      2.,
-      persistance:         .3,
-      lacunarity:          2.,
-      iteration:           5,
-      terbulance:       false,
-      ridge:            false,
-    })
-    cm.snapShotFront (download)
-  
-  
-    let t = cm.textuerArray
-  
-    const params = {
-      width: 10000,
-      height: 10000,
-      widthSegment: 1,
-      heightSegment:1,
-      quadTreeDimensions: 1,
-      levels: 1,
-      radius: 10000,
-      displacmentScale:0,
-   }
-  
-   this. s = new Sphere(
-      params.width,
-      params.height,
-      params.widthSegment,
-      params.heightSegment,
-      params.quadTreeDimensions
-      )
-  
-    this.s.build(
-      params.levels,
-      params.radius,
-      params.displacmentScale,
-    )
-  
-    this.s.front.addTexture  ([t[0],t[0]], params.displacmentScale)
-  
-    this.s.front.lighting    (NODE.vec3(0.0,50.0,50.0))
-  
-    this.allp = [
-      ...this.s.front.instances,
-      ...this.s.back.instances,
-      ...this.s.right.instances,
-      ...this.s.left.instances,
-      ...this.s.top.instances,
-      ...this.s.bottom.instances,
-    ]
-  */
-  
-  
 
-    let N = [
-      new THREE.TextureLoader().load('./planet/nf_image.png'),
-      new THREE.TextureLoader().load('./planet/nb_image.png'),
-      new THREE.TextureLoader().load('./planet/nr_image.png'),
-      new THREE.TextureLoader().load('./planet/nl_image.png'),
-      new THREE.TextureLoader().load('./planet/nt_image.png'),
-      new THREE.TextureLoader().load('./planet/nbo_image.png'),
-    ]
-    
-    let D = [
-      new THREE.TextureLoader().load('./planet/f_image.png'),
-      new THREE.TextureLoader().load('./planet/b_image.png'),
-      new THREE.TextureLoader().load('./planet/r_image.png'),
-      new THREE.TextureLoader().load('./planet/l_image.png'),
-      new THREE.TextureLoader().load('./planet/t_image.png'),
-      new THREE.TextureLoader().load('./planet/bo_image.png'),
-    ]
     
     const params = {
       width:          10000,
@@ -130,9 +37,11 @@ class ViewGL {
       widthSegment:     50,
       heightSegment:    50,
       quadTreeDimensions: 1,
-      levels:             5,
+      levels:             1,
       radius:         10000,
-      displacmentScale:  0,
+      displacmentScale:   0,
+      color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
+
     }
     
     this. s = new Sphere(
@@ -147,23 +56,11 @@ class ViewGL {
       params.levels,
       params.radius,
       params.displacmentScale,
+      params.color
     )
-    this.s.front.addTexture  ([N[0],D[0]], params.displacmentScale)
-    this.s.back.addTexture   ([N[1],D[1]], params.displacmentScale)
-    this.s.right.addTexture  ([N[2],D[2]], params.displacmentScale)
-    this.s.left.addTexture   ([N[3],D[3]], params.displacmentScale)
-    this.s.top.addTexture    ([N[4],D[4]], params.displacmentScale)
-    this.s.bottom.addTexture ([N[5],D[5]], params.displacmentScale)
+
     
-    const ld = NODE.vec3(0.0,100.0,100.0)
-    
-    this.s.front.lighting    (ld)
-    this.s.back.lighting     (ld)
-    this.s.right.lighting    (ld)
-    this.s.left.lighting     (ld)
-    this.s.top.lighting      (ld)
-    this.s.bottom.lighting   (ld)
-    
+
     this.allp = [
       ...this.s.front.instances,
       ...this.s.back.instances,
@@ -173,7 +70,6 @@ class ViewGL {
       ...this.s.bottom.instances,
     ]
 
-    this.s.position(0,0,10000/2)
 
   
     this.rend.scene_.add( this.s.sphere);
@@ -218,9 +114,7 @@ class ViewGL {
   
   //this.rend.stats_.end();
   requestAnimationFrame(this.update.bind(this));
-  nodeFrame.update();
-  this.atmo.run()
-  //this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
+  this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
   }
   }
   

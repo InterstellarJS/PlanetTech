@@ -2,7 +2,6 @@ import * as NODE from 'three/nodes';
 import * as THREE   from 'three';
 import {QuadTrees}  from './quadtree'
 import {norm}       from './utils'
-import { lightv2 } from '../shaders/analyticalNormals';
 
 
 console.log(NODE)
@@ -12,11 +11,6 @@ var fbmCount = 0
 var displacementNormalCount= 0 
 var patternCount = 0 
 
-const normalDisplace = NODE.func(`
-vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
-  return vec4(normalM.xyz,displacMentM.x)
-}
-`)
 
   export default class Quad{
     constructor(w,h,ws,hs,d){
@@ -81,25 +75,6 @@ vec4 packNormalDisplacement(vec4 normalM,vec4 displacMentM){
         }
         }
         this.count++
-      }
-
-
-      lighting(ld){
-        this.quadTreeconfig.config.light = {ld:ld}
-        var fn = NODE.func(`
-        vec3 light_(vec4 n, vec3 ld,vec3 cp) {
-          float l = lightv2(n,ld,cp);
-          return vec3(l);
-        }
-        `,[lightv2])
-        for (var i = 0; i < this.instances.length; i++) {
-          var p = this.instances[i].plane
-          p.material.colorNode = fn.call({
-            n:p.material.colorNode,
-            ld:ld,
-            cp:NODE.vec3(0.,0.,0.)
-          })
-        }
       }
 
 

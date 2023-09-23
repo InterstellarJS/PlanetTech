@@ -3,9 +3,12 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
-//import Stats from 'https://www.unpkg.com/stats-gl';
+//webgpu
 import * as Nodes from 'three/nodes';
-import { global } from 'three/nodes';
+import { global, } from 'three/nodes';
+import WebGPU from 'three/addons/capabilities/WebGPU.js';
+import WebGPURenderer from 'three/addons/renderers/webgpu/WebGPURenderer.js';
+
 
 global.set('TSL', Nodes);
 
@@ -22,6 +25,26 @@ this.container = document.getElementById('canvasContainer');
 this.renderer.setSize(
 this.container.clientWidth,
 this.container.clientHeight
+);
+}
+
+
+webGPURenderer(canvasRef) {
+  if ( WebGPU.isAvailable() === false ) {
+    document.body.appendChild( WebGPU.getErrorMessage() );
+    throw new Error( 'No WebGPU support' );
+  }
+  this.renderer = new WebGPURenderer({
+    powerPreference: "high-performance",
+    canvas: canvasRef,
+    logarithmicDepthBuffer: true,
+    antialias: true,
+  });
+  this.renderer.setClearColor('white');
+  this.container = document.getElementById('canvasContainer');
+  this.renderer.setSize(
+  this.container.clientWidth,
+  this.container.clientHeight
 );
 }
 
@@ -43,9 +66,9 @@ this.rtt.rtScene_.onAfterRender = function () {
 
 camera(x = 0, y = 0, z = 0) {
 this.camera_ = new THREE.PerspectiveCamera(
-75,
+45,
 this.container.clientWidth / this.container.clientHeight,
-12,
+.01,
 6371e3
 );
 }

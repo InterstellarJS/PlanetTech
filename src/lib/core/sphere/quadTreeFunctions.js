@@ -1,15 +1,10 @@
 import * as THREE  from 'three';
 import {norm}      from './utils'
 import * as NODE   from 'three/nodes';
-import { lightv2 } from '../shaders/analyticalNormals';
 
 
-var lighting =  NODE.func(`
-vec3 light_(vec4 n, vec3 ld,vec3 cp) {
-  float l = lightv2(n,ld,cp);
-  return vec3(l);
-}
-`,[lightv2])
+var lighting =  NODE.wgslFn(`
+`)
 
 
 

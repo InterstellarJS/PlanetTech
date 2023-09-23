@@ -1,7 +1,7 @@
 import * as THREEWG from 'three/nodes';
 import * as THREE   from 'three';
 import Quad         from './quad'
-import {QuadTrees}    from './quadtree'
+import {QuadTrees}  from './quadtree'
 
 
 

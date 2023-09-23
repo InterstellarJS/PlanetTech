@@ -1,10 +1,11 @@
-import * as NODE from 'three/nodes';
+import * as NODE    from 'three/nodes';
 import * as THREE   from 'three';
 import {QuadTrees}  from './quadtree'
 import {norm}       from './utils'
+import renderer     from '../../render';
+import * as Shaders from '../shaders/index.js';
 
-
-console.log(NODE)
+console.log(Shaders)
 
 var snoiseCount = 0 
 var fbmCount = 0
@@ -35,6 +36,18 @@ var patternCount = 0
     add( q ){
         this.children.push( q )
         this.plane.add(q.plane)
+    }
+
+    lighting(ld){
+      this.quadTreeconfig.config.light = {ld:ld}
+      for (var i = 0; i < this.instances.length; i++) {
+        var p = this.instances[i].plane
+        p.material.colorNode = Shaders.light({
+          normalMap:p.material.colorNode.rgba,
+          lightPosition:ld,
+          cP:NODE.vec3(0.,0.,0.)
+        })
+      }
     }
 
 

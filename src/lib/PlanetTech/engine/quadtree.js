@@ -101,6 +101,7 @@ class QuadTreeLoDCore  {
 
   
   front(w,h,rw,rh,quad){
+    console.log(rw,rh)
     var side  = quad.side
     var cnt   = this.config.cnt
     var textures    = this.config.dataTransfer[side].textuers

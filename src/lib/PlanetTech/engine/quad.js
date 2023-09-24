@@ -5,13 +5,6 @@ import {norm}       from './utils'
 import renderer     from '../../render';
 import * as Shaders from '../shaders/index.js';
 
-console.log(Shaders)
-
-var snoiseCount = 0 
-var fbmCount = 0
-var displacementNormalCount= 0 
-var patternCount = 0 
-
 
   export default class Quad{
     constructor(w,h,ws,hs,d){

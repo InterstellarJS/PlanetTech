@@ -1,6 +1,6 @@
 
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls }       from 'three/examples/jsm/controls/OrbitControls';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 //webgpu
@@ -52,7 +52,6 @@ class Renderer {
     return localStorage.getItem('type');
   }
 
-
   camera(x = 0, y = 0, z = 0) {
     let aspect = (this.container.clientWidth / this.container.clientHeight)
     let fov    =  30
@@ -61,38 +60,28 @@ class Renderer {
     this.camera_ = new THREE.PerspectiveCamera(fov,aspect,near,far);
   }
 
-
-
-
   updateCamera(x, y, z) {
-  this.camera_.position.x = x;
-  this.camera_.position.y = y;
-  this.camera_.position.z = z;
+    this.camera_.position.x = x;
+    this.camera_.position.y = y;
+    this.camera_.position.z = z;
   }
 
   scene() {
-  this.scene_ = new THREE.Scene();
+    this.scene_ = new THREE.Scene();
   }
-
-
 
   orbitControls(){
-      this. controls = new OrbitControls(this.camera_, this.renderer.domElement);
+    this. controls = new OrbitControls(this.camera_, this.renderer.domElement);
     }
 
-
-
-  updateControlsSpeed(movementSpeed, lookSpeed) {}
-
-
-
   info() {
-  console.log('Scene polycount:', this.renderer.info.render.triangles);
-  console.log('Active Drawcalls:', this.renderer.info.render.calls);
-  console.log('Textures in Memory', this.renderer.info.memory.textures);
-  console.log('Geometries in Memory', this.renderer.info.memory.geometries);
+    console.log('Scene polycount:', this.renderer.info.render.triangles);
+    console.log('Active Drawcalls:', this.renderer.info.render.calls);
+    console.log('Textures in Memory', this.renderer.info.memory.textures);
+    console.log('Geometries in Memory', this.renderer.info.memory.geometries);
   }
 
+  updateControlsSpeed(movementSpeed, lookSpeed) {}
   createcomposer() {}
   runVFX() {}
   PLControls() {}

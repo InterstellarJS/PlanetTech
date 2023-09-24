@@ -1,15 +1,15 @@
 import * as NODE     from 'three/nodes';
 import * as THREE    from 'three';
 import renderer      from './render';
-import Sphere        from './engine/sphere/sphere'
+import Sphere        from './PlanetTech/sphere/sphere'
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
-import { getRandomColor,hexToRgbA } from './engine/sphere/utils'
+import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 import { nodeFrame } from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
 
 
 class ViewGL {
   constructor() {
-  this.Texts = [];
+    this.Texts = [];
   }
   
   render(canvasViewPort) {
@@ -54,9 +54,9 @@ class ViewGL {
       widthSegment:     50,
       heightSegment:    50,
       quadTreeDimensions: 1,
-      levels:             4,
+      levels:             5,
       radius:         10000,
-      displacmentScale:  30,
+      displacmentScale:  15,
     }
     
     this. s = new Sphere(

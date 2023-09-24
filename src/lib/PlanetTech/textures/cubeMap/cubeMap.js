@@ -5,7 +5,7 @@ import {RtTexture} from './../rTtexture'
 import * as NODE   from 'three/nodes';
 import {snoise3D,fbmNoise,displacementNormalNoiseFBM,displacementFBM,displacementNormalNoiseFBMWarp,displacementNoiseFBMWarp}  from  './../../shaders/glslFunctions'
 import {snoise,normals, sdfbm2,} from '../../shaders/analyticalNormals';
-import Quad from '../../sphere/quad';
+import Quad from '../../engine/quad';
 import { displayCanvasesInGrid } from './utils';
 
 

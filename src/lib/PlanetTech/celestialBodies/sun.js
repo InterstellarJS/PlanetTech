@@ -1,9 +1,10 @@
 import * as NODE  from 'three/nodes';
 import * as THREE from 'three';
-import Sphere     from '../sphere/sphere';
+import { CelestialBodies } from './celestialbodies';
 
-export class Sun {
-    constructor(){
-        
+export class Sun extends CelestialBodies {
+    constructor(params,name){
+        super(params,'Sun')
+        this.name = name
     }
 }

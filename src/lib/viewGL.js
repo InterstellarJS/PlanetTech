@@ -1,11 +1,12 @@
-import * as NODE     from 'three/nodes';
-import * as THREE    from 'three';
-import renderer      from './render';
-import Sphere        from './PlanetTech/sphere/sphere'
-import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls';
+import * as NODE      from 'three/nodes';
+import * as THREE     from 'three';
+import renderer       from './render';
+import Sphere         from './PlanetTech/sphere/sphere'
+import { Planet }     from './PlanetTech/celestialBodies/planet';
+import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
+import { Atmosphere } from './PlanetTech/shaders/vfx/atmosphereScattering';
+import { FirstPersonControls }      from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
-import { nodeFrame } from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
-
 
 class ViewGL {
   constructor() {
@@ -14,19 +15,17 @@ class ViewGL {
   
   render(canvasViewPort) {
     this.rend = renderer;
-    this.rend.webglRenderer(canvasViewPort);
+    this.rend.WebGLRenderer(canvasViewPort);
     this.rend.scene();
     this.rend.stats();
     this.rend.camera();
-    this.rend.updateCamera(0,0,10000*2)
+    this.rend.updateCamera(0,0,10000)
     this.rend.orbitControls()
   }
   
   initViewPort(canvasViewPort) {
   this.canvasViewPort = canvasViewPort;
   }
-  
-
   
   initPlanet() {
 
@@ -47,61 +46,27 @@ class ViewGL {
       new THREE.TextureLoader().load('./planet/t_image.png'),
       new THREE.TextureLoader().load('./planet/bo_image.png'),
     ]
-    
-    const params = {
+        
+    this.planet = new Planet({
       width:          10000,
       height:         10000,
-      widthSegment:     500,
-      heightSegment:    500,
-      quadTreeDimensions: 1,
-      levels:             1,
+      widthSegment:      50,
+      heightSegment:     50,
+      quadTreeDimensions: 2,
+      levels:             5,
       radius:         10000,
-      displacmentScale:  15,
-    }
-    
-    this. s = new Sphere(
-      params.width,
-      params.height,
-      params.widthSegment,
-      params.heightSegment,
-      params.quadTreeDimensions
-      )
-    
-    this.s.build(
-      params.levels,
-      params.radius,
-      params.displacmentScale,
-    )
-    this.s.front.addTexture  ([N[0],D[0]], params.displacmentScale)
-    this.s.back.addTexture   ([N[1],D[1]], params.displacmentScale)
-    this.s.right.addTexture  ([N[2],D[2]], params.displacmentScale)
-    this.s.left.addTexture   ([N[3],D[3]], params.displacmentScale)
-    this.s.top.addTexture    ([N[4],D[4]], params.displacmentScale)
-    this.s.bottom.addTexture ([N[5],D[5]], params.displacmentScale)
-    
-    const ld = NODE.vec3(0.0,100.0,100.0)
-    
-    this.s.front.lighting    (ld)
-    this.s.back.lighting     (ld)
-    this.s.right.lighting    (ld)
-    this.s.left.lighting     (ld)
-    this.s.top.lighting      (ld)
-    this.s.bottom.lighting   (ld)
-    
-    this.allp = [
-      ...this.s.front.instances,
-      ...this.s.back.instances,
-      ...this.s.right.instances,
-      ...this.s.left.instances,
-      ...this.s.top.instances,
-      ...this.s.bottom.instances,
-    ]
-    
-      this.rend.scene_.add( this.s.sphere);
+      displacmentScale:  0,
+      lodDistanceOffset: 1.0,
+      color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
+    })
+
+    this.quads = this.planet.getAllInstance()
+    //this.planet.position(0,0,15000)
+    this.rend.scene_.add( this.planet.sphere);
   }
   
   initPlayer(){
-  var boxGeometry        = new THREE.BoxGeometry( 1, 1, 1,1 )
+  var boxGeometry        = new THREE.BoxGeometry( 10.1, 10.1, 10.1, 1 )
   var boxMaterial        = new THREE.MeshBasicMaterial({color:'red'});
   this.player            = new THREE.Mesh( boxGeometry, boxMaterial );
   this.player.position.z = this.rend.camera_.position.z
@@ -109,13 +74,15 @@ class ViewGL {
   this.controls.movementSpeed = 500
   this.controls.lookSpeed     = 0
   this.clock = new THREE.Clock();
-  //this.rend.scene_.add(this.player)
+  this.rend.scene_.add(this.player)
+  //this.player.position.set(0,0,3000)
+
   }
   
   start() {
   this.render(this.canvasViewPort);
-  this.initPlayer()
   this.initPlanet()
+  this.initPlayer()
   this.update();
   }
   
@@ -129,14 +96,14 @@ class ViewGL {
   
   update(t) {
   
-  if(this.s){
-    this.controls.update(this.clock.getDelta())
-   for (var i = 0; i < this.allp.length; i++) {
-      this.allp[i].update(this.player)
-   }
-  }
-  
+
   requestAnimationFrame(this.update.bind(this));
+  if(this.planet){
+    this.controls.update(this.clock.getDelta())
+    for (var i = 0; i < this.quads.length; i++) {
+     this.quads[i].update(this.player)
+    }
+   }
   nodeFrame.update();
   this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
 

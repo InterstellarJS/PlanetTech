@@ -23,6 +23,9 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 - Procedural planet generation: Create unique and realistic planets using procedural algorithms.
 - flexability and speed.
 - quadtree sphere.
+- CDLOD. (coming soon)
+- custom frustum culling. (coming soon)
+- raycasting mannequin. (coming soon)
 - cubeMap. (threading and instancing coming soon)
 - Terrain generation: Generate detailed and customizable terrains with different types of landscapes such as mountains, valleys, and plains.
 - Texture mapping: Apply textures to the terrain to enhance visual realism and add visual variety.(coming soon)

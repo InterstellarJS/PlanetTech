@@ -14,9 +14,11 @@ global.set('TSL', Nodes);
 class Renderer {
   constructor(type) {this.type = type}
 
-  webglRenderer(canvasRef) {
+  WebGLRenderer(canvasRef) {
     this.renderer = new THREE.WebGLRenderer({
+      powerPreference: "high-performance",
       canvas: canvasRef,
+      logarithmicDepthBuffer: true,
       antialias: true,
     });
     this.renderer.setClearColor('white');
@@ -28,7 +30,7 @@ class Renderer {
     this.type=localStorage.setItem('type','WebGL');
   }
 
-  webGPURenderer(canvasRef) {
+  WebGPURenderer(canvasRef) {
     if ( WebGPU.isAvailable() === false ) {
       document.body.appendChild( WebGPU.getErrorMessage() );
       throw new Error( 'No WebGPU support' );
@@ -56,7 +58,7 @@ class Renderer {
     let aspect = (this.container.clientWidth / this.container.clientHeight)
     let fov    =  30
     let near   = .01
-    let far    =  6371e3
+    let far    =  Number.MAX_SAFE_INTEGER
     this.camera_ = new THREE.PerspectiveCamera(fov,aspect,near,far);
   }
 

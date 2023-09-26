@@ -35,7 +35,7 @@ import * as Shaders from '../shaders/index.js';
       this.quadTreeconfig.config.light = {ld:ld}
       for (var i = 0; i < this.instances.length; i++) {
         var p = this.instances[i].plane
-        p.material.colorNode = Shaders.light({
+        p.material.colorNode = Shaders.defualtLight({
           normalMap:p.material.colorNode.rgba,
           lightPosition:ld,
           cP:NODE.vec3(0.,0.,0.)

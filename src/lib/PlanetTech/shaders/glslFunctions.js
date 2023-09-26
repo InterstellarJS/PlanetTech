@@ -1,8 +1,8 @@
 import * as NODE from 'three/nodes';
 import {glslFn} from 'three/nodes';
 
-export const light = glslFn(`
-  float light(vec4 normalMap, vec3 lightPosition, vec3 cP) {
+export const defualtLight = glslFn(`
+  float defualtLight(vec4 normalMap, vec3 lightPosition, vec3 cP) {
     vec3 lightDirection = normalize(lightPosition - normalMap.xyz);
     vec3 viewDirection  = normalize(cP - normalMap.xyz);
     vec3 ambientColor   = vec3(0.0, 0.0, 0.0);  // Ambient light color

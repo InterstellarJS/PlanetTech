@@ -2,16 +2,16 @@ import renderer          from '../../render.js';
 import * as glslFunctions from './glslFunctions.js';
 import * as wgslFunctions from './wgslFunctions.js';
 
-let light;
+let defualtLight;
 
 if (renderer.getType() === 'WebGL') {
     console.log('WebGL');
-    light = glslFunctions.light;
+    defualtLight = glslFunctions.defualtLight;
 } else if (renderer.getType() === 'WebGPU') {
     console.log('WebGPU');
-    light = wgslFunctions.light;
+    defualtLight = wgslFunctions.defualtLight;
 }
 
 export { 
-    light 
+    defualtLight 
 };

@@ -4,6 +4,12 @@ import Quad         from '../engine/quad'
 import {QuadTrees}  from '../engine/quadtree'
 
 
+function project( v, r, center )
+{
+	v.sub( center )
+			.setLength( r )
+			.add( center );
+}
 
 export default class Sphere{
     constructor(w,h,ws,hs,d) {
@@ -17,45 +23,11 @@ export default class Sphere{
         this. quadTreeconfig = QuadTrees.QuadTreeLoDCore
       }
 
-      position(x,y,z){
-        this.quadTreeconfig.shardedData.position = {x,y,z}
-        this.sphere.position.set(x,y,z)
-        var bbox   = new THREE.Box3();
-        bbox.expandByObject(this.sphere);
-        var center = new THREE.Vector3();
-        bbox.getCenter(center);
-        var cnt = center
-        this.front. quadTreeconfig.config['cnt'] = cnt.clone()
-        this.back.  quadTreeconfig.config['cnt'] = cnt.clone()
-        this.right. quadTreeconfig.config['cnt'] = cnt.clone()
-        this.left.  quadTreeconfig.config['cnt'] = cnt.clone()
-        this.top.   quadTreeconfig.config['cnt'] = cnt.clone()
-        this.bottom.quadTreeconfig.config['cnt'] = cnt.clone()
-
-      }
-
-      scale(s){
-        this.quadTreeconfig.shardedData.scale = s
-        this. sphere.scale.set(s,s,s)
-        var bbox   = new THREE.Box3();
-        bbox.expandByObject(this.sphere);
-        var center = new THREE.Vector3();
-        bbox.getCenter(center);
-        var cnt = center
-        this.front. quadTreeconfig.config['cnt'] = cnt.clone()
-        this.back.  quadTreeconfig.config['cnt'] = cnt.clone()
-        this.right. quadTreeconfig.config['cnt'] = cnt.clone()
-        this.left.  quadTreeconfig.config['cnt'] = cnt.clone()
-        this.top.   quadTreeconfig.config['cnt'] = cnt.clone()
-        this.bottom.quadTreeconfig.config['cnt'] = cnt.clone()
-
-      }
-    
-
-    build(lvl,radius, displacmentScale, color=this.quadTreeconfig.shardedData.color){
+    build(lvl,radius, displacmentScale, lodDistanceOffset, color=this.quadTreeconfig.shardedData.color){
         this.quadTreeconfig.shardedData.radius = radius 
         this.quadTreeconfig.shardedData.color = color
         this.quadTreeconfig.shardedData.displacmentScale = displacmentScale
+        this.quadTreeconfig.shardedData.lodDistanceOffset = lodDistanceOffset
 
 
         this.front = new Quad(this.w,this.h,this.ws,this.hs,this.d)
@@ -118,28 +90,42 @@ export default class Sphere{
         var cnt = this.centerPosition()
     
         let allp = [
-            ...front.children,
-            ...back.children,
-            ...right.children,
-            ...left.children,
-            ...top.children,
-            ...bottom.children,
+          ...this.front.instances,
+          ...this.back.instances,
+          ...this.right.instances,
+          ...this.left.instances,
+          ...this.top.instances,
+          ...this.bottom.instances,
           ]
 
           allp.map((e)=>{
             var cnt_ = cnt.clone()      
-            e.worldToLocal(cnt_)
+            e.plane.worldToLocal(cnt_)
             var ps = THREEWG.float(radius).mul((THREEWG.positionLocal.sub(cnt_).normalize())).add(cnt_) 
-            e.material.positionNode = ps
-            e.material.colorNode    = color instanceof Function ? color() : color
+            e.plane.material.positionNode = ps
+            e.plane.material.colorNode    = color instanceof Function ? color() : color
+            //----
+            let wp = new THREE.Vector3()
+            //e.plane.getWorldPosition(wp)
+            project(wp,radius,cnt_.clone())
+            e.center = wp
+
+            const g = new THREE.SphereGeometry( 105, 32, 16 ); 
+            var ma = new THREE.MeshBasicMaterial({color:'red'});
+            let m  = new THREE.Mesh( g, ma );
+            //e.plane.add(m)
+            //m.position.copy(wp.clone())
+            e.isRoot = true
+            //console.log(e)
            })
+
+
            this.front. quadTreeconfig.config['cnt'] = cnt.clone()
            this.back.  quadTreeconfig.config['cnt'] = cnt.clone()
            this.right. quadTreeconfig.config['cnt'] = cnt.clone()
            this.left.  quadTreeconfig.config['cnt'] = cnt.clone()
            this.top.   quadTreeconfig.config['cnt'] = cnt.clone()
            this.bottom.quadTreeconfig.config['cnt'] = cnt.clone()
-
           }
 
     log(){
@@ -152,5 +138,39 @@ export default class Sphere{
         this.bbox.getCenter(center);
         return center
       }
+
+    position(x,y,z){
+      this.quadTreeconfig.shardedData.position = {x,y,z}
+      this.sphere.position.set(x,y,z)
+      var bbox   = new THREE.Box3();
+      bbox.expandByObject(this.sphere);
+      var center = new THREE.Vector3();
+      bbox.getCenter(center);
+      var cnt = center
+      this.front. quadTreeconfig.config['cnt'] = cnt.clone()
+      this.back.  quadTreeconfig.config['cnt'] = cnt.clone()
+      this.right. quadTreeconfig.config['cnt'] = cnt.clone()
+      this.left.  quadTreeconfig.config['cnt'] = cnt.clone()
+      this.top.   quadTreeconfig.config['cnt'] = cnt.clone()
+      this.bottom.quadTreeconfig.config['cnt'] = cnt.clone()
+
+    }
+
+    scale(s){
+      this.quadTreeconfig.shardedData.scale = s
+      this. sphere.scale.set(s,s,s)
+      var bbox   = new THREE.Box3();
+      bbox.expandByObject(this.sphere);
+      var center = new THREE.Vector3();
+      bbox.getCenter(center);
+      var cnt = center
+      this.front. quadTreeconfig.config['cnt'] = cnt.clone()
+      this.back.  quadTreeconfig.config['cnt'] = cnt.clone()
+      this.right. quadTreeconfig.config['cnt'] = cnt.clone()
+      this.left.  quadTreeconfig.config['cnt'] = cnt.clone()
+      this.top.   quadTreeconfig.config['cnt'] = cnt.clone()
+      this.bottom.quadTreeconfig.config['cnt'] = cnt.clone()
+
+    }
 
 }

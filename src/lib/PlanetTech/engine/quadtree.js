@@ -1,6 +1,6 @@
 import * as THREE  from 'three';
 import * as NODE   from 'three/nodes';
-import {norm}      from './utils'
+import {norm,project}      from './utils'
 import {frontsetData,backsetData,rightsetData,leftsetData,topsetData,bottomsetData} from  './quadTreeFunctions'
 
 function color(c){
@@ -26,7 +26,8 @@ class QuadTreeLoDCore  {
     position:{x:0,y:0,z:0},
     scale: 1,
     color: NODE.vec3(0,0,0),
-    light:{}
+    light:{},
+    lodDistanceOffset: 1,
   }
 
   constructor(config={}) {
@@ -81,12 +82,26 @@ class QuadTreeLoDCore  {
     this.insert(player,quad)
     }
 
+  setCenter(child,cnt){
+    let wp = new THREE.Vector3()
+    project(wp, this.config.radius,cnt.clone())
+    child.center = wp
+    /*
+    const g = new THREE.SphereGeometry( 105, 32, 16 ); 
+    var ma = new THREE.MeshBasicMaterial({color:'blue'});
+    let m  = new THREE.Mesh( g, ma );
+    child.plane.add(m)
+    m.position.copy( wp.clone())
+    console.log(m)
+    */
+  }  
+
   insert(player,quad){
     quad.active(true)
-    const wp = new THREE.Vector3(0, 0, 0);
-    quad.plane.getWorldPosition(wp)
-    var distance = wp.distanceTo(player.position)/2
-    if ( (distance) < (quad.quadData.width) &&  quad.quadData.width > this.config.minLevelSize ){
+    let wpc = quad.center.clone()
+    quad.plane.getWorldPosition(wpc)
+    var distance = wpc.distanceTo(player.position)
+    if ( (distance) < (this.config.lodDistanceOffset * quad.quadData.width) &&  quad.quadData.width > this.config.minLevelSize ){
       let childw         =  Math.floor(quad.quadData.width/2)
       let childh         =  Math.floor(quad.quadData.height/2)
       let widthSegments  =  quad.quadData.widthSegments*2
@@ -104,7 +119,7 @@ class QuadTreeLoDCore  {
     console.log(rw,rh)
     var side  = quad.side
     var cnt   = this.config.cnt
-    var textures    = this.config.dataTransfer[side].textuers
+    var textures = this.config.dataTransfer[side].textuers
     var shardedGeometry = this.config.arrybuffers[w] 
     var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
     var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
@@ -122,31 +137,39 @@ class QuadTreeLoDCore  {
     var scaling   = w / starting
     var halfScale = scaling/2
 
-    var cnt = this.config.cnt.clone()
-    child1.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+    var cnt1 = this.config.cnt.clone()
+    child1.plane.worldToLocal(cnt1)
+    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt1).normalize())).add(cnt1)
     var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
     child1.plane.material.colorNode = currentColor
     child1.plane.material.positionNode = newP
-    var cnt = this.config.cnt.clone()
-    child2.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+    this.setCenter(child1,cnt1,quad)
+    //---
+    var cnt2 = this.config.cnt.clone()
+    child2.plane.worldToLocal(cnt2)
+    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt2).normalize())).add(cnt2)
     var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
     child2.plane.material.colorNode = currentColor
     child2.plane.material.positionNode = newP
+    this.setCenter(child2,cnt2,quad)
+
+    //---
     var cnt = this.config.cnt.clone()
     child3.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
     child3.plane.material.colorNode = currentColor
     child3.plane.material.positionNode = newP
+    this.setCenter(child3,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child4.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
     child4.plane.material.colorNode = currentColor
     child4.plane.material.positionNode = newP
-
+    this.setCenter(child4,cnt,quad)
+    //---
     for (var i = 0; i < textures.length; i++) {
       frontsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
       frontsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
@@ -184,25 +207,32 @@ class QuadTreeLoDCore  {
     var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
     child1.plane.material.colorNode = currentColor
     child1.plane.material.positionNode = newP
+    this.setCenter(child1,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child2.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
     child2.plane.material.colorNode = currentColor
     child2.plane.material.positionNode = newP
+    this.setCenter(child2,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child3.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
     child3.plane.material.colorNode = currentColor
     child3.plane.material.positionNode = newP
+    this.setCenter(child3,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child4.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
     child4.plane.material.colorNode = currentColor
     child4.plane.material.positionNode = newP
-
+    this.setCenter(child4,cnt,quad)
+    //---
     for (var i = 0; i < textures.length; i++) {
       backsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
       backsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
@@ -240,25 +270,32 @@ class QuadTreeLoDCore  {
     var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
     child1.plane.material.colorNode = currentColor
     child1.plane.material.positionNode = newP
+    this.setCenter(child1,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child2.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
     child2.plane.material.colorNode = currentColor
     child2.plane.material.positionNode = newP
+    this.setCenter(child2,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child3.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
     child3.plane.material.colorNode = currentColor
     child3.plane.material.positionNode = newP
+    this.setCenter(child3,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child4.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
     child4.plane.material.colorNode = currentColor
     child4.plane.material.positionNode = newP
-
+    this.setCenter(child4,cnt,quad)
+    //---
     for (var i = 0; i < textures.length; i++) {
       rightsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
       rightsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
@@ -295,24 +332,32 @@ class QuadTreeLoDCore  {
     var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
     child1.plane.material.colorNode = currentColor
     child1.plane.material.positionNode = newP
+    this.setCenter(child1,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child2.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
     child2.plane.material.colorNode = currentColor
     child2.plane.material.positionNode = newP
+    this.setCenter(child2,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child3.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
     child3.plane.material.colorNode = currentColor
     child3.plane.material.positionNode = newP
+    this.setCenter(child3,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child4.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
     child4.plane.material.colorNode = currentColor
     child4.plane.material.positionNode = newP
+    this.setCenter(child4,cnt,quad)
+    //---
 
     for (var i = 0; i < textures.length; i++) {
       leftsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
@@ -350,24 +395,32 @@ class QuadTreeLoDCore  {
     var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
     child1.plane.material.colorNode = currentColor
     child1.plane.material.positionNode = newP
+    this.setCenter(child1,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child2.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
     child2.plane.material.colorNode = currentColor
     child2.plane.material.positionNode = newP
+    this.setCenter(child2,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child3.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
     child3.plane.material.colorNode = currentColor
     child3.plane.material.positionNode = newP
+    this.setCenter(child3,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child4.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
     child4.plane.material.colorNode = currentColor
     child4.plane.material.positionNode = newP
+    this.setCenter(child4,cnt,quad)
+    //---
     for (var i = 0; i < textures.length; i++) {
       topsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
       topsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
@@ -404,33 +457,38 @@ class QuadTreeLoDCore  {
     var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
     child1.plane.material.colorNode = currentColor
     child1.plane.material.positionNode = newP
+    this.setCenter(child1,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child2.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
     child2.plane.material.colorNode = currentColor
     child2.plane.material.positionNode = newP
+    this.setCenter(child2,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child3.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
     child3.plane.material.colorNode = currentColor
     child3.plane.material.positionNode = newP
+    this.setCenter(child3,cnt,quad)
+    //---
     var cnt = this.config.cnt.clone()
     child4.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
     var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
     child4.plane.material.colorNode = currentColor
     child4.plane.material.positionNode = newP
-
+    this.setCenter(child4,cnt,quad)
+    //---
     for (var i = 0; i < textures.length; i++) {
       bottomsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
       bottomsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
       bottomsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
       bottomsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
     }
-
-
     return [child1,child2,child3,child4]
   }
 

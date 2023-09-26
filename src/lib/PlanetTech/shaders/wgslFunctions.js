@@ -1,8 +1,8 @@
 import {wgslFn} from 'three/nodes';
 
 
-export const light = wgslFn( `
-fn light( normalMap:vec4<f32>, lightPosition:vec3<f32>, cP:vec3<f32> ) -> f32 {
+export const defualtLight = wgslFn( `
+fn defualtLight( normalMap:vec4<f32>, lightPosition:vec3<f32>, cP:vec3<f32> ) -> f32 {
 
     let lightDirection = normalize(lightPosition - normalMap.xyz);
     let viewDirection  = normalize(cP - normalMap.xyz);

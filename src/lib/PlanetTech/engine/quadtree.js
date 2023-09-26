@@ -86,20 +86,19 @@ class QuadTreeLoDCore  {
     let wp = new THREE.Vector3()
     project(wp, this.config.radius,cnt.clone())
     child.center = wp
-    /*
-    const g = new THREE.SphereGeometry( 105, 32, 16 ); 
+   /*
+    const g = new THREE.SphereGeometry( 105, 5, 5 ); 
     var ma = new THREE.MeshBasicMaterial({color:'blue'});
     let m  = new THREE.Mesh( g, ma );
     child.plane.add(m)
     m.position.copy( wp.clone())
-    console.log(m)
     */
   }  
 
   insert(player,quad){
     quad.active(true)
     let wpc = quad.center.clone()
-    quad.plane.getWorldPosition(wpc)
+    quad.plane.localToWorld(wpc)
     var distance = wpc.distanceTo(player.position)
     if ( (distance) < (this.config.lodDistanceOffset * quad.quadData.width) &&  quad.quadData.width > this.config.minLevelSize ){
       let childw         =  Math.floor(quad.quadData.width/2)

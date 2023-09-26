@@ -55,13 +55,13 @@ class ViewGL {
       quadTreeDimensions: 2,
       levels:             5,
       radius:         10000,
-      displacmentScale:  0,
-      lodDistanceOffset: 1.0,
-      color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
+      displacmentScale:   30,
+      lodDistanceOffset:  1.5,
     })
 
+    this.planet.textuers(N,D)
+    this.planet.light(NODE.vec3(0.0,20.0,20.0))
     this.quads = this.planet.getAllInstance()
-    //this.planet.position(0,0,15000)
     this.rend.scene_.add( this.planet.sphere);
   }
   

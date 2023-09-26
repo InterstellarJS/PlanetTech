@@ -40,16 +40,5 @@ export class CelestialBodies extends Sphere{
         this.bottom.lighting (ld)
     }
 
-    getAllInstance(){
-        return [
-            ...this.front.instances,
-            ...this.back.instances,
-            ...this.right.instances,
-            ...this.left.instances,
-            ...this.top.instances,
-            ...this.bottom.instances,
-          ]
-    }
-
 
 }

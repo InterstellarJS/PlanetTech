@@ -49,7 +49,7 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 ## How It Works
 The PlanettechJS repository contains two libraries: **PlanetTech** itself and **CubeMap**.
 
-- **PlanetTech**: Think of it as the backend. It handles planet system management, mesh creation, as well as the generation of quads and quadtree data structures from the PlanetTech engine.
+- **PlanetTech**: Think of it as the backend. It handles planet system management, mesh creation, as well as the generation of quads and quadtree data structures from the `'./PlanetTech/engine'`.
 
 - **CubeMap**: This serves as the frontend and primarily handles texture generation.
 
@@ -101,16 +101,18 @@ import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 ```
 ![quad Sphere](./public/readmeImg/img2.png)
 
-- `width` : set a quads width 
-- `height`: set a quads height
-- `widthSegment`:  width poly count
-- `heightSegment`: height poly count
-- `quadTreeDimensions`: number of top quads a sphere is intialized with
-- `levels`: how deep a quadtree should go
-- `radius`: planet radius
-- `displacmentScale`: texture displacement height 
-- `lodDistanceOffset`: distance offset used for triguring the splitting of a quad
-- `color`: color applied to each quad
+### Input Parameters
+
+- `width`: Set the width of a quad.
+- `height`: Set the height of a quad.
+- `widthSegment`: Set the poly count for the width.
+- `heightSegment`: Set the poly count for the height.
+- `quadTreeDimensions`: Specify the number of top quads with which a sphere is initialized.
+- `levels`: Determine how deep the quadtree should go.
+- `radius`: Specify the planet's radius.
+- `displacementScale`: Set the texture displacement height.
+- `lodDistanceOffset`: Specify the distance offset used to trigger the splitting of a quad.
+- `color`: Apply a color to each quad.
 
 Now let's crank up the `levels` all the way to 10 (a reasonable number without my machine freezing up). So you'll be creating a sphere with 10x10x6 dimensions at a resolution of 50. You can play with the parameters to fit your needs; the only limitation is your machine.
 ![quad Sphere](./public/readmeImg/img3.png)

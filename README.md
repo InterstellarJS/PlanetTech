@@ -53,10 +53,11 @@ The PlanettechJS repository contains two libraries: **PlanetTech** itself and **
 
 - **CubeMap**: This serves as the frontend and primarily handles texture generation.
 
-Additionally, PlanetTech requires you to use the `render` object. With the `render` object, you can switch between the **WebGL** `render.WebGLRenderer(canvasViewPort)` and **WebGPU** `render.WebGPURenderer(canvasViewPort)`. You should stick with **WebGL** because **WebGPU** is still very experimental in ThreeJS and can cause issues with each version update.
+Additionally, PlanetTech requires you to use the `render` object. With the `render` object, you can switch between the **WebGL**: `render.WebGLRenderer(canvasViewPort)` and **WebGPU**: `render.WebGPURenderer(canvasViewPort)`. You should stick with WebGL because WebGPU is still very experimental in ThreeJS and can cause issues with each version update.
 
 We will start with **PlanetTech**. Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.
 Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.
+
 ```javascript
 import renderer from './render';
 import Sphere   from './PlanetTech/sphere/sphere'

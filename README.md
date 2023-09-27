@@ -114,10 +114,10 @@ import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 - `lodDistanceOffset`: Specify the distance offset used to trigger the splitting of a quad.
 - `color`: Apply a color to each quad.
 
-### understing dimensions 
+### Dimensions 
 Now let's crank up the `dimensions` all the way to 10 (a reasonable number without my machine freezing up). So you'll be creating a sphere with 10x10x6 dimensions at a resolution of 50. You can play with the parameters to fit your needs; the only limitation is your machine.
 ![quad Sphere](./public/readmeImg/img3.png)
 
-### understing levels 
+### Levels 
 To get a better understanding of the `levels` parameter, let's take a look at a single quad (single dimension). If we were to grab a quad from our sphere without the projection so its a flat plane, and adding a simple height map texture. Setting `params.levels = 6` gives a single dimension the ability to go six levels deep. As you can see each child in each level with a random color. 
 ![quad Sphere](./public/readmeImg/img4.jpg)

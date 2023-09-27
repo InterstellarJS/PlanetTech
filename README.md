@@ -301,25 +301,25 @@ The `celestialBodies` directory is simply a straightforward wrapper around the p
 It is meant to serve as the main interface for a user to create celestial bodies such as `Planet`, `Moon`, and `Sun`.
 
 ```javaScript
-    let N = [...]
-    let D = [...]
-        
-    this.planet = new Planet({
-      width:          10000,
-      height:         10000,
-      widthSegment:      30,
-      heightSegment:     30,
-      quadTreeDimensions: 1,
-      levels:             5,
-      radius:         10000,
-      displacmentScale:  25,
-      lodDistanceOffset:1.4,
-    })
+let N = [...]
+let D = [...]
+    
+let planet = new Planet({
+  width:          10000,
+  height:         10000,
+  widthSegment:      30,
+  heightSegment:     30,
+  quadTreeDimensions: 1,
+  levels:             5,
+  radius:         10000,
+  displacmentScale:  25,
+  lodDistanceOffset:1.4,
+})
 
-    this.planet.textuers(N,D)
-    this.planet.light(NODE.vec3(0.0,20.0,20.0))
-    this.quads = this.planet.getAllInstance()
-    this.rend.scene_.add( this.planet.sphere);
+planet.textuers(N,D)
+planet.light   (NODE.vec3(0.0,20.0,20.0))
+let quads = planet.getAllInstance()
+scene.add(planet.sphere);
 ```
 
 <p align="center">

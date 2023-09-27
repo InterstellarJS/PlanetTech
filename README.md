@@ -144,12 +144,12 @@ Notice we dont need the color anymore. And all we added was a THREE.TextureLoade
 </p>
 
 ## How To Build A Planet
-**You dont have to use [CubeMapJS](./src/lib/core/textures/cubeMap). You can import your own height map and normal map, the work flow will be the same.**
-
 To build something the resembles a planet, PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows users to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMapJS works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
 You can think of PlanetTechJS as the back-end and CubeMapJS as the front end of the planet creation process.
 
 ⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size or resolution to a large amount can cause WebGL to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
+
+**You dont have to use [CubeMapJS](./src/lib/core/textures/cubeMap). You can import your own height map and normal map, the work flow will be the same.**
 
 ```javaScript
   const displacmentMaps = new CubeMap(2000,3,false)

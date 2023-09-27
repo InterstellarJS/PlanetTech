@@ -329,6 +329,17 @@ planet.textuers(N,D)
 planet.light   (NODE.vec3(0.0,20.0,20.0))
 let quads = planet.getAllInstance()
 scene.add(planet.sphere);
+
+update(t) {
+  requestAnimationFrame(update);
+  if(planet){
+    for (var i = 0; i < quads.length; i++) {
+    quads[i].update(/*player or camera object*/)
+    }
+  }
+  nodeFrame.update();
+  renderer.render(scene, camera);
+}
 ```
 
 ## Debugging

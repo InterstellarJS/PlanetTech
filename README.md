@@ -150,7 +150,7 @@ You can think of PlanetTechJS as the back-end and CubeMapJS as the front-end of 
 
 ⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size or resolution to a large amount can cause the renderer to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
 
-**You dont have to use [CubeMapJS](./src/lib/core/textures/cubeMap). You can import your own height map and normal map, the work flow will be the same.**
+**You dont have to use [CubeMapJS](./src/lib/core/textures/cubeMap). You can import your own height map and normal map, the work flow will be the same as for as loading your textures onto a planet.**
 
 ```javaScript
   const displacmentMaps = new CubeMap(2000,3,false)

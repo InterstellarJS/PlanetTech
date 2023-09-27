@@ -54,6 +54,14 @@ class Renderer {
     return localStorage.getItem('type');
   }
 
+  scene() {
+    this.scene_ = new THREE.Scene();
+  }
+
+  orbitControls(){
+    this. controls = new OrbitControls(this.camera_, this.renderer.domElement);
+  }
+
   camera(x = 0, y = 0, z = 0) {
     let aspect = (this.container.clientWidth / this.container.clientHeight)
     let fov    =  30
@@ -68,13 +76,6 @@ class Renderer {
     this.camera_.position.z = z;
   }
 
-  scene() {
-    this.scene_ = new THREE.Scene();
-  }
-
-  orbitControls(){
-    this. controls = new OrbitControls(this.camera_, this.renderer.domElement);
-    }
 
   info() {
     console.log('Scene polycount:', this.renderer.info.render.triangles);

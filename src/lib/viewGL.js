@@ -50,65 +50,63 @@ class ViewGL {
     this.planet = new Planet({
       width:          10000,
       height:         10000,
-      widthSegment:      50,
-      heightSegment:     50,
-      quadTreeDimensions: 2,
+      widthSegment:      30,
+      heightSegment:     30,
+      quadTreeDimensions: 1,
       levels:             5,
       radius:         10000,
-      displacmentScale:   30,
-      lodDistanceOffset:  1.5,
+      displacmentScale:  25,
+      lodDistanceOffset:1.4,
+      //color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
     })
 
     this.planet.textuers(N,D)
     this.planet.light(NODE.vec3(0.0,20.0,20.0))
     this.quads = this.planet.getAllInstance()
+
+    console.log(this.planet.log())
     this.rend.scene_.add( this.planet.sphere);
   }
   
   initPlayer(){
-  var boxGeometry        = new THREE.BoxGeometry( 10.1, 10.1, 10.1, 1 )
-  var boxMaterial        = new THREE.MeshBasicMaterial({color:'red'});
-  this.player            = new THREE.Mesh( boxGeometry, boxMaterial );
-  this.player.position.z = this.rend.camera_.position.z
-  this.controls               = new FirstPersonControls( this.player, document.body );
-  this.controls.movementSpeed = 500
-  this.controls.lookSpeed     = 0
-  this.clock = new THREE.Clock();
-  this.rend.scene_.add(this.player)
-  //this.player.position.set(0,0,3000)
-
+    var boxGeometry        = new THREE.BoxGeometry( 10.1, 10.1, 10.1, 1 )
+    var boxMaterial        = new THREE.MeshBasicMaterial({color:'red'});
+    this.player            = new THREE.Mesh( boxGeometry, boxMaterial );
+    this.player.position.z = this.rend.camera_.position.z
+    this.controls               = new FirstPersonControls( this.player, document.body );
+    this.controls.movementSpeed = 500
+    this.controls.lookSpeed     = 0
+    this.clock = new THREE.Clock();
+    this.rend.scene_.add(this.player)
   }
   
   start() {
-  this.render(this.canvasViewPort);
-  this.initPlanet()
-  this.initPlayer()
-  this.update();
+    this.render(this.canvasViewPort);
+    this.initPlanet()
+    this.initPlayer()
+    this.update();
   }
   
   onWindowResize(vpW, vpH) {
-  this.rend.renderer.setSize(vpW, vpH);
+    this.rend.renderer.setSize(vpW, vpH);
   }
   
   updateMeshPosition(value){
-  //this.mesh.position.x = value
+    //this.mesh.position.x = value
   }
   
   update(t) {
-  
-
-  requestAnimationFrame(this.update.bind(this));
-  if(this.planet){
-    this.controls.update(this.clock.getDelta())
-    for (var i = 0; i < this.quads.length; i++) {
-     this.quads[i].update(this.player)
+    requestAnimationFrame(this.update.bind(this));
+    if(this.planet){
+      this.controls.update(this.clock.getDelta())
+      for (var i = 0; i < this.quads.length; i++) {
+      this.quads[i].update(this.player)
+      }
     }
-   }
-  nodeFrame.update();
-  this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
-
+    nodeFrame.update();
+    this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
   }
-  }
+}
   
   var viewGL = new ViewGL();
   export default viewGL;

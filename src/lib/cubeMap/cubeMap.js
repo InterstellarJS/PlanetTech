@@ -1,12 +1,11 @@
 
 import * as THREE  from 'three'
-import { OBJExporter } from 'three/addons/exporters/OBJExporter.js';
-import {RtTexture} from './../rTtexture'
 import * as NODE   from 'three/nodes';
-import {snoise3D,fbmNoise,displacementNormalNoiseFBM,displacementFBM,displacementNormalNoiseFBMWarp,displacementNoiseFBMWarp}  from  './../../shaders/glslFunctions'
-import {snoise,normals, sdfbm2,} from '../../shaders/analyticalNormals';
-import Quad from '../../engine/quad';
+import Quad        from '../../engine/quad';
+import {RtTexture} from './../rTtexture'
 import { displayCanvasesInGrid } from './utils';
+import {snoise,normals, sdfbm2,} from '../../shaders/analyticalNormals';
+import {snoise3D,fbmNoise,displacementNormalNoiseFBM,displacementFBM,displacementNormalNoiseFBMWarp,displacementNoiseFBMWarp}  from  './../../shaders/glslFunctions'
 
 
 export class CubeMap{
@@ -42,7 +41,7 @@ export class CubeMap{
         return plane
       }
 
-      simplexNoise(params){
+    simplexNoise(params){
         params.vn = NODE.normalLocal 
         params.tangent = NODE.tangentLocal
         this.mainCubeSides.map((p)=>{
@@ -190,11 +189,11 @@ export class CubeMap{
           }
 
 
-    build(resoultion=512){
+    build(resoultion=512,renderer){
         let  cubes  = this.buildCube()
         let  camera = new THREE.OrthographicCamera( this.w / - 2, this.w / 2, this.h / 2, this.h / - 2, 0, this.d*2 );
         this. cube  = cubes[0]
-        this. rtt   = new RtTexture(resoultion)
+        this. rtt   = new RtTexture(resoultion,renderer)
         this. rtt.initRenderTraget()
         this. rtt.rtCamera = camera.clone()
         this. rtt.rtScene.add(cubes[1])
@@ -365,44 +364,3 @@ export class CubeMap{
     }
 
 }
-
-/*
-export class CubeMapTexture{
-    constructor(){
-       this.displacementNormalGen =  [new CubeMap(true),new CubeMap(false)]
-       }
-
-        build(resoultion){
-            this.displacementNormalGen.forEach((e,i)=>{
-                e.build(resoultion[i])
-            })  
-        }
-
-        simplexNoiseFbm(params){
-            this.displacementNormalGen.forEach((e)=>{
-                e.simplexNoiseFbm(params)
-            })  
-        }
-
-
-        simplexNoiseFbmD(params){
-            this.displacementNormalGen.forEach((e)=>{
-                e.simplexNoiseFbmD(params)
-            })  
-        }
-
-        snapShot(download){
-            this.displacementNormalGen.forEach((e)=>{
-                e.snapShot(download)
-            })  
-        }
-
-        getTexture(){
-            let normal       = this.displacementNormalGen[0].textuerArray
-            let displacement = this.displacementNormalGen[1].textuerArray
-            return {normal,displacement}
-        }
-
-
-    }
-    */

@@ -17,7 +17,6 @@ What sets this library apart is its utilization of the GPU for all tasks. This i
 ## Getting Started
 Download and run the project. Go to http://localhost:3001/. The file for the demo is located at src/lib/viewGL.js. If things aren't working, open an issue, and I will try to correct any problems.
 
-⚠️ **Disclaimer:** Because this is in alpha, and I haven't fully implemented good first-person controls yet, in the demo, you need to find a spot on the front face of the planet. Make sure to orient and rotate the camera to your liking. Hold down the right mouse key to move the red cube; this is currently how I activate the quadtree. Finding the cube can be challenging due to the scale of the planet. However, holding down the right mouse clicker activates the quadtree. I plan to implement basic character controls, but for now, this is the method I'm using. Alternatively, you can adjust the scale or speed of the cube. It's located in the initPlayer method in src/lib/viewGL.js
 
 ## Features/Ideas
 - Procedural planet generation: Create unique and realistic planets using procedural algorithms.
@@ -63,6 +62,7 @@ import { getRandomColor,hexToRgbA } from './core/sphere/utils'
     levels:             2,
     radius:           100,
     displacmentScale:   1,
+    lodDistanceOffset:1.4, 
     color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
  }
 
@@ -104,6 +104,7 @@ The code will be the same as before except now we are using `addTexture` method.
     levels:             2,
     radius:           100,
     displacmentScale:   5,
+    lodDistanceOffset:1.4,
  }
 
  var s = new Sphere(
@@ -118,6 +119,7 @@ The code will be the same as before except now we are using `addTexture` method.
     params.levels,
     params.radius,
     params.displacmentScale,
+    params.lodDistanceOffset
   )
 
   const loader1 = new THREE.TextureLoader().load('./planet/front_image.png' );
@@ -142,9 +144,12 @@ Notice we dont need the color anymore. And all we added was a THREE.TextureLoade
 </p>
 
 ## How To Build A Planet
-To build planet, PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows users to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMapJS works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
+To build something the resembles a planet, PlanetTechJS comes with an experimental feature called [CubeMapJS](./src/lib/core/textures/cubeMap). CubeMapJS allows users to create procedurally generated cube textures that return displacement maps and normal maps. CubeMapJS can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMapJS works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
+You can think of PlanetTechJS as the back-end and CubeMapJS as the front end of the planet creation process.
 
 **You dont have to use [CubeMapJS](./src/lib/core/textures/cubeMap). You can import your own height map and normal map, the work flow will be the same.**
+
+⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size or resolution to a large amount can cause WebGL to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
 
 ```javaScript
   const displacmentMaps = new CubeMap(2000,3,false)
@@ -235,6 +240,7 @@ const params = {
   levels:             5,
   radius:         10000,
   displacmentScale:  30,
+  lodDistanceOffset:1.4,
 }
 
 let s = new Sphere(
@@ -292,6 +298,32 @@ renderer.render(scene_, camera_);
 
 ```
 
+# Celestial Bodies
+The `celestialBodies` directory is simply a straightforward wrapper around the process we just completed.
+It is meant to serve as the main interface for a user to create celestial bodies such as `Planet`, `Moon`, and `Sun`.
+
+```javaScript
+    let N = [...]
+    let D = [...]
+        
+    this.planet = new Planet({
+      width:          10000,
+      height:         10000,
+      widthSegment:      30,
+      heightSegment:     30,
+      quadTreeDimensions: 1,
+      levels:             5,
+      radius:         10000,
+      displacmentScale:  25,
+      lodDistanceOffset:1.4,
+    })
+
+    this.planet.textuers(N,D)
+    this.planet.light(NODE.vec3(0.0,20.0,20.0))
+    this.quads = this.planet.getAllInstance()
+    this.rend.scene_.add( this.planet.sphere);
+```
+
 <p align="center">
   <img src="./public/readmeImg/w.png"/>
 </p>
@@ -321,9 +353,6 @@ For debugging Calling `s.log()` returns an object that contains all the importan
 - `position` is the position of the planet.
 - `radius` is the radius of the planet.
 - `scale` is the scale of the planet.
-
-⚠️ **Disclaimer:** CubeMapJS isn't optimized yet; increasing the grid size or resolution to a large amount can cause WebGL to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
-
 
 <p align="center">
   World space normal:

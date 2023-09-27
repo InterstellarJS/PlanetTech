@@ -105,7 +105,6 @@ export default class Sphere{
       project(wp,radius,cnt_.clone())
       e.center = wp
       e.isRoot = true
-
       /*
       const g = new THREE.SphereGeometry( 105, 5, 5 ); 
       var ma = new THREE.MeshBasicMaterial({color:'blue'});

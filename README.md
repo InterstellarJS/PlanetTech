@@ -47,52 +47,70 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 - Recommended GPU is GTX 1060 and above.
 
 ## How It Works
-The PlanettechJS repository contains two libraries: PlanetTech itself and Cubemap.
+The PlanettechJS repository contains two libraries: **PlanetTech** itself and **CubeMap**.
 
 - **PlanetTech**: Think of it as the backend. It handles planet system management, mesh creation, as well as the generation of quads and quadtree data structures from the PlanetTech engine.
 
 - **CubeMap**: This serves as the frontend and primarily handles texture generation.
 
-We will start with planetTech. Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.
+We will start with **PlanetTech**. Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.
 Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.
 ```javascript
-
-import Sphere from './PlanetTech/sphere/sphere'
+import renderer from './render';
+import Sphere   from './PlanetTech/sphere/sphere'
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 
-  const params = {
-    width:            100,
-    height:           100,
-    widthSegment:      50,
-    heightSegment:     50,
-    quadTreeDimensions: 1,
-    levels:             2,
-    radius:           100,
-    displacmentScale:   1,
-    lodDistanceOffset:1.4, 
-    color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
- }
+    let rend = renderer;
+    rend.WebGLRenderer(canvasViewPort);
+    rend.scene();
+    rend.stats();
+    rend.camera();
+    rend.updateCamera(0,0,10000)
+    rend.orbitControls()
 
- let s = new Sphere(
-    params.width,
-    params.height,
-    params.widthSegment,
-    params.heightSegment,
-    params.quadTreeDimensions
+    const params = {
+        width:            100,
+        height:           100,
+        widthSegment:      50,
+        heightSegment:     50,
+        quadTreeDimensions: 1,
+        levels:             1,
+        radius:           100,
+        displacmentScale:   1,
+        lodDistanceOffset:1.4, 
+        color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
+    }
+
+    let s = new Sphere(
+        params.width,
+        params.height,
+        params.widthSegment,
+        params.heightSegment,
+        params.quadTreeDimensions
     )
 
-  s.build(
-    params.levels,
-    params.radius,
-    params.displacmentScale,
-    params.lodDistanceOffset,
-    params.color,
-  )
+    s.build(
+        params.levels,
+        params.radius,
+        params.displacmentScale,
+        params.lodDistanceOffset,
+        params.color,
+    )
 
- scene.add(s.sphere);
-
+    scene.add(s.sphere);
 ```
 ![quad Sphere](./public/readmeImg/img2.png)
+
+- `width` : set a quads width 
+- `height`: set a quads height
+- `widthSegment`:  width poly count
+- `heightSegment`: height poly count
+- `quadTreeDimensions`: number of top quads a sphere is intialized with
+- `levels`: how deep a quadtree should go
+- `radius`: planet radius
+- `displacmentScale`: texture displacement height 
+- `lodDistanceOffset`: distance offset used for triguring the splitting of a quad
+- `color`: color applied to each quad
 
 Now let's crank up the `levels` all the way to 10 (a reasonable number without my machine freezing up). So you'll be creating a sphere with 10x10x6 dimensions at a resolution of 50. You can play with the parameters to fit your needs; the only limitation is your machine.
 ![quad Sphere](./public/readmeImg/img3.png)

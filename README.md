@@ -295,6 +295,13 @@ renderer.render(scene_, camera_);
 }
 
 ```
+<p align="center">
+  <img src="./public/readmeImg/w.png"/>
+</p>
+
+Here is a video of our planet. The 1 meter red cube is used to visualize the scale/percision of the height map.
+
+https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/b6ad90b5-5664-4a3a-b535-d3bcbc542d35
 
 # Celestial Bodies
 The `celestialBodies` directory is simply a straightforward wrapper around the process we just completed.
@@ -321,15 +328,6 @@ planet.light   (NODE.vec3(0.0,20.0,20.0))
 let quads = planet.getAllInstance()
 scene.add(planet.sphere);
 ```
-
-<p align="center">
-  <img src="./public/readmeImg/w.png"/>
-</p>
-
-Here is a video of our planet. The 1 meter red cube is used to visualize the scale/percision of the height map.
-
-https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/b6ad90b5-5664-4a3a-b535-d3bcbc542d35
-
 
 ## Debugging
 For debugging Calling `s.log()` returns an object that contains all the important data for the planet engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.

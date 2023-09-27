@@ -269,7 +269,7 @@ const postFragmentShader =
       sceneDepth,
       addColor,
       lightDirection,
-      12.,
+      100.,
       vec3(.5,.5,.5),
       PLANET_CENTER,
       PLANET_RADIUS,
@@ -340,5 +340,3 @@ export class Atmosphere{
       };
 
 }
-
-

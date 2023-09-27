@@ -64,7 +64,7 @@ class Renderer {
 
   camera(x = 0, y = 0, z = 0) {
     let aspect = (this.container.clientWidth / this.container.clientHeight)
-    let fov    =  30
+    let fov    =  20
     let near   = .01
     let far    =  Number.MAX_SAFE_INTEGER
     this.camera_ = new THREE.PerspectiveCamera(fov,aspect,near,far);

@@ -28,7 +28,9 @@ export const defualtLight = glslFn(`
   }
 `)
 
-export const snoise3D =  glslFn(`
+export const permute       = glslFn(`vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}`)
+export const taylorInvSqrt = glslFn(`vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}`)
+export const snoise3D      = glslFn(`
 float snoise3D(vec3 v){ 
   const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
   const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
@@ -89,16 +91,6 @@ float snoise3D(vec3 v){
   return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), 
                                 dot(p2,x2), dot(p3,x3) ) );
 }
-
-vec3 orthogonal(vec3 v) {
-  return normalize(abs(v.x) > abs(v.z) ? vec3(-v.y, v.x, 0.0)
-  : vec3(0.0, -v.z, v.y));
-}
-
-vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
-
-vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
-
-`)
+`,[taylorInvSqrt,])
 
 

@@ -8,7 +8,7 @@
 /public/planet
 # testing
 /coverage
-
+/_README.md
 # production
 /build
 

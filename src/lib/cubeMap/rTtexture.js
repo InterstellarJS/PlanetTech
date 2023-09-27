@@ -38,15 +38,15 @@ export class RtTexture {
   }
 
   snapShot(){
-    this.renderer_.renderer.setRenderTarget(this.renderTarget);
-    this.renderer_.renderer.clear();
-    this.renderer_.renderer.render(this.rtScene, this.rtCamera);
-    this.renderer_.renderer.setRenderTarget(null);
+    this.renderer_.setRenderTarget(this.renderTarget);
+    this.renderer_.clear();
+    this.renderer_.render(this.rtScene, this.rtCamera);
+    this.renderer_.setRenderTarget(null);
   }
 
   getPixels(){
     var pixels = new Uint8Array(this.rtWidth * this.rtHeight * 4);
-    this.renderer_.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.rtWidth, this.rtHeight, pixels);
+    this.renderer_.readRenderTargetPixels(this.renderTarget, 0, 0, this.rtWidth, this.rtHeight, pixels);
     return pixels
   }
 
@@ -78,7 +78,6 @@ export class RtTexture {
     tmpCanvas.style.imageRendering = "-webkit-crisp-edges";
 
     var tmpContext   = tmpCanvas.getContext('2d');
-
 
     tmpContext.putImageData(imageData, 0, 0);
     context.translate(0, this.rtHeight);

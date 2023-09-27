@@ -1,11 +1,11 @@
 
 import * as THREE  from 'three'
 import * as NODE   from 'three/nodes';
-import Quad        from '../../engine/quad';
-import {RtTexture} from './../rTtexture'
+import Quad        from './../PlanetTech/engine/quad';
+import {RtTexture} from './rTtexture'
 import { displayCanvasesInGrid } from './utils';
-import {snoise,normals, sdfbm2,} from '../../shaders/analyticalNormals';
-import {snoise3D,fbmNoise,displacementNormalNoiseFBM,displacementFBM,displacementNormalNoiseFBMWarp,displacementNoiseFBMWarp}  from  './../../shaders/glslFunctions'
+//import {snoise,normals, sdfbm2,} from '../../shaders/analyticalNormals';
+import * as Shaders  from  './../PlanetTech/shaders/index.js'
 
 
 export class CubeMap{
@@ -47,11 +47,11 @@ export class CubeMap{
         this.mainCubeSides.map((p)=>{
             var cnt_ = this.center.clone()
             var newPostion = NODE.float(params.radius).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
-            p.material.colorNode = snoise3D.call({v:newPostion.mul(params.scale)})
+            p.material.colorNode = Shaders.snoise3D({v:newPostion.mul(params.scale)})
         })
 
     }
-  
+/*  
     simplexNoiseFbm(params){
         params.vn = NODE.normalLocal
         params.tangent = NODE.tangentLocal
@@ -87,7 +87,7 @@ export class CubeMap{
             }
         })
     }
-
+*/
 
     buildCube(){
         let qf = new Quad(this.w,this.h,this.ws,this.hs,this.d)

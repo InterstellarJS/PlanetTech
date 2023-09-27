@@ -78,7 +78,8 @@ import { getRandomColor,hexToRgbA } from './core/sphere/utils'
     params.levels,
     params.radius,
     params.displacmentScale,
-    params.color
+    params.lodDistanceOffset,
+    params.color,
   )
 
  scene.add(s.sphere);
@@ -253,6 +254,7 @@ s.build(
   params.levels,
   params.radius,
   params.displacmentScale,
+  params.lodDistanceOffset
 )
 
 s.front. addTexture([N[0],D[0]], params.displacmentScale)

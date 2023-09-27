@@ -47,7 +47,7 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 - Recommended GPU is GTX 1060 and above.
 
 ## How It Works
-The PlanettechJS repository contains two libraries: **PlanetTech** itself and **CubeMap**. Both **PlanetTech** and **CubeMap** are built using ThreeJS experimant NodeMatrial.
+The PlanettechJS repository contains two libraries: PlanetTech itself and CubeMap. Both PlanetTech and CubeMap are built using ThreeJS experimant NodeMatrial.
 
 - **PlanetTech**: Think of it as the backend. It handles planet system management, mesh creation, as well as the generation of quads and quadtree data structures from the `'./PlanetTech/engine'`.
 

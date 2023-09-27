@@ -97,7 +97,7 @@ import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
         params.color,
     )
 
-    scene.add(s.sphere);
+    rend.scene_.add(s.sphere);
 ```
 ![quad Sphere](./public/readmeImg/img2.png)
 

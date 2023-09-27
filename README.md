@@ -47,11 +47,55 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 - Recommended GPU is GTX 1060 and above.
 
 ## How It Works
-The PlanettechJS repository contains two libraries: Planettech itself and Cubemap.
+The PlanettechJS repository contains two libraries: PlanetTech itself and Cubemap.
 
-- Planettech: Think of it as the backend. It handles planet system management, mesh creation, as well as the generation of quads and quadtree data structures from the PlanetTech engine.
+- **PlanetTech**: Think of it as the backend. It handles planet system management, mesh creation, as well as the generation of quads and quadtree data structures from the PlanetTech engine.
 
-- Cubemap: This serves as the frontend and primarily handles texture generation.
+- **CubeMap**: This serves as the frontend and primarily handles texture generation.
 
-
+We will start with planetTech. Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.
 Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.
+```javascript
+
+import Sphere from './PlanetTech/sphere/sphere'
+import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
+
+  const params = {
+    width:            100,
+    height:           100,
+    widthSegment:      50,
+    heightSegment:     50,
+    quadTreeDimensions: 1,
+    levels:             2,
+    radius:           100,
+    displacmentScale:   1,
+    lodDistanceOffset:1.4, 
+    color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
+ }
+
+ let s = new Sphere(
+    params.width,
+    params.height,
+    params.widthSegment,
+    params.heightSegment,
+    params.quadTreeDimensions
+    )
+
+  s.build(
+    params.levels,
+    params.radius,
+    params.displacmentScale,
+    params.lodDistanceOffset,
+    params.color,
+  )
+
+ scene.add(s.sphere);
+
+```
+![quad Sphere](./public/readmeImg/img2.png)
+
+Now let's crank up the `levels` all the way to 10 (a reasonable number without my machine freezing up). So you'll be creating a sphere with 10x10x6 dimensions at a resolution of 50. You can play with the parameters to fit your needs; the only limitation is your machine.
+![quad Sphere](./public/readmeImg/img3.png)
+
+To get a better understanding of the `levels` parameter, let's take a look at a single quad (single dimension). If we were to grab a quad from our sphere without the projection so its a flat plane, and adding a simple height map texture. Setting `params.levels = 6` gives a single dimension the ability to go six levels deep. As you can see each child in each level with a random color. 
+![quad Sphere](./public/readmeImg/img4.jpg)

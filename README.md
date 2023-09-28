@@ -135,8 +135,6 @@ We initialize a cube map, setting the width and height of the noise space to 200
 
 Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory. The order that the textures are in is `[front,back,right,left,top,bottom]`. If you choose to download the images you can load them using `THREE.TextureLoader()`, and put them in the correct order PlanetTech uses.
 
-As shown previously we build the Sphere then set the textures or each face, add a light direction for each face, finally add our Sphere to the scene.
-
 ```javaScript
 const displacmentMaps = new CubeMap(2000,3,false)
 const download = false
@@ -177,8 +175,17 @@ ridge:            false,
 })
 normalMap.snapShot(download)
 let N = normalMap.textuerArray
+```
+
+ The normal and displacement map for the front face.
+<p align="center">
+  <img src="./public/readmeImg/nss1.png" width="400" />
+  <img src="./public/readmeImg/dss1.png" width="400" />
+</p>
 
 
+As shown previously we build the Sphere then set the textures or each face, add a light direction for each face, finally add our Sphere to the scene.
+```javaScript
 const params = {
 width:          10000,
 height:         10000,
@@ -235,9 +242,9 @@ https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/b6ad90b5-5664-4a3a-
 
 
 # Celestial Bodies
-The `celestialBodies` simply a wrapper around the process we just completed.
+The `celestialBodies` is simply a wrapper around the process we just completed.
 It is meant to serve as the main interface for a user to create celestial bodies such as `Planet`, `Moon`, and `Sun`.
-A celestialBodies is initialize with `object` and a `name`.
+A `celestialBodies` is initialize with a `object` and a `name`.
 
 ```javaScript
 let N = [...]

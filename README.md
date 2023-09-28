@@ -127,7 +127,8 @@ To get a better understanding of the `levels` parameter, let's take a look at a 
 
 
 # CubeMap
-⚠️ **Disclaimer:** CubeMap isn't optimized yet; increasing the grid size or resolution to a large amount can cause the renderer to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
+⚠️ **Disclaimer:** It's recommended to use WebGL renderer for CubeMap `.build()` method, WebGPU renderer isn't supported yet.
+ CubeMap isn't optimized yet; increasing the grid size or resolution to a large amount can cause the renderer to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
 
 To build something the resembles a planet, PlanetTechJS comes with an experimental feature called [CubeMap](./src/lib/cubeMap). CubeMap allows users to create procedurally generated cube textures that return displacement maps or normal maps. CubeMap can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMap works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
 You can think of PlanetTechJS as the back-end and CubeMap as the front-end of the planet creation process.
@@ -137,9 +138,15 @@ We initialize a cube map, setting the width and height of the noise space to 200
 Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory. The order that the textures are in is `[front,back,right,left,top,bottom]`. If you choose to download the images you can load them using `THREE.TextureLoader()`, and put them in the correct order PlanetTech uses.
 
 ```javaScript
+import renderer from './render';
+import { CubeMap } from './cubeMap/cubeMap';
+
+let rend = renderer;
+rend.WebGLRenderer(canvasViewPort);
+
 const displacmentMaps = new CubeMap(2000,3,false)
 const download = false
-displacmentMaps.build(3512)
+displacmentMaps.build(3512,renderer)
 displacmentMaps.simplexNoiseFbm({
 inScale:            2.5,
 scale:              0.2,
@@ -159,7 +166,7 @@ let D = displacmentMaps.textuerArray
 
 const normalMap = new CubeMap(2000,3,true)
 const download = false
-normalMap.build(2512)
+normalMap.build(2512,renderer)
 normalMap.simplexNoiseFbm({
 inScale:            2.5,
 scale:              0.2,

@@ -17,7 +17,7 @@ class ViewGL {
   
   render(canvasViewPort) {
     this.rend = renderer;
-    this.rend.WebGLRenderer(canvasViewPort);
+    this.rend.WebGPURenderer(canvasViewPort);
     this.rend.scene();
     this.rend.stats();
     this.rend.camera();
@@ -38,9 +38,9 @@ class ViewGL {
       scale:              0.2,
       radius:             100,
     })
-    displacmentMaps.snapShot(download)
-    let dt = displacmentMaps.textuerArray
 
+    displacmentMaps.snapShot(download)
+    let N = displacmentMaps.textuerArray
 
     this.planet = new Planet({
       width:           10000,
@@ -54,7 +54,7 @@ class ViewGL {
       lodDistanceOffset: 1.4,
     })
 
-    this.planet.textuers(dt,dt)
+    this.planet.textuers(N,N)
     this.planet.light(NODE.vec3(0.0,20.0,20.0))
     this.quads = this.planet.getAllInstance()
     this.rend.scene_.add( this.planet.sphere);

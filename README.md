@@ -126,50 +126,101 @@ To get a better understanding of the `levels` parameter, let's take a look at a 
 
 
 ## CubeMap
-To build something the resembles a planet, PlanetTechJS comes with an experimental feature called [CubeMap](./src/lib/cubeMap). CubeMap allows users to create procedurally generated cube textures that return displacement maps and normal maps. CubeMap can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMap works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
-You can think of PlanetTechJS as the back-end and CubeMap as the front-end of the planet creation process.
-
 ⚠️ **Disclaimer:** CubeMap isn't optimized yet; increasing the grid size or resolution to a large amount can cause the renderer to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
 
+To build something the resembles a planet, PlanetTechJS comes with an experimental feature called [CubeMap](./src/lib/cubeMap). CubeMap allows users to create procedurally generated cube textures that return displacement maps or normal maps. CubeMap can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMap works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
+You can think of PlanetTechJS as the back-end and CubeMap as the front-end of the planet creation process.
+
+We initialize a cube map, setting the width and height of the noise space to 2000 and specifying that we want a 3x3 grid with a `mapType` set to `false` for displacement map and `true` for normal map. We then call the build method, creating the cube with the specified resolution of 3512 for this displacement map and 2512 for the normal map.
+
+Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory. The order that the textures are in is `[front,back,right,left,top,bottom]`. If you choose to download the images you can load them using `THREE.TextureLoader()`, and put them in the correct order PlanetTech uses.
+
+As shown previously we build the Sphere then set the textuers or each face and, add a light direction for each face and finally add our Sphere to the scene.
+
 ```javaScript
-  const displacmentMaps = new CubeMap(2000,3,false)
-  const download = false
-  displacmentMaps.build(3512)
-  displacmentMaps.simplexNoiseFbm({
-    inScale:            2.5,
-    scale:              0.2,
-    radius:             100,
-    scaleHeightOutput:  0.1,
-    seed:               0.0,
-    normalScale:        .01,
-    redistribution:      2.,
-    persistance:        .35,
-    lacunarity:          2.,
-    iteration:            5,
-    terbulance:       false,
-    ridge:            false,
-  })
-  displacmentMaps.snapShot(download)
-  let dt = displacmentMaps.textuerArray
+const displacmentMaps = new CubeMap(2000,3,false)
+const download = false
+displacmentMaps.build(3512)
+displacmentMaps.simplexNoiseFbm({
+inScale:            2.5,
+scale:              0.2,
+radius:             100,
+scaleHeightOutput:  0.1,
+seed:               0.0,
+normalScale:        .01,
+redistribution:      2.,
+persistance:        .35,
+lacunarity:          2.,
+iteration:            5,
+terbulance:       false,
+ridge:            false,
+})
+displacmentMaps.snapShot(download)
+let D = displacmentMaps.textuerArray
 
-  const normalMap = new CubeMap(2000,3,true)
-  const download = false
-  normalMap.build(2512)
-  normalMap.simplexNoiseFbm({
-    inScale:            2.5,
-    scale:              0.2,
-    radius:             100,
-    scaleHeightOutput:  0.1,
-    seed:               0.0,
-    normalScale:        .01,
-    redistribution:      2.,
-    persistance:        .35,
-    lacunarity:          2.,
-    iteration:            5,
-    terbulance:       false,
-    ridge:            false,
-  })
-  normalMap.snapShot(download)
-  let nt = normalMap.textuerArray
+const normalMap = new CubeMap(2000,3,true)
+const download = false
+normalMap.build(2512)
+normalMap.simplexNoiseFbm({
+inScale:            2.5,
+scale:              0.2,
+radius:             100,
+scaleHeightOutput:  0.1,
+seed:               0.0,
+normalScale:        .01,
+redistribution:      2.,
+persistance:        .35,
+lacunarity:          2.,
+iteration:            5,
+terbulance:       false,
+ridge:            false,
+})
+normalMap.snapShot(download)
+let N = normalMap.textuerArray
 
+
+const params = {
+width:            100,
+height:           100,
+widthSegment:      50,
+heightSegment:     50,
+quadTreeDimensions: 1,
+levels:             1,
+radius:           100,
+displacmentScale:   1,
+lodDistanceOffset:1.4, 
+//color: () => NODE.vec3(...hexToRgbA(getRandomColor())), no longer needed
+}
+
+let s = new Sphere(
+params.width,
+params.height,
+params.widthSegment,
+params.heightSegment,
+params.quadTreeDimensions
+)
+
+s.build(
+params.levels,
+params.radius,
+params.displacmentScale,
+params.lodDistanceOffset,
+params.color,
+)
+
+s.front. addTexture([N[0],D[0]], params.displacmentScale)
+s.back.  addTexture([N[1],D[1]], params.displacmentScale)
+s.right. addTexture([N[2],D[2]], params.displacmentScale)
+s.left.  addTexture([N[3],D[3]], params.displacmentScale)
+s.top.   addTexture([N[4],D[4]], params.displacmentScale)
+s.bottom.addTexture([N[5],D[5]], params.displacmentScale)
+
+const ld = NODE.vec3(0.0,50.0,50.0)
+
+s.front. lighting(ld)
+s.back.  lighting(ld)
+s.right. lighting(ld)
+s.left.  lighting(ld)
+s.top.   lighting(ld)
+s.bottom.lighting(ld)
 ```

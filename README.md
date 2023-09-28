@@ -123,3 +123,53 @@ Now let's crank up the `dimensions` all the way to 10 (a reasonable number witho
 ### Levels 
 To get a better understanding of the `levels` parameter, let's take a look at a single quad (single dimension). If we were to grab a quad from our sphere without the projection so its a flat plane, and adding a simple height map texture. Setting `params.levels = 6` gives a single dimension the ability to go six levels deep. As you can see each child in each level with a random color. 
 ![quad Sphere](./public/readmeImg/img4.jpg)
+
+
+## CubeMap
+To build something the resembles a planet, PlanetTechJS comes with an experimental feature called [CubeMap](./src/lib/cubeMap). CubeMap allows users to create procedurally generated cube textures that return displacement maps and normal maps. CubeMap can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMap works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
+You can think of PlanetTechJS as the back-end and CubeMap as the front-end of the planet creation process.
+
+⚠️ **Disclaimer:** CubeMap isn't optimized yet; increasing the grid size or resolution to a large amount can cause the renderer to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
+
+```javaScript
+  const displacmentMaps = new CubeMap(2000,3,false)
+  const download = false
+  displacmentMaps.build(3512)
+  displacmentMaps.simplexNoiseFbm({
+    inScale:            2.5,
+    scale:              0.2,
+    radius:             100,
+    scaleHeightOutput:  0.1,
+    seed:               0.0,
+    normalScale:        .01,
+    redistribution:      2.,
+    persistance:        .35,
+    lacunarity:          2.,
+    iteration:            5,
+    terbulance:       false,
+    ridge:            false,
+  })
+  displacmentMaps.snapShot(download)
+  let dt = displacmentMaps.textuerArray
+
+  const normalMap = new CubeMap(2000,3,true)
+  const download = false
+  normalMap.build(2512)
+  normalMap.simplexNoiseFbm({
+    inScale:            2.5,
+    scale:              0.2,
+    radius:             100,
+    scaleHeightOutput:  0.1,
+    seed:               0.0,
+    normalScale:        .01,
+    redistribution:      2.,
+    persistance:        .35,
+    lacunarity:          2.,
+    iteration:            5,
+    terbulance:       false,
+    ridge:            false,
+  })
+  normalMap.snapShot(download)
+  let nt = normalMap.textuerArray
+
+```

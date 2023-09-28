@@ -294,7 +294,7 @@ atmosphere.createcomposer(planetRadius,planetCenterPosition,atomsphereRadius)
 ```
 <p align="center">
   Here is PlanetTechJS using CubeMapJS and Atmosphere.
-  <img src="./public/readmeImg/atmo6.png" />
+  <img src="./public/readmeImg/atom6.png" />
   <img src="./public/readmeImg/atmo7.png" />
   <img src="./public/readmeImg/atmo8.png" />
   <img src="./public/readmeImg/atmo2.png" />

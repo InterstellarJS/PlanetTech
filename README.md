@@ -62,44 +62,44 @@ import renderer from './render';
 import Sphere   from './PlanetTech/sphere/sphere'
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 
-    let rend = renderer;
-    rend.WebGLRenderer(canvasViewPort);
-    rend.scene();
-    rend.stats();
-    rend.camera();
-    rend.updateCamera(0,0,10000)
-    rend.orbitControls()
+let rend = renderer;
+rend.WebGLRenderer(canvasViewPort);
+rend.scene();
+rend.stats();
+rend.camera();
+rend.updateCamera(0,0,10000)
+rend.orbitControls()
 
-    const params = {
-        width:            100,
-        height:           100,
-        widthSegment:      50,
-        heightSegment:     50,
-        quadTreeDimensions: 1,
-        levels:             1,
-        radius:           100,
-        displacmentScale:   1,
-        lodDistanceOffset:1.4, 
-        color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
-    }
+const params = {
+width:            100,
+height:           100,
+widthSegment:      50,
+heightSegment:     50,
+quadTreeDimensions: 1,
+levels:             1,
+radius:           100,
+displacmentScale:   1,
+lodDistanceOffset:1.4, 
+color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
+}
 
-    let s = new Sphere(
-        params.width,
-        params.height,
-        params.widthSegment,
-        params.heightSegment,
-        params.quadTreeDimensions
-    )
+let s = new Sphere(
+params.width,
+params.height,
+params.widthSegment,
+params.heightSegment,
+params.quadTreeDimensions
+)
 
-    s.build(
-        params.levels,
-        params.radius,
-        params.displacmentScale,
-        params.lodDistanceOffset,
-        params.color,
-    )
+s.build(
+params.levels,
+params.radius,
+params.displacmentScale,
+params.lodDistanceOffset,
+params.color,
+)
 
-    rend.scene_.add(s.sphere);
+rend.scene_.add(s.sphere);
 ```
 ![quad Sphere](./public/readmeImg/img2.png)
 
@@ -111,7 +111,7 @@ import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 - `heightSegment`: Set the poly count for the height.
 - `quadTreeDimensions`: Specify the number of top quads with which a sphere is initialized.
 - `levels`: Determine how deep the quadtree should go.
-- `radius`: Specify the planet's radius.
+- `radius`: Specify the sphere's radius.
 - `displacementScale`: Set the texture displacement height.
 - `lodDistanceOffset`: Specify the distance offset used to trigger the splitting of a quad.
 - `color`: Apply a color to each quad.

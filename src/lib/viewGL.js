@@ -7,6 +7,8 @@ import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes
 import { Atmosphere } from './PlanetTech/shaders/vfx/atmosphereScattering';
 import { FirstPersonControls }      from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
+import { CubeMap } from './cubeMap/cubeMap';
+
 
 class ViewGL {
   constructor() {
@@ -26,46 +28,74 @@ class ViewGL {
   initViewPort(canvasViewPort) {
   this.canvasViewPort = canvasViewPort;
   }
+
+  initCubeMapPlanet() {
+
+    const displacmentMaps = new CubeMap(2000,1,true)
+    const download = false
+    displacmentMaps.build(1512,this.rend.renderer)
+    displacmentMaps.simplexNoise({
+      scale:              0.2,
+      radius:             100,
+    })
+    displacmentMaps.snapShot(download)
+    let dt = displacmentMaps.textuerArray
+
+
+    this.planet = new Planet({
+      width:           10000,
+      height:          10000,
+      widthSegment:       30,
+      heightSegment:      30,
+      quadTreeDimensions:  1,
+      levels:              5,
+      radius:          10000,
+      displacmentScale: 22.5,
+      lodDistanceOffset: 1.4,
+    })
+
+    this.planet.textuers(dt,dt)
+    this.planet.light(NODE.vec3(0.0,20.0,20.0))
+    this.quads = this.planet.getAllInstance()
+    this.rend.scene_.add( this.planet.sphere);
+    //console.log(this.planet.log())
+  }
+  
+
   
   initPlanet() {
 
-    let N = [
+    this.planet = new Planet({
+      width:           10000,
+      height:          10000,
+      widthSegment:       30,
+      heightSegment:      30,
+      quadTreeDimensions:  1,
+      levels:              5,
+      radius:          10000,
+      displacmentScale: 22.5,
+      lodDistanceOffset: 1.4,
+    })
+
+    this.planet.textuers([
       new THREE.TextureLoader().load('./planet/nf_image.png'),
       new THREE.TextureLoader().load('./planet/nb_image.png'),
       new THREE.TextureLoader().load('./planet/nr_image.png'),
       new THREE.TextureLoader().load('./planet/nl_image.png'),
       new THREE.TextureLoader().load('./planet/nt_image.png'),
       new THREE.TextureLoader().load('./planet/nbo_image.png'),
-    ]
-    
-    let D = [
+      ],[
       new THREE.TextureLoader().load('./planet/f_image.png'),
       new THREE.TextureLoader().load('./planet/b_image.png'),
       new THREE.TextureLoader().load('./planet/r_image.png'),
       new THREE.TextureLoader().load('./planet/l_image.png'),
       new THREE.TextureLoader().load('./planet/t_image.png'),
       new THREE.TextureLoader().load('./planet/bo_image.png'),
-    ]
-        
-    this.planet = new Planet({
-      width:          10000,
-      height:         10000,
-      widthSegment:      30,
-      heightSegment:     30,
-      quadTreeDimensions: 1,
-      levels:             5,
-      radius:         10000,
-      displacmentScale:  25,
-      lodDistanceOffset:1.4,
-      //color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
-    })
-
-    this.planet.textuers(N,D)
+    ])
     this.planet.light(NODE.vec3(0.0,20.0,20.0))
     this.quads = this.planet.getAllInstance()
-
-    console.log(this.planet.log())
     this.rend.scene_.add( this.planet.sphere);
+    //console.log(this.planet.log())
   }
   
   initPlayer(){

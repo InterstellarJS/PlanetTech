@@ -268,6 +268,39 @@ let quads = planet.getAllInstance()
 rend.scene_.add(planet.sphere);
 ```
 
+# Atomsphere Scattering
+
+To add a atomsphere to a planet 
+
+```javaScript
+import { Atmosphere } from './PlanetTech/shaders/vfx/atmosphereScattering';
+
+let atmosphere = new Atmosphere() 
+atmosphere.createcomposer(planetRadius,planetCenterPosition,atomsphereRadius)
+
+//update loop
+  update(t) {
+    requestAnimationFrame(this.update.bind(this));
+    if(this.planet){
+      this.controls.update(this.clock.getDelta())
+      for (var i = 0; i < this.quads.length; i++) {
+      this.quads[i].update(this.player)
+      }
+    }
+    atmosphere.run()
+    nodeFrame.update();
+    this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
+  }
+```
+<p align="center">
+  Here is PlanetTechJS using CubeMapJS and Atmosphere.
+  <img src="./public/readmeImg/atmo6.png" />
+  <img src="./public/readmeImg/atmo7.png" />
+  <img src="./public/readmeImg/atmo8.png" />
+  <img src="./public/readmeImg/atmo2.png" />
+</p>
+
+
 # Debugging
 For debugging Calling `Sphere.log()` method returns an object that contains all the important data for the Sphere engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
 

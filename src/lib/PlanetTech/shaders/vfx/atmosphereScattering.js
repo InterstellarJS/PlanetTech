@@ -291,10 +291,6 @@ export class Atmosphere{
     }
   
 
-    createcomposer(){
-    }
-
-
     createcomposer(pradius,pcenter,aradius){
       this.composer = new EffectComposer(renderer.renderer,{
         frameBufferType: HalfFloatType

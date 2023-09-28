@@ -46,7 +46,7 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 ## Specs
 - Recommended GPU is GTX 1060 and above.
 
-## How It Works
+# How It Works
 The PlanettechJS repository contains two libraries: PlanetTech itself and CubeMap. Both PlanetTech and CubeMap are built using ThreeJS experimental NodeMaterial.
 Additionally, PlanetTech requires you to use the `render` object. With the `render` object, you can switch between the **WebGL**: `render.WebGLRenderer(canvasViewPort)` and **WebGPU**: `render.WebGPURenderer(canvasViewPort)`. You should stick with WebGL because WebGPU is still very experimental in ThreeJS and can cause issues with each version update.
 
@@ -125,7 +125,7 @@ To get a better understanding of the `levels` parameter, let's take a look at a 
 ![quad Sphere](./public/readmeImg/img4.jpg)
 
 
-## CubeMap
+# CubeMap
 ⚠️ **Disclaimer:** CubeMap isn't optimized yet; increasing the grid size or resolution to a large amount can cause the renderer to crash and may result in a lost context. You have to find a balance between visual appeal and performance. Additionally, in some cases, the normal map can create seams between each face of the texture, which can break immersion for the user. Sometimes, these seams can be ignored because they are negligible.
 
 To build something the resembles a planet, PlanetTechJS comes with an experimental feature called [CubeMap](./src/lib/cubeMap). CubeMap allows users to create procedurally generated cube textures that return displacement maps or normal maps. CubeMap can generate displacement and normal maps in tangent space, as well as analytical noise derivatives that generate world space normal maps. CubeMap works by dividing the noise space into a tiled NxN grid, setting the resolution for each tile, allowing the camera to capture more detailed snapshots, resulting in better quality images.
@@ -267,3 +267,24 @@ planet.light   (NODE.vec3(0.0,20.0,20.0))
 let quads = planet.getAllInstance()
 rend.scene_.add(planet.sphere);
 ```
+
+# Debugging
+For debugging Calling `Sphere.log()` method returns an object that contains all the important data for the Sphere engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
+
+<p align="center">
+  <img src="./public/readmeImg/log.png" />
+</p>
+
+- `arrayBuffers` contains all the geometry for each level, with the key being the dimensions of the mesh.
+- `cnt` represents the center of our sphere.
+- `color` is the default color.
+- `dataTransfer` holds our textures for each face of the planet.
+- `dimensions` is the number of dimensions for each face.
+- `displacementScale` for our texture.
+- `levels` holds `levelsArray`, with each item representing the dimensions of the mesh at each level. `polyPerLevel` tells you the polygon count of the mesh at each level.
+- `maxLevelSize` represents the largest mesh size.
+- `minLevelSize` represents the smallest mesh size.
+- `minPolyCount` represents the smallest polygon count.
+- `position` is the position of the planet.
+- `radius` is the radius of the planet.
+- `scale` is the scale of the planet.

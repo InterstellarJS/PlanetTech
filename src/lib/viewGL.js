@@ -53,9 +53,9 @@ class ViewGL {
       widthSegment:      30,
       heightSegment:     30,
       quadTreeDimensions: 1,
-      levels:             1,
+      levels:             5,
       radius:         10000,
-      displacmentScale:  0,
+      displacmentScale:  25,
       lodDistanceOffset:1.4,
       //color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
     })

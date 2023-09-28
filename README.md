@@ -47,7 +47,7 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 - Recommended GPU is GTX 1060 and above.
 
 ## How It Works
-The PlanettechJS repository contains two libraries: PlanetTech itself and CubeMap. Both PlanetTech and CubeMap are built using ThreeJS experimant NodeMatrial.
+The PlanettechJS repository contains two libraries: PlanetTech itself and CubeMap. Both PlanetTech and CubeMap are built using ThreeJS experimental NodeMaterial.
 Additionally, PlanetTech requires you to use the `render` object. With the `render` object, you can switch between the **WebGL**: `render.WebGLRenderer(canvasViewPort)` and **WebGPU**: `render.WebGPURenderer(canvasViewPort)`. You should stick with WebGL because WebGPU is still very experimental in ThreeJS and can cause issues with each version update.
 
 - **PlanetTech**: Think of it as the backend. It handles planet system management, mesh creation, as well as the generation of quads and quadtree data structures from the `'./PlanetTech/engine'`.

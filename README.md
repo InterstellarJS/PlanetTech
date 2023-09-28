@@ -67,17 +67,17 @@ rend.WebGLRenderer(canvasViewPort);
 rend.scene();
 rend.stats();
 rend.camera();
-rend.updateCamera(0,0,10000)
+rend.updateCamera(0,0,20000)
 rend.orbitControls()
 
 const params = {
-width:            100,
-height:           100,
+width:          10000,
+height:         10000,
 widthSegment:      50,
 heightSegment:     50,
 quadTreeDimensions: 1,
 levels:             1,
-radius:           100,
+radius:         10000,
 displacmentScale:   1,
 lodDistanceOffset:1.4, 
 color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
@@ -180,13 +180,13 @@ let N = normalMap.textuerArray
 
 
 const params = {
-width:            100,
-height:           100,
+width:          10000,
+height:         10000,
 widthSegment:      50,
 heightSegment:     50,
 quadTreeDimensions: 1,
 levels:             1,
-radius:           100,
+radius:         10000,
 displacmentScale:   1,
 lodDistanceOffset:1.4, 
 //color: () => NODE.vec3(...hexToRgbA(getRandomColor())), no longer needed
@@ -232,3 +232,31 @@ s.bottom.lighting(ld)
 Here is a video of our planet. The 1 meter red cube is used to visualize the scale/percision of the height map.
 
 https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/b6ad90b5-5664-4a3a-b535-d3bcbc542d35
+
+
+# Celestial Bodies
+The `celestialBodies` simply a wrapper around the process we just completed.
+It is meant to serve as the main interface for a user to create celestial bodies such as `Planet`, `Moon`, and `Sun`.
+A celestialBodies is initialize with object and a name.
+
+```javaScript
+let N = [...]
+let D = [...]
+    
+let planet = new Planet({
+  width:          10000,
+  height:         10000,
+  widthSegment:      30,
+  heightSegment:     30,
+  quadTreeDimensions: 1,
+  levels:             5,
+  radius:         10000,
+  displacmentScale:  25,
+  lodDistanceOffset:1.4,
+},'Terranox')
+
+planet.textuers(N,D)
+planet.light   (NODE.vec3(0.0,20.0,20.0))
+let quads = planet.getAllInstance()
+rend.scene_.add(planet.sphere);
+```

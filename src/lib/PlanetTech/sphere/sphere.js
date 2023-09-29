@@ -123,7 +123,7 @@ export default class Sphere{
       this.bottom.quadTreeconfig.config['cnt'] = cnt.clone()
     }
 
-    log(){
+    metaData(){
       return this.quadTreeconfig.shardedData
     }
 
@@ -186,5 +186,12 @@ export default class Sphere{
       this.top.   quadTreeconfig.config['cnt'] = cnt.clone()
       this.bottom.quadTreeconfig.config['cnt'] = cnt.clone()
     }
+
+    update(player){
+      let quads = this.getAllInstance()
+      for (var i = 0; i < quads.length; i++) {
+          quads[i].update(player)
+      } 
+  }
 
 }

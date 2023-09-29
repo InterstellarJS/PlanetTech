@@ -261,7 +261,7 @@ const postFragmentShader =
     vec3 rayDirection   = normalize(posWS - uCameraPosition);
     float sceneDepth    = length(posWS.xyz - uCameraPosition);
     vec3 addColor       = inputColor.xyz;
-    vec3 lightDirection = normalize(vec3(0.,0.,PLANET_RADIUS*5.) - rayOrigin);;
+    vec3 lightDirection = normalize(vec3(0.,0.,PLANET_RADIUS));;
 
     addColor = calculate_scattering(
       rayOrigin,
@@ -269,8 +269,8 @@ const postFragmentShader =
       sceneDepth,
       addColor,
       lightDirection,
-      100.,
-      vec3(.5,.5,.5),
+      1.,
+      vec3(1.5,1.5,1.5),
       PLANET_CENTER,
       PLANET_RADIUS,
       ATMOSPHERE_RADIUS,

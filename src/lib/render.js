@@ -21,7 +21,7 @@ class Renderer {
       logarithmicDepthBuffer: true,
       antialias: true,
     });
-    this.renderer.setClearColor('white');
+    this.renderer.setClearColor('black');
     this.container = document.getElementById('canvasContainer');
     this.renderer.setSize(
       this.container.clientWidth,

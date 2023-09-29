@@ -274,29 +274,21 @@ let quads = planet.getAllInstance()
 rend.scene_.add(planet.sphere);
 ```
 
-# Atomsphere Scattering
-
-To add a atomsphere to a planet 
+# Space
+To add a atomsphere to a planet use the `Space` class.
 
 ```javaScript
-import { Atmosphere } from './PlanetTech/shaders/vfx/atmosphereScattering';
+import { Space } from './Space/space';
 
-let atmosphere = new Atmosphere() 
-atmosphere.createcomposer(planetRadius,planetCenterPosition,atomsphereRadius)
+let space = new Space()
+space.createAtmosphere(planet,atmosphereRadius)
 
-//update loop
-  update(t) {
-    requestAnimationFrame(this.update.bind(this));
-    if(this.planet){
-      this.controls.update(this.clock.getDelta())
-      for (var i = 0; i < this.quads.length; i++) {
-      this.quads[i].update(this.player)
-      }
-    }
-    atmosphere.run()
-    nodeFrame.update();
-    this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
-  }
+update(t) {
+  requestAnimationFrame(update);
+  space.update(player)
+  nodeFrame.update();
+  rend.renderer.render(rend.scene_, rend.camera_);
+}
 ```
 <p align="center">
   Here is PlanetTechJS using CubeMapJS and Atmosphere.
@@ -307,8 +299,8 @@ atmosphere.createcomposer(planetRadius,planetCenterPosition,atomsphereRadius)
 </p>
 
 
-# Debugging
-For debugging Calling `Sphere.log()` method returns an object that contains all the important data for the Sphere engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
+# MetaData
+Calling `Sphere.metaData()` method returns an object that contains all the important data for the Sphere engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
 
 <p align="center">
   <img src="./public/readmeImg/log.png" />

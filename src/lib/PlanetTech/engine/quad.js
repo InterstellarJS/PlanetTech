@@ -85,7 +85,6 @@ import * as Shaders from '../shaders/index.js';
 
 
     createNewMesh(shardedGeometry){
-      //shardedGeometry.computeTangents()
       const width  = shardedGeometry.parameters.width
       const height = shardedGeometry.parameters.height
       const heightSegments = shardedGeometry.parameters.heightSegments
@@ -94,7 +93,7 @@ import * as Shaders from '../shaders/index.js';
       const quad     = new Quad(width,height,widthSegments,heightSegments)
       quad.plane     = new THREE.Mesh( shardedGeometry, material );
       quad.plane.frustumCulled = false
-      quad.plane.geometry.computeBoundingSphere()
+      //quad.plane.geometry.computeBoundingSphere()
       return quad
       }
 
@@ -179,24 +178,3 @@ import * as Shaders from '../shaders/index.js';
   
   }
   
-  /*
-  
-var cbt = new CubeTexture()
-var t = cbt.get(this.rend)
-console.log(t)
-
-this. q = new Quad(50,50,250,250,2)
-this. q.createQuadTree(2)
-this. q.createDimensions()
-this. q.addTexture  (t[0])
-this. q.lighting    (NODE.vec3(0,0,0))
-this.rend.scene.add( ...this. q.instances.map(x=>x.plane) );
-
-  if(this.q){
-    this.controls.update(this.clock.getDelta())
-    for (var i = 0; i < this.q.instances.length; i++) {
-      this.q.instances[i].update(this.player)
-    }
-}
-
-  */

@@ -94,3 +94,122 @@ float snoise3D(vec3 v){
 `,[permute,taylorInvSqrt])
 
 
+export const  snoise3Dfbm = glslFn(`
+float fbm(vec3 v_, float seed_, float scale_,float persistance_,float lacunarity_,float redistribution_, int iteration_,bool terbulance_, bool ridge_  ) {
+  vec3 v = v_; 
+  v += (seed_ * 100.0);
+  float persistance = persistance_;
+  float lacunarity = lacunarity_;
+  float redistribution = redistribution_;
+  bool terbulance = terbulance_;
+  bool ridge = terbulance_ && ridge_;
+
+  float result = 0.0;
+  float amplitude = 1.0;
+  float frequency = 1.0;
+  float maximum = amplitude;
+
+  for (int i = 0; i < iteration_; i++) {
+
+    vec3 p = v * frequency * scale_;
+
+    float noiseVal = snoise3D(p);
+
+    if (terbulance)
+      noiseVal = abs(noiseVal);
+
+    if (ridge)
+      noiseVal = -1.0 * noiseVal;
+
+    result += noiseVal * amplitude;
+
+    frequency *= lacunarity;
+    amplitude *= persistance;
+    maximum += amplitude;
+  }
+
+  float redistributed = pow(result, redistribution);
+  return redistributed / maximum;
+}
+`,[snoise3D])
+
+
+export  const  snoise3DDisplacementNormalFBM = glslFn(` 
+vec3 displacementNormalNoiseFBM(
+    vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float normalScale, float persistance,float lacunarity,float redistribution,  int iteration,bool terbulance, bool ridge){
+    float n = fbm(wp,  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge);  
+    vec3 displacedPosition = wp + vn * n;
+    float offset = normalScale;
+    vec3 tangent_ = tangent.xyz;
+    vec3 bitangent = normalize(cross(vn, tangent_));
+    vec3 neighbour1 = wp + tangent_ * offset;
+    vec3 neighbour2 = wp + bitangent * offset;
+    vec3 displacedNeighbour1 = neighbour1 + vn * fbm(neighbour1,  seed,  scale, persistance, lacunarity, redistribution,   iteration, terbulance,  ridge );
+    vec3 displacedNeighbour2 = neighbour2 + vn * fbm(neighbour2,  seed,  scale, persistance, lacunarity, redistribution,   iteration, terbulance,  ridge );
+    vec3 displacedTangent = displacedNeighbour1 - displacedPosition;
+    vec3 displacedBitangent = displacedNeighbour2 - displacedPosition;
+    vec3 displacedNormal = normalize(cross(displacedTangent, displacedBitangent));
+    return displacedNormal;
+  }
+
+  `,[snoise3Dfbm])
+
+
+  export  const  displacementFBM = glslFn(` 
+  float displacementFBM(
+      vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float persistance,float lacunarity,float redistribution, int iteration,bool terbulance, bool ridge){
+      float n = fbm(wp,  seed,  scale, persistance, lacunarity, redistribution,   iteration, terbulance,  ridge);  
+      return n;
+    }
+  
+    `,[snoise3Dfbm])
+
+  export  const  pattern = glslFn(` 
+  float pattern(vec3 wp, float seed, float scale,  float persistance,float lacunarity,float redistribution,  int iteration,bool terbulance, bool ridge){
+        float p1 = fbm( wp+ vec3(2.0,3.0,0.0),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+        float p2 = fbm( wp+ vec3(5.2,1.3,3.2),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+        float p3 = fbm( wp+ vec3(3.2,4.3,2.6),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+
+        vec3 q = vec3( p1 , p2, p3);
+
+        float p1r = fbm( wp+ 4.0*q +vec3(1.7,9.2,0.0),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+        float p2r = fbm( wp+ 4.0*q +vec3(2.3,2.8,3.2),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+        float p3r = fbm( wp+ 4.0*q +vec3(5.2,9.3,5.6),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+
+        vec3 r = vec3( p1r , p2r, p3r);
+
+      return fbm( (wp + 2.0 * r),  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge );
+    }
+  
+    `,[snoise3Dfbm])
+
+  export  const  displacementNormalNoiseFBMWarp = glslFn(` 
+  vec3 displacementNormalNoiseFBM(
+      vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float normalScale, float persistance,float lacunarity,float redistribution,  int iteration,bool terbulance, bool ridge){
+      float n = pattern(wp,  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge);  
+      vec3 displacedPosition = wp + vn * n;
+      float offset = normalScale;
+      vec3 tangent_ = tangent.xyz;
+      vec3 bitangent = normalize(cross(vn, tangent_));
+      vec3 neighbour1 = wp + tangent_ * offset;
+      vec3 neighbour2 = wp + bitangent * offset;
+      vec3 displacedNeighbour1 = neighbour1 + vn * pattern(neighbour1,  seed,  scale, persistance, lacunarity, redistribution,   iteration, terbulance,  ridge );
+      vec3 displacedNeighbour2 = neighbour2 + vn * pattern(neighbour2,  seed,  scale, persistance, lacunarity, redistribution,   iteration, terbulance,  ridge );
+      vec3 displacedTangent = displacedNeighbour1 - displacedPosition;
+      vec3 displacedBitangent = displacedNeighbour2 - displacedPosition;
+      vec3 displacedNormal = normalize(cross(displacedTangent, displacedBitangent));
+      return displacedNormal;
+    }
+  
+    `,[pattern])
+
+  export  const  displacementNoiseFBMWarp = glslFn(` 
+  float displacementNormalNoiseFBM(
+      vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float normalScale, float persistance,float lacunarity,float redistribution,  int iteration,bool terbulance, bool ridge){
+      float n = pattern(wp,  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge);  
+      return n;
+    }
+  
+    `,[pattern])
+
+

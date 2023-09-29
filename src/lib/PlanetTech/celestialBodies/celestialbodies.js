@@ -5,10 +5,10 @@ import Sphere     from '../sphere/sphere';
 export class CelestialBodies extends Sphere{
     constructor(params,type){
         super(
-            params.width,
-            params.height,
-            params.widthSegment,
-            params.heightSegment,
+            params.size,
+            params.size,
+            params.polyCount,
+            params.polyCount,
             params.quadTreeDimensions)
 
         this.build(

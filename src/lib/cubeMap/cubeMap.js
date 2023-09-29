@@ -51,7 +51,6 @@ export class CubeMap{
         })
 
     }
-/*  
     simplexNoiseFbm(params){
         params.vn = NODE.normalLocal
         params.tangent = NODE.tangentLocal
@@ -63,12 +62,34 @@ export class CubeMap{
                 params.wp = wp.mul(params.inScale);
               }
             if(this.mapType){
-                p.material.colorNode = displacementNormalNoiseFBM.call(params).mul(.5).add(.5)
+                p.material.colorNode = Shaders.snoise3DDisplacementNormalFBM(params).mul(.5).add(.5)
             }else{
-                p.material.colorNode = displacementFBM.call(params).add(params.scaleHeightOutput)
+                p.material.colorNode = Shaders.displacementFBM(params).add(params.scaleHeightOutput)
             }
         })
     }
+
+    simplexNoiseFbmWarp(params){
+        params.vn = NODE.normalLocal
+        params.tangent = NODE.tangentLocal
+        this.mainCubeSides.map((p)=>{
+            var cnt_ = this.center.clone()
+            var newPostion = NODE.float(params.radius).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
+            var wp = newPostion;
+            if (!params.hasOwnProperty('wp')) {
+                params.wp = wp.mul(params.inScale);
+              }
+            if(this.mapType){
+                p.material.colorNode = Shaders.displacementNormalNoiseFBMWarp(params).mul(.5).add(.5)
+            }else{
+                p.material.colorNode = Shaders.displacementNoiseFBMWarp(params).add(params.scaleHeightOutput)
+            }
+        })
+    }
+
+
+
+/*  
 
     simplexNoiseFbmWarp(params){
         params.vn = NODE.normalLocal

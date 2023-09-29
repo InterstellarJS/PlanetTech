@@ -17,7 +17,7 @@ class ViewGL {
   
   render(canvasViewPort) {
     this.rend = renderer;
-    this.rend.WebGPURenderer(canvasViewPort);
+    this.rend.WebGLRenderer(canvasViewPort);
     this.rend.scene();
     this.rend.stats();
     this.rend.camera();
@@ -31,26 +31,34 @@ class ViewGL {
 
   initCubeMapPlanet() {
 
-    const displacmentMaps = new CubeMap(2000,1,true)
+    const displacmentMaps = new CubeMap(2000,3,true)
     const download = false
-    displacmentMaps.build(1512,this.rend.renderer)
-    displacmentMaps.simplexNoise({
-      scale:              0.2,
+    displacmentMaps.build(2512,this.rend.renderer)
+    displacmentMaps.simplexNoiseFbm({
+      inScale:            0.05,
+      scale:              0.1,
       radius:             100,
+      scaleHeightOutput:  0.1,
+      seed:               0.0,
+      normalScale:        .01,
+      redistribution:      2.,
+      persistance:        .35,
+      lacunarity:          2.,
+      iteration:           10,
+      terbulance:       false,
+      ridge:            false,
     })
 
     displacmentMaps.snapShot(download)
     let N = displacmentMaps.textuerArray
 
     this.planet = new Planet({
-      width:           10000,
-      height:          10000,
-      widthSegment:       30,
-      heightSegment:      30,
+      size:            10000,
+      polyCount:          30,
       quadTreeDimensions:  1,
       levels:              5,
       radius:          10000,
-      displacmentScale: 22.5,
+      displacmentScale:    0,
       lodDistanceOffset: 1.4,
     })
 
@@ -112,7 +120,7 @@ class ViewGL {
   
   start() {
     this.render(this.canvasViewPort);
-    this.initPlanet()
+    this.initCubeMapPlanet()
     this.initPlayer()
     this.update();
   }
@@ -130,7 +138,7 @@ class ViewGL {
     if(this.planet){
       this.controls.update(this.clock.getDelta())
       for (var i = 0; i < this.quads.length; i++) {
-      this.quads[i].update(this.player)
+      //this.quads[i].update(this.player)
       }
     }
     nodeFrame.update();

@@ -259,16 +259,14 @@ let N = [...]
 let D = [...]
     
 let planet = new Planet({
-  width:          10000,
-  height:         10000,
-  widthSegment:      30,
-  heightSegment:     30,
-  quadTreeDimensions: 1,
-  levels:             5,
-  radius:         10000,
-  displacmentScale:  25,
-  lodDistanceOffset:1.4,
-},'Terranox')
+  size:            10000,
+  polyCount:          30,
+  quadTreeDimensions:  1,
+  levels:              5,
+  radius:          10000,
+  displacmentScale: 22.5,
+  lodDistanceOffset: 1.4,
+    },'Terranox')
 
 planet.textuers(N,D)
 planet.light   (NODE.vec3(0.0,20.0,20.0))

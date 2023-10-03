@@ -6,12 +6,10 @@ export class Space{
 
     }
 
-    createAtmosphere(planet,atmosphereRadius){
-        this.planet      = planet
-        let planetCenter = planet.metaData().cnt
-        let planetRadius = planet.metaData().radius
+    createAtmosphere(planet,params){
+        this.planet = planet
         this.atmosphere  = new Atmosphere()
-        this.atmosphere.createcomposer(planetRadius,planetCenter,atmosphereRadius)
+        this.atmosphere.createcomposer(params)
     }
 
     update(player){

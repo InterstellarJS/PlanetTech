@@ -2,7 +2,6 @@ import * as NODE    from 'three/nodes';
 import * as THREE   from 'three';
 import {QuadTrees}  from './quadtree'
 import {norm}       from './utils'
-import renderer     from '../../render';
 import * as Shaders from '../shaders/index.js';
 
 
@@ -89,11 +88,10 @@ import * as Shaders from '../shaders/index.js';
       const height = shardedGeometry.parameters.height
       const heightSegments = shardedGeometry.parameters.heightSegments
       const widthSegments  = shardedGeometry.parameters.widthSegments
-      const material = new NODE.MeshBasicNodeMaterial();
+      const material = this.quadTreeconfig.config.material.clone();
       const quad     = new Quad(width,height,widthSegments,heightSegments)
       quad.plane     = new THREE.Mesh( shardedGeometry, material );
       quad.plane.frustumCulled = false
-      //quad.plane.geometry.computeBoundingSphere()
       return quad
       }
 

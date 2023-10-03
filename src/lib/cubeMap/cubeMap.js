@@ -88,28 +88,6 @@ export class CubeMap{
     }
 
 
-
-/*  
-
-    simplexNoiseFbmWarp(params){
-        params.vn = NODE.normalLocal
-        params.tangent = NODE.tangentLocal
-        this.mainCubeSides.map((p)=>{
-            var cnt_ = this.center.clone()
-            var newPostion = NODE.float(params.radius).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
-            var wp = newPostion;
-            if (!params.hasOwnProperty('wp')) {
-                params.wp = wp.mul(params.inScale);
-              }
-            if(this.mapType){
-                p.material.colorNode = displacementNormalNoiseFBMWarp.call(params).mul(.5).add(.5)
-            }else{
-                p.material.colorNode = displacementNoiseFBMWarp.call(params).add(params.scaleHeightOutput)
-            }
-        })
-    }
-*/
-
     buildCube(){
         let qf = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         qf.createQuadTree(1)

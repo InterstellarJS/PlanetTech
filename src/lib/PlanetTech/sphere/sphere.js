@@ -20,12 +20,21 @@ export default class Sphere{
     this. quadTreeconfig = QuadTrees.QuadTreeLoDCore
     }
 
-  build(lvl,radius, displacmentScale, lodDistanceOffset, color=this.quadTreeconfig.shardedData.color){
-    this.quadTreeconfig.shardedData.radius = radius 
-    this.quadTreeconfig.shardedData.color = color
-    this.quadTreeconfig.shardedData.displacmentScale = displacmentScale
+  build(
+    lvl,
+    radius, 
+    displacmentScale  = this.quadTreeconfig.shardedData.displacmentScale, 
+    lodDistanceOffset = this.quadTreeconfig.shardedData.lodDistanceOffset, 
+    material          = this.quadTreeconfig.shardedData.material, 
+    color             = this.quadTreeconfig.shardedData.color
+    ){
+    
+    this.quadTreeconfig.shardedData.radius   = radius 
+    this.quadTreeconfig.shardedData.color    = color
+    this.quadTreeconfig.shardedData.material = material
+    this.quadTreeconfig.shardedData.displacmentScale  = displacmentScale
     this.quadTreeconfig.shardedData.lodDistanceOffset = lodDistanceOffset
-
+    
     this.front = new Quad(this.w,this.h,this.ws,this.hs,this.d)
     this.front.createQuadTree(lvl)
     this.front.createDimensions('front')

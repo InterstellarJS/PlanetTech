@@ -28,6 +28,8 @@ class QuadTreeLoDCore  {
     color: NODE.vec3(0,0,0),
     light:{},
     lodDistanceOffset: 1,
+    material: NODE.MeshBasicNodeMaterial,
+    displacmentScale:1
   }
 
   constructor(config={}) {

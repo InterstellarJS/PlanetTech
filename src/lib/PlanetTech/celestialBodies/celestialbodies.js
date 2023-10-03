@@ -16,7 +16,8 @@ export class CelestialBodies extends Sphere{
             params.radius,
             params.displacmentScale,
             params.lodDistanceOffset,
-            params.color
+            params.material,
+            params.color,
         )
         this.params = params
         this.type   = type

@@ -8,7 +8,7 @@ import { Atmosphere } from './PlanetTech/shaders/vfx/atmosphereScattering';
 import { FirstPersonControls }      from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 import { CubeMap } from './cubeMap/cubeMap';
-import { Space } from './Space/space';
+import { Space } from './WorldSpace/space';
 
 
 let N = [
@@ -35,11 +35,15 @@ class ViewGL {
   render(canvasViewPort) {
     this.rend = renderer;
     this.rend.WebGLRenderer(canvasViewPort);
+    this.rend.antialias = false
+    this.rend.stencil   = false
+    this.rend.depth     = false
     this.rend.scene();
     this.rend.stats();
     this.rend.camera();
-    this.rend.updateCamera(0,0,10000)
+    this.rend.updateCamera(0,0,80000)
     this.rend.orbitControls()
+    this.rend.renderer.setClearColor('black');
     this.space = new Space()
   }
   
@@ -92,16 +96,31 @@ class ViewGL {
       polyCount:          30,
       quadTreeDimensions:  1,
       levels:              5,
-      radius:          10000,
-      displacmentScale: 22.5,
+      radius:          50000,
+      displacmentScale: 44.5,
       lodDistanceOffset: 1.4,
-    })
-
+      material: new NODE.MeshPhysicalNodeMaterial(),
+        },'Terranox')
+    
     this.planet.textuers(N,D)
-    this.planet.light(NODE.vec3(0.0,100.0,100.0))
+    this.planet.light   (NODE.vec3(0.0,100.0,100.0))
 
-    this.space.createAtmosphere(this.planet,12000)
-    this.rend.scene_.add( this.planet.sphere);
+    this.space.createAtmosphere(this.planet,{
+      pcenter:this.planet.metaData().cnt.clone(),
+      pradius:this.planet.metaData().radius,
+      aradius:50500,
+      lightDir:new THREE.Vector3(0,0,1),
+      ulight_intensity:new THREE.Vector3(2.5,2.5,2.5),
+      uray_light_color:new THREE.Vector3(10,10,10),
+      umie_light_color:new THREE.Vector3(10,10,10),
+      PRIMARY_STEPS: 12,
+      LIGHT_STEPS: 8,
+      G: 0.7,
+    })
+    const light = new THREE.AmbientLight( 0x404040,25 ); // soft white light
+    this.rend.scene_.add( light );
+    this.rend.scene_.add( this.planet.sphere );
+
   }
   
   initPlayer(){
@@ -114,15 +133,6 @@ class ViewGL {
     this.controls.lookSpeed     = 0
     this.clock = new THREE.Clock();
     this.rend.scene_.add(this.player)
-
-    var boxGeometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1, 1 )
-    var boxMaterial = new THREE.MeshBasicMaterial({color:'blue'});
-    let box         = new THREE.Mesh( boxGeometry, boxMaterial );
-    let planetQuads = this.planet.getAllInstance()
-  
-    planetQuads[0].center.z += 7
-    box.position.copy(planetQuads[0].center)
-    this.rend.scene_.add( box);
   }
   
   start() {
@@ -132,6 +142,11 @@ class ViewGL {
     this.update();
   }
   
+
+  onWindowResize(vpW, vpH) {
+    this.rend.renderer.setSize(vpW, vpH);
+  }
+
   update(t) {
     requestAnimationFrame(this.update.bind(this));
     if(this.space){
@@ -139,7 +154,7 @@ class ViewGL {
       this.space.update(this.player)
     }
     nodeFrame.update();
-    this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
+    //this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
   }
 
 }

@@ -55,6 +55,8 @@ Additionally, PlanetTech requires you to use the `render` object. With the `rend
 
 - **CubeMap**: This serves as the frontend and primarily handles texture generation.
 
+- **WorldSpace**: WorldSpace is a post-processing shader that acts as our scene and serves as an abstraction for the space. It handles all the attributes for space in PlanetTechJS, including atmospheric scattering, volumetric lighting, fog, and more. If you need to add a post-processing to the scene use this class.
+
 We will start with **PlanetTech**. Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.
 Let's create a basic quadtree sphere without any textures or displacement, just coloring each dimension to show what's going on under the hood.
 
@@ -72,35 +74,47 @@ rend.updateCamera(0,0,20000)
 rend.orbitControls()
 
 const params = {
-width:          10000,
-height:         10000,
-widthSegment:      50,
-heightSegment:     50,
-quadTreeDimensions: 1,
-levels:             1,
-radius:         10000,
-displacmentScale:   1,
-lodDistanceOffset:1.4, 
-color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
+  width:          10000,
+  height:         10000,
+  widthSegment:      50,
+  heightSegment:     50,
+  quadTreeDimensions: 1,
+  levels:             1,
+  radius:         10000,
+  displacmentScale:   1,
+  lodDistanceOffset:1.4,
+  material: new NODE.MeshBasicNodeMaterial(),
+  color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
 }
 
 let s = new Sphere(
-params.width,
-params.height,
-params.widthSegment,
-params.heightSegment,
-params.quadTreeDimensions
+  params.width,
+  params.height,
+  params.widthSegment,
+  params.heightSegment,
+  params.quadTreeDimensions
 )
 
 s.build(
-params.levels,
-params.radius,
-params.displacmentScale,
-params.lodDistanceOffset,
-params.color,
+  params.levels,
+  params.radius,
+  params.displacmentScale,
+  params.lodDistanceOffset,
+  params.material,
+  params.color,
 )
 
 rend.scene_.add(s.sphere);
+
+let player = /*player or camera object*/
+
+function update(t) {
+  requestAnimationFrame(update);
+  s.update(player);
+  nodeFrame.update();
+  rend.renderer.render(rend.scene_, rend.camera_);
+}
+
 ```
 ![quad Sphere](./public/readmeImg/img2.png)
 
@@ -115,6 +129,7 @@ rend.scene_.add(s.sphere);
 - `radius`: Specify the sphere's radius.
 - `displacementScale`: Set the texture displacement height.
 - `lodDistanceOffset`: Specify the distance offset used to trigger the splitting of a quad.
+- `material`: set material for the planet.
 - `color`: Apply a color to each quad.
 
 ### Dimensions 
@@ -195,32 +210,34 @@ let N = normalMap.textuerArray
 As shown previously we build the Sphere then set the textures or each face, add a light direction for each face, finally add our Sphere to the scene.
 ```javaScript
 const params = {
-width:          10000,
-height:         10000,
-widthSegment:      50,
-heightSegment:     50,
-quadTreeDimensions: 1,
-levels:             1,
-radius:         10000,
-displacmentScale:   1,
-lodDistanceOffset:1.4, 
-//color: () => NODE.vec3(...hexToRgbA(getRandomColor())), no longer needed
+  width:          10000,
+  height:         10000,
+  widthSegment:      50,
+  heightSegment:     50,
+  quadTreeDimensions: 1,
+  levels:             1,
+  radius:         10000,
+  displacmentScale:   1,
+  lodDistanceOffset:1.4,
+  material: new NODE.MeshBasicNodeMaterial()
+  //color: () => NODE.vec3(...hexToRgbA(getRandomColor())), no longer needed
 }
 
 let s = new Sphere(
-params.width,
-params.height,
-params.widthSegment,
-params.heightSegment,
-params.quadTreeDimensions
+  params.width,
+  params.height,
+  params.widthSegment,
+  params.heightSegment,
+  params.quadTreeDimensions
 )
 
 s.build(
-params.levels,
-params.radius,
-params.displacmentScale,
-params.lodDistanceOffset,
-params.color,
+  params.levels,
+  params.radius,
+  params.displacmentScale,
+  params.lodDistanceOffset,
+  params.material,
+  params.color,
 )
 
 s.front. addTexture([N[0],D[0]], params.displacmentScale)
@@ -238,6 +255,17 @@ s.right. lighting(ld)
 s.left.  lighting(ld)
 s.top.   lighting(ld)
 s.bottom.lighting(ld)
+
+rend.scene_.add(s.sphere);
+
+let player = /*player or camera object*/
+
+function update(t) {
+  requestAnimationFrame(update);
+  s.update(player);
+  nodeFrame.update();
+  rend.renderer.render(rend.scene_, rend.camera_);
+}
 ```
 
 <p align="center">
@@ -266,6 +294,7 @@ let planet = new Planet({
   radius:          10000,
   displacmentScale: 22.5,
   lodDistanceOffset: 1.4,
+  material: new NODE.MeshBasicNodeMaterial()
     },'Terranox')
 
 planet.textuers(N,D)
@@ -274,20 +303,19 @@ let quads = planet.getAllInstance()
 rend.scene_.add(planet.sphere);
 ```
 
-# Space
-To add a atomsphere to a planet use the `Space` class.
+# WorldSpace
+To add a atomsphere to a planet use the `WorldSpace` class.
 
 ```javaScript
-import { Space } from './Space/space';
+import { Space } from './WorldSpace/space';
 
 let space = new Space()
 space.createAtmosphere(planet,atmosphereRadius)
 
-update(t) {
+function update(t) {
   requestAnimationFrame(update);
   space.update(player)
   nodeFrame.update();
-  rend.renderer.render(rend.scene_, rend.camera_);
 }
 ```
 <p align="center">

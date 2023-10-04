@@ -307,9 +307,9 @@ rend.scene_.add(planet.sphere);
 
 To add a atomsphere to a planet use the `WorldSpace` class.
 ```javaScript
-import { Space }      from './WorldSpace/space';
-import { Planet }     from './PlanetTech/celestialBodies/planet';
-import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
+import { Space }     from './WorldSpace/space';
+import { Planet }    from './PlanetTech/celestialBodies/planet';
+import { nodeFrame } from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
 
 let N = [...]
 let D = [...]
@@ -324,15 +324,13 @@ let planet = new Planet({
   radius:          80000,
   displacmentScale: 80.5,
   lodDistanceOffset: 12.4,
-  material: new NODE.MeshPhysicalNodeMaterial(),
-    },'Terranox')
+  material: new NODE.MeshPhysicalNodeMaterial()},
+  'Terranox')
     
 planet.textuers(N,D)
 planet.light(NODE.vec3(0.0,100.0,100.0))
 
-space.createAtmosphere(
-  planet,
-  {
+space.createAtmosphere(planet,{
   pcenter:         planet.metaData().cnt.clone(),
   pradius:         planet.metaData().radius,
   aradius:         50000*1.62,
@@ -353,9 +351,9 @@ space.createAtmosphere(
   G:                 0.7,
 })
 
+rend.scene_.add( planet.sphere );
 const light = new THREE.AmbientLight( 0x404040,35 ); 
 rend.scene_.add( light );
-rend.scene_.add( planet.sphere );
 
 function update(t) {
   requestAnimationFrame(update);

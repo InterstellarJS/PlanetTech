@@ -303,6 +303,8 @@ rend.scene_.add(planet.sphere);
 ```
 
 # WorldSpace
+⚠️ **Disclaimer: WebGPU doesn't work with atomsphere because WebGPU doesn't have post-processing Shader package yet.**
+
 To add a atomsphere to a planet use the `WorldSpace` class.
 
 ```javaScript

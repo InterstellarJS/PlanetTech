@@ -1,7 +1,7 @@
 ⚠️ **Disclaimer:** PlanetTechJS is currently in its alpha version and is being developed by a single developer. Consequently, it's important to keep in mind that there may be bugs, spelling errors, lack of tests, and occasional inconsistencies in the library. While every effort is being made to provide a stable and enjoyable experience, please approach the library with the understanding that it's a work in progress. Your feedback, bug reports, and contributions are highly appreciated as they play a crucial role in improving the library and ensuring its quality.
 
 
-# PlanetTechJS (ALPHA V0.0) 
+# PlanetTechJS (ALPHA V0.1) 
 <p align="center">
   <img src="./public/readmeImg/atmo15.png" />
 </p>
@@ -330,10 +330,10 @@ planet.textuers(N,D)
 planet.light(NODE.vec3(0.0,100.0,100.0))
 
 space.createAtmosphere(
-  this.planet,
+  planet,
   {
-  pcenter:         this.planet.metaData().cnt.clone(),
-  pradius:         this.planet.metaData().radius,
+  pcenter:         planet.metaData().cnt.clone(),
+  pradius:         planet.metaData().radius,
   aradius:         50000*1.62,
   lightDir:        new THREE.Vector3(0,0,1),
   ulight_intensity:new THREE.Vector3(5.0,5.0,5.0),
@@ -351,6 +351,7 @@ space.createAtmosphere(
   LIGHT_STEPS:         4,
   G:                 0.7,
 })
+
 const light = new THREE.AmbientLight( 0x404040,35 ); 
 rend.scene_.add( light );
 rend.scene_.add( planet.sphere );

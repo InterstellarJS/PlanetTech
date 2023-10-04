@@ -2,10 +2,8 @@
 
 
 # PlanetTechJS (ALPHA V0.0) 
-![Example Planet](./public/readmeImg/example-planet.png)
-
 <p align="center">
-  <img src="./public/readmeImg/img6.png" />
+  <img src="./public/readmeImg/atmo15.png" />
 </p>
 
 
@@ -153,6 +151,7 @@ We initialize a cube map, setting the width and height of the noise space to 200
 Next, we call one of the noise methods with the following parameters. Finally, we call the download method. If set to true, this method downloads the images to your computer. The `.textureArray` variable holds the images in memory. The order that the textures are in is `[front,back,right,left,top,bottom]`. If you choose to download the images you can load them using `THREE.TextureLoader()`, and put them in the correct order PlanetTech uses.
 
 ```javaScript
+import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
 import renderer from './render';
 import { CubeMap } from './cubeMap/cubeMap';
 
@@ -307,10 +306,54 @@ rend.scene_.add(planet.sphere);
 To add a atomsphere to a planet use the `WorldSpace` class.
 
 ```javaScript
-import { Space } from './WorldSpace/space';
+import { Space }      from './WorldSpace/space';
+import { Planet }     from './PlanetTech/celestialBodies/planet';
+import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
+
+let N = [...]
+let D = [...]
 
 let space = new Space()
-space.createAtmosphere(planet,atmosphereRadius)
+
+let planet = new Planet({
+  size:            10000,
+  polyCount:          30,
+  quadTreeDimensions:  1,
+  levels:              5,
+  radius:          80000,
+  displacmentScale: 80.5,
+  lodDistanceOffset: 12.4,
+  material: new NODE.MeshPhysicalNodeMaterial(),
+    },'Terranox')
+    
+planet.textuers(N,D)
+planet.light(NODE.vec3(0.0,100.0,100.0))
+
+space.createAtmosphere(
+  this.planet,
+  {
+  pcenter:         this.planet.metaData().cnt.clone(),
+  pradius:         this.planet.metaData().radius,
+  aradius:         50000*1.62,
+  lightDir:        new THREE.Vector3(0,0,1),
+  ulight_intensity:new THREE.Vector3(5.0,5.0,5.0),
+  uray_light_color:new THREE.Vector3(5,5,5),
+  umie_light_color:new THREE.Vector3(1,1,1),
+  RAY_BETA:        new THREE.Vector3(5.5e-6, 13.0e-6, 22.4e-6),
+  MIE_BETA:        new THREE.Vector3(21e-6, 21e-6, 21e-6),
+  AMBIENT_BETA:    new THREE.Vector3(0.0),
+  ABSORPTION_BETA: new THREE.Vector3(2.04e-5, 4.97e-5, 1.95e-6),
+  HEIGHT_RAY:       .2e3,
+  HEIGHT_MIE:       .1e3,
+  HEIGHT_ABSORPTION:30e3,
+  ABSORPTION_FALLOFF:4e3,
+  PRIMARY_STEPS:       8,
+  LIGHT_STEPS:         4,
+  G:                 0.7,
+})
+const light = new THREE.AmbientLight( 0x404040,35 ); 
+rend.scene_.add( light );
+rend.scene_.add( planet.sphere );
 
 function update(t) {
   requestAnimationFrame(update);

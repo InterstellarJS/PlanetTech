@@ -1,10 +1,7 @@
-import renderer from "../../../render";
+import renderer from "../../render";
 import * as THREE  from 'three'
 import {SMAAEffect,BlendFunction, Effect, EffectComposer, RenderPass,EffectPass,EffectAttribute, WebGLExtension} from "postprocessing";
 import { Uniform, HalfFloatType  } from "three";
-
-
-
 
 const uniformBlock = `
 uniform mat4  inverseProjection;
@@ -17,25 +14,21 @@ uniform vec3  lightDir;
 uniform float PLANET_RADIUS;
 uniform float ATMOSPHERE_RADIUS;
 uniform float G;
-uniform int PRIMARY_STEPS;
-uniform int LIGHT_STEPS;
+uniform int   PRIMARY_STEPS;
+uniform int   LIGHT_STEPS;
 uniform vec3  ulight_intensity;
 uniform vec3  uray_light_color;
 uniform vec3  umie_light_color;
+uniform vec3  RAY_BETA;
+uniform vec3  MIE_BETA;
+uniform vec3  AMBIENT_BETA;
+uniform vec3  ABSORPTION_BETA;
+uniform float HEIGHT_RAY;
+uniform float HEIGHT_MIE;
+uniform float HEIGHT_ABSORPTION;
+uniform float ABSORPTION_FALLOFF;
+`
 
-`
-const scatterDefsBlock = `
-// scattering coeffs
-#define RAY_BETA vec3(5.5e-6, 13.0e-6, 22.4e-6) /* rayleigh, affects the color of the sky */
-#define MIE_BETA vec3(21e-6) /* mie, affects the color of the blob around the sun */
-#define AMBIENT_BETA vec3(0.0) /* ambient, affects the scattering color when there is no lighting from the sun */
-#define ABSORPTION_BETA vec3(2.04e-5, 4.97e-5, 1.95e-6) /* what color gets absorbed by the atmosphere (Due to things like ozone) */
-// and the heights (how far to go up before the scattering has no effect)
-#define HEIGHT_RAY 8e3 /* rayleigh height */
-#define HEIGHT_MIE 1.2e3 /* and mie */
-#define HEIGHT_ABSORPTION 30e3 /* at what height the absorption is at it's maximum */
-#define ABSORPTION_FALLOFF 4e3 /* how much the absorption decreases the further away it gets from the maximum height */
-`
 const calculateScatteringBlock = `
 vec3 calculate_scattering(
 	vec3 start, 				// the start of the ray (the camera position)
@@ -231,8 +224,6 @@ vec3 _ScreenToWorld(vec3 posS) {
 const postFragmentShader =
   `
   ${uniformBlock}
-
-  ${scatterDefsBlock}
   
   ${calculateScatteringBlock}
   
@@ -282,12 +273,10 @@ const postFragmentShader =
 
 const cameraDir = new THREE.Vector3();
 
-
 export class Atmosphere{
     constructor() {
     }
   
-
     createcomposer(params){
       this.composer = new EffectComposer(renderer.renderer,{
         frameBufferType: HalfFloatType
@@ -314,8 +303,15 @@ export class Atmosphere{
                 ["PRIMARY_STEPS",     new Uniform(params.PRIMARY_STEPS)],
                 ["LIGHT_STEPS",       new Uniform(params.LIGHT_STEPS)],
                 ["G",                 new Uniform(params.G)],
+                ["HEIGHT_RAY",        new Uniform(params.HEIGHT_RAY)],
+                ["RAY_BETA",          new Uniform(params.RAY_BETA)],
+                ["MIE_BETA",          new Uniform(params.MIE_BETA)],
+                ["AMBIENT_BETA",      new Uniform(params.AMBIENT_BETA)],
+                ["ABSORPTION_BETA",   new Uniform(params.ABSORPTION_BETA)],
+                ["HEIGHT_MIE",        new Uniform(params.HEIGHT_MIE)],
+                ["HEIGHT_ABSORPTION", new Uniform(params.HEIGHT_ABSORPTION)],
+                ["ABSORPTION_FALLOFF",new Uniform(params.ABSORPTION_FALLOFF)],
               ]),
-
               attributes: EffectAttribute.DEPTH,
               extensions: new Set([WebGLExtension.DERIVATIVES]),
             });

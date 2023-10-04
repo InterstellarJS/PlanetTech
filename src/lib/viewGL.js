@@ -4,7 +4,7 @@ import renderer       from './render';
 import Sphere         from './PlanetTech/sphere/sphere'
 import { Planet }     from './PlanetTech/celestialBodies/planet';
 import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
-import { Atmosphere } from './PlanetTech/shaders/vfx/atmosphereScattering';
+import { Atmosphere } from './WorldSpace/Shaders/atmosphereScattering';
 import { FirstPersonControls }      from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 import { CubeMap } from './cubeMap/cubeMap';
@@ -41,7 +41,7 @@ class ViewGL {
     this.rend.scene();
     this.rend.stats();
     this.rend.camera();
-    this.rend.updateCamera(0,0,80000)
+    this.rend.updateCamera(0,0,80000*4)
     this.rend.orbitControls()
     this.rend.renderer.setClearColor('black');
     this.space = new Space()
@@ -96,9 +96,9 @@ class ViewGL {
       polyCount:          30,
       quadTreeDimensions:  1,
       levels:              5,
-      radius:          50000,
-      displacmentScale: 44.5,
-      lodDistanceOffset: 1.4,
+      radius:          80000,
+      displacmentScale: 80.5,
+      lodDistanceOffset: 12.4,
       material: new NODE.MeshPhysicalNodeMaterial(),
         },'Terranox')
     
@@ -108,16 +108,24 @@ class ViewGL {
     this.space.createAtmosphere(this.planet,{
       pcenter:this.planet.metaData().cnt.clone(),
       pradius:this.planet.metaData().radius,
-      aradius:50500,
+      aradius:50000*1.62,
       lightDir:new THREE.Vector3(0,0,1),
-      ulight_intensity:new THREE.Vector3(2.5,2.5,2.5),
-      uray_light_color:new THREE.Vector3(10,10,10),
-      umie_light_color:new THREE.Vector3(10,10,10),
-      PRIMARY_STEPS: 12,
-      LIGHT_STEPS: 8,
+      ulight_intensity:new THREE.Vector3(5.0,5.0,5.0),
+      uray_light_color:new THREE.Vector3(5,5,5),
+      umie_light_color:new THREE.Vector3(1,1,1),
+      RAY_BETA:        new THREE.Vector3(5.5e-6, 13.0e-6, 22.4e-6),
+      MIE_BETA:        new THREE.Vector3(21e-6, 21e-6, 21e-6),
+      AMBIENT_BETA:    new THREE.Vector3(0.0),
+      ABSORPTION_BETA: new THREE.Vector3(2.04e-5, 4.97e-5, 1.95e-6),
+      HEIGHT_RAY:.2e3,
+      HEIGHT_MIE:.1e3,
+      HEIGHT_ABSORPTION:30e3,
+      ABSORPTION_FALLOFF:4e3,
+      PRIMARY_STEPS: 8,
+      LIGHT_STEPS: 4,
       G: 0.7,
     })
-    const light = new THREE.AmbientLight( 0x404040,25 ); // soft white light
+    const light = new THREE.AmbientLight( 0x404040,35 ); // soft white light
     this.rend.scene_.add( light );
     this.rend.scene_.add( this.planet.sphere );
 
@@ -127,7 +135,7 @@ class ViewGL {
     var boxGeometry        = new THREE.BoxGeometry( 10.1, 10.1, 10.1, 1 )
     var boxMaterial        = new THREE.MeshBasicMaterial({color:'red'});
     this.player            = new THREE.Mesh( boxGeometry, boxMaterial );
-    this.player.position.z = this.rend.camera_.position.z
+    this.player.position.z = 110000
     this.controls               = new FirstPersonControls( this.player, document.body );
     this.controls.movementSpeed = 500
     this.controls.lookSpeed     = 0

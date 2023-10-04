@@ -1,4 +1,4 @@
-import { Atmosphere } from "../PlanetTech/shaders/vfx/atmosphereScattering";
+import { Atmosphere } from "./Shaders/atmosphereScattering";
 
 
 export class Space{

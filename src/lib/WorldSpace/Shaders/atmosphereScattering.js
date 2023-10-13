@@ -236,7 +236,6 @@ const postFragmentShader =
   
   ${screenToWorldBlock}
 
-
   void mainImage(const in vec4 inputColor, const in vec2 uv, const in float depth, out vec4 outputColor) {
 
     float d           = texture2D(depthBuffer, uv).x;

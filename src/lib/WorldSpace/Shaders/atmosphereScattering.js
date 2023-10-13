@@ -3,32 +3,37 @@ import * as THREE  from 'three'
 import {SMAAEffect,BlendFunction, Effect, EffectComposer, RenderPass,EffectPass,EffectAttribute, WebGLExtension} from "postprocessing";
 import { Uniform, HalfFloatType  } from "three";
 
+
+
+const structAtmospheresBlock = `
+struct Atmospheres {
+  vec3 PLANET_CENTER;
+  vec3 lightDir;
+  float PLANET_RADIUS;
+  float ATMOSPHERE_RADIUS;
+  float G;
+  int PRIMARY_STEPS;
+  int LIGHT_STEPS;
+  vec3 ulight_intensity;
+  vec3 uray_light_color;
+  vec3 umie_light_color;
+  vec3 RAY_BETA;
+  vec3 MIE_BETA;
+  vec3 AMBIENT_BETA;
+  vec3 ABSORPTION_BETA;
+  float HEIGHT_RAY;
+  float HEIGHT_MIE;
+  float HEIGHT_ABSORPTION;
+  float ABSORPTION_FALLOFF;
+};
+`
 const uniformBlock = `
 uniform mat4  inverseProjection;
 uniform mat4  inverseView;
 uniform vec3  uCameraPosition;
 uniform vec3  uCameraDir;
-uniform vec3  PLANET_CENTER;
-uniform vec3  weights;
-uniform vec3  lightDir;
-uniform float PLANET_RADIUS;
-uniform float ATMOSPHERE_RADIUS;
-uniform float G;
-uniform int   PRIMARY_STEPS;
-uniform int   LIGHT_STEPS;
-uniform vec3  ulight_intensity;
-uniform vec3  uray_light_color;
-uniform vec3  umie_light_color;
-uniform vec3  RAY_BETA;
-uniform vec3  MIE_BETA;
-uniform vec3  AMBIENT_BETA;
-uniform vec3  ABSORPTION_BETA;
-uniform float HEIGHT_RAY;
-uniform float HEIGHT_MIE;
-uniform float HEIGHT_ABSORPTION;
-uniform float ABSORPTION_FALLOFF;
+uniform Atmospheres atmospheres[1];
 `
-
 const calculateScatteringBlock = `
 vec3 calculate_scattering(
 	vec3 start, 				// the start of the ray (the camera position)
@@ -223,6 +228,8 @@ vec3 _ScreenToWorld(vec3 posS) {
 
 const postFragmentShader =
   `
+  ${structAtmospheresBlock}
+
   ${uniformBlock}
   
   ${calculateScatteringBlock}
@@ -231,14 +238,17 @@ const postFragmentShader =
 
 
   void mainImage(const in vec4 inputColor, const in vec2 uv, const in float depth, out vec4 outputColor) {
-    float d             = texture2D(depthBuffer, uv).x;
-    vec3 posWS          = _ScreenToWorld(vec3(uv, d));
-    vec3 rayOrigin      = uCameraPosition;
-    vec3 rayDirection   = normalize(posWS - uCameraPosition);
-    float sceneDepth    = length(posWS.xyz - uCameraPosition);
-    vec3 addColor       = inputColor.xyz;
-    vec3 lightDirection = normalize(lightDir);;
-    vec3 col            = vec3(0.0);
+
+    float d           = texture2D(depthBuffer, uv).x;
+    vec3 posWS        = _ScreenToWorld(vec3(uv, d));
+    vec3 rayOrigin    = uCameraPosition;
+    vec3 rayDirection = normalize(posWS - uCameraPosition);
+    float sceneDepth  = length(posWS.xyz - uCameraPosition);
+    vec3 addColor     = inputColor.xyz;
+    vec3 col          = vec3(0.0);
+
+    Atmospheres currentAtmospheres = atmospheres[0];
+    vec3 lightDirection = normalize(currentAtmospheres.lightDir);;
 
     col += calculate_scattering(
       rayOrigin,
@@ -246,28 +256,25 @@ const postFragmentShader =
       sceneDepth,
       addColor,
       lightDirection,
-      ulight_intensity,
-      uray_light_color,
-      umie_light_color,
-      PLANET_CENTER,
-      PLANET_RADIUS,
-      ATMOSPHERE_RADIUS,
-      RAY_BETA,
-      MIE_BETA,
-      ABSORPTION_BETA,                // Absorbtion coefficient
-      AMBIENT_BETA,					// ambient scattering, turned off for now. This causes the air to glow a bit when no light reaches it
-      G,                          	// Mie preferred scattering direction
-      HEIGHT_RAY,                     // Rayleigh scale height
-      HEIGHT_MIE,                     // Mie scale height
-      HEIGHT_ABSORPTION,				// the height at which the most absorption happens
-      ABSORPTION_FALLOFF,				// how fast the absorption falls off from the absorption height 
-      PRIMARY_STEPS, 					// steps in the ray direction 
-      LIGHT_STEPS 					// steps in the light direction
+      currentAtmospheres.ulight_intensity,
+      currentAtmospheres.uray_light_color,
+      currentAtmospheres.umie_light_color,
+      currentAtmospheres.PLANET_CENTER,
+      currentAtmospheres.PLANET_RADIUS,
+      currentAtmospheres.ATMOSPHERE_RADIUS,
+      currentAtmospheres.RAY_BETA,
+      currentAtmospheres.MIE_BETA,
+      currentAtmospheres.ABSORPTION_BETA,                
+      currentAtmospheres.AMBIENT_BETA,					
+      currentAtmospheres.G,                          	
+      currentAtmospheres.HEIGHT_RAY,                     
+      currentAtmospheres.HEIGHT_MIE,                     
+      currentAtmospheres.HEIGHT_ABSORPTION,
+      currentAtmospheres.ABSORPTION_FALLOFF,				
+      currentAtmospheres.PRIMARY_STEPS, 					
+      currentAtmospheres.LIGHT_STEPS 					
     );
-    col = 1.0 - exp(-col);
-
     outputColor = vec4(col*2., 1.0);
-  
   }
 `;
 
@@ -278,39 +285,16 @@ export class Atmosphere{
     }
   
     createcomposer(params){
-      this.composer = new EffectComposer(renderer.renderer,{
-        frameBufferType: HalfFloatType
-      });
-      this.composer.addPass(new RenderPass(renderer.scene_, renderer.camera_));
-      this.composer.setSize(window.innerWidth, window.innerHeight);
-
          class CustomEffect extends Effect {
           constructor(camera) {
             renderer.camera_.getWorldDirection(cameraDir);
             super("CustomEffect", postFragmentShader, {
               uniforms: new Map([
+                ["atmospheres",       new Uniform(params)],
                 ["uCameraPosition",   new Uniform(renderer.camera_.position)],
                 ["inverseProjection", new Uniform(renderer.camera_.projectionMatrixInverse)],
                 ["inverseView",       new Uniform(renderer.camera_.matrixWorld)],
                 ["uCameraDir",        new Uniform(cameraDir)],
-                ["PLANET_CENTER",     new Uniform(params.pcenter)],
-                ["PLANET_RADIUS",     new Uniform(params.pradius)],
-                ["ATMOSPHERE_RADIUS", new Uniform(params.aradius)],
-                ["lightDir",          new Uniform(params.lightDir)],
-                ["ulight_intensity",  new Uniform(params.ulight_intensity)],
-                ["uray_light_color",  new Uniform(params.uray_light_color)],
-                ["umie_light_color",  new Uniform(params.umie_light_color)],
-                ["PRIMARY_STEPS",     new Uniform(params.PRIMARY_STEPS)],
-                ["LIGHT_STEPS",       new Uniform(params.LIGHT_STEPS)],
-                ["G",                 new Uniform(params.G)],
-                ["HEIGHT_RAY",        new Uniform(params.HEIGHT_RAY)],
-                ["RAY_BETA",          new Uniform(params.RAY_BETA)],
-                ["MIE_BETA",          new Uniform(params.MIE_BETA)],
-                ["AMBIENT_BETA",      new Uniform(params.AMBIENT_BETA)],
-                ["ABSORPTION_BETA",   new Uniform(params.ABSORPTION_BETA)],
-                ["HEIGHT_MIE",        new Uniform(params.HEIGHT_MIE)],
-                ["HEIGHT_ABSORPTION", new Uniform(params.HEIGHT_ABSORPTION)],
-                ["ABSORPTION_FALLOFF",new Uniform(params.ABSORPTION_FALLOFF)],
               ]),
               attributes: EffectAttribute.DEPTH,
               extensions: new Set([WebGLExtension.DERIVATIVES]),
@@ -318,13 +302,8 @@ export class Atmosphere{
             this.camera = camera
           }
         }
-
         this.depthPass = new CustomEffect(renderer.camera_);
-        let smaaEffect = new SMAAEffect()
-        this.composer.addPass(new EffectPass(renderer.camera_, this.depthPass));
-        this.composer.addPass(new EffectPass(renderer.camera_, smaaEffect));
       }
-      
       
       run() {
         renderer.camera_.getWorldDirection(cameraDir);
@@ -332,7 +311,6 @@ export class Atmosphere{
         this.depthPass.uniforms.get('inverseProjection').value = renderer.camera_.projectionMatrixInverse
         this.depthPass.uniforms.get('inverseView')      .value = renderer.camera_.matrixWorld
         this.depthPass.uniforms.get('uCameraDir')       .value = cameraDir
-        this.composer.render();
       };
 
 }

@@ -8,7 +8,49 @@ import { displayCanvasesInGrid } from './utils';
 import * as Shaders  from  './../PlanetTech/shaders/index.js'
 
 
-export class CubeMap{
+const _cubeTextureNormal = (cubeText,vUV,scale,strength,eps)=>{    
+    let center = NODE.cubeTexture(cubeText, vUV).r;
+    let dx = NODE.cubeTexture(cubeText, vUV.add(NODE.vec3(eps,.0,.0))).r.sub(center);  
+    let dy = NODE.cubeTexture(cubeText, vUV.add(NODE.vec3(.0,eps,.0))).r.sub(center); 
+    //let dz = NODE.cubeTexture(cubeText, vUV.add(NODE.vec3(.0,0,eps))).r.sub(center);  
+ 
+    let normalMap = NODE.vec3(dx.mul(scale), dy.mul(scale), 1.).normalize();  
+    normalMap = normalMap.mul(strength);                            
+    return normalMap.mul(0.5).add(0.5);
+}
+
+
+/*const _cubeTextureNormal = (cubeText,vUV,scale,strength)=>{    
+    let center = NODE.cubeTexture(cubeText, vUV).r;
+    let dx = NODE.cubeTexture(cubeText, vUV.add(NODE.dFdx(vUV))).r.sub(center);  
+    let dy = NODE.cubeTexture(cubeText, vUV.add(NODE.dFdy(vUV))).r.sub(center);  
+    let normalMap = NODE.vec3(dx.mul(scale), dy.mul(scale), 1.).normalize();  
+    normalMap = normalMap.mul(strength);                            
+    return normalMap.mul(0.5).add(0.5);
+}*/
+
+
+
+const displace = (tex,uv) =>{
+    return NODE.cubeTexture(tex,uv).r
+   }
+const textureNormal = (tangent,bitangent,position, normal, texture, vUv) =>{
+      let displacedPosition = normal.mul(displace(texture,vUv)).add(position)
+      let texelSize = .008; // temporarily hardcoding texture resolution
+      let offset = 0.09;
+      let neighbour1 = tangent.mul(texelSize).add(position)
+      let neighbour2 = bitangent.mul(texelSize).add(position)
+      let neighbour1uv = vUv.add(NODE.vec3(-offset,0,0))
+      let neighbour2uv = vUv.add(NODE.vec3(0,-offset,0))
+      let displacedNeighbour1 = normal.mul(displace(texture,neighbour1uv)).add(neighbour1)
+      let displacedNeighbour2 = normal.mul(displace(texture,neighbour2uv)).add(neighbour2)
+      let displacedTangent = displacedNeighbour1.sub(displacedPosition)
+      let displacedBitangent = displacedNeighbour2.sub(displacedPosition)
+      let displacedNormal = NODE.normalize(NODE.cross(displacedTangent, displacedBitangent));
+      return displacedNormal.mul(0.5).add(0.5);
+    }
+
+export class CubeTexture{
     constructor(wxh,d,mapType=false){
         this.w  = wxh
         this.h  = wxh
@@ -16,11 +58,10 @@ export class CubeMap{
         this.hs = 1
         this.d  = d
         this.textuerArray = []
+        this.textuerNormalArray = []
         this.mapType = mapType
        }
        
-
-    addTexture(t){}
 
     log(){}
 
@@ -49,8 +90,8 @@ export class CubeMap{
             var newPostion = NODE.float(params.radius).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
             p.material.colorNode = Shaders.snoise3D({v:newPostion.mul(params.scale)})
         })
-
     }
+    
     simplexNoiseFbm(params){
         params.vn = NODE.normalLocal
         params.tangent = NODE.tangentLocal
@@ -61,8 +102,10 @@ export class CubeMap{
             if (!params.hasOwnProperty('wp')) {
                 params.wp = wp.mul(params.inScale);
               }
-            if(this.mapType){
-                p.material.colorNode = Shaders.snoise3DDisplacementNormalFBM(params).mul(.5).add(.5)
+            if(p.material.colorNode){
+                let t1 = NODE.clamp(p.material.colorNode,0., 1.)
+                let t2 = NODE.clamp(Shaders.displacementFBM(params).add(params.scaleHeightOutput),0., 1.)//Shaders.displacementFBM(params).add(params.scaleHeightOutput)
+                p.material.colorNode = NODE.mix(t2,t1,t1.a)
             }else{
                 p.material.colorNode = Shaders.displacementFBM(params).add(params.scaleHeightOutput)
             }
@@ -87,6 +130,12 @@ export class CubeMap{
         })
     }
 
+    addTexture(face,text){
+        let f  = this.mainCubeSides[face]
+        let t1 = NODE.clamp(NODE.texture(text,NODE.uv()).r,0., 1.) 
+        let t2 = f.material.colorNode
+        f.material.colorNode = t2.add(t1)
+    }
 
     buildCube(){
         let qf = new Quad(this.w,this.h,this.ws,this.hs,this.d)
@@ -199,7 +248,7 @@ export class CubeMap{
         }
       
 
-    snapShotFront(download=false){
+    snapShotFront(download=false,textuerArray){
         let canvases = []
         this.cube.children[0].children.map((e,i)=>{
             this.rtt.rtCamera.position.set(...e.position.toArray());
@@ -216,12 +265,12 @@ export class CubeMap{
                 this.rtt.download(canvas,`f`)
             }
         }
-        this.textuerArray.push(new THREE.CanvasTexture(canvas))
+        textuerArray.push((canvas))
         this.rtt.rtCamera.position.set(0,0,0)
 
     }
 
-    snapShotBack(download=false){
+    snapShotBack(download=false,textuerArray){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[1].children.map((e,i)=>{
@@ -242,13 +291,13 @@ export class CubeMap{
                 this.rtt.download(canvas,`b`)
             }
         }
-        this.textuerArray.push(new THREE.CanvasTexture(canvas))
+        textuerArray.push((canvas))
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
 
-    snapShotRight(download=false){
+    snapShotRight(download=false,textuerArray){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[2].children.map((e,i)=>{
@@ -269,12 +318,12 @@ export class CubeMap{
                 this.rtt.download(canvas,`r`)
             }
         } 
-        this.textuerArray.push(new THREE.CanvasTexture(canvas))
+        textuerArray.push((canvas))
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-    snapShotLeft(download=false){
+    snapShotLeft(download=false,textuerArray){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[3].children.map((e,i)=>{
@@ -295,12 +344,12 @@ export class CubeMap{
                 this.rtt.download(canvas,`l`)
             }
         } 
-        this.textuerArray.push( new THREE.CanvasTexture(canvas))
+        textuerArray.push((canvas))
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-    snapShotTop(download=false){
+    snapShotTop(download=false,textuerArray){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[4].children.map((e,i)=>{
@@ -321,12 +370,12 @@ export class CubeMap{
                 this.rtt.download(canvas,`t`)
             }
         } 
-        this.textuerArray.push( new THREE.CanvasTexture(canvas))
+        textuerArray.push((canvas))
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-    snapShotBottom(download=false){
+    snapShotBottom(download=false,textuerArray){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[5].children.map((e,i)=>{
@@ -347,19 +396,71 @@ export class CubeMap{
                 this.rtt.download(canvas,`bo`)
             }
         } 
-        this.textuerArray.push(new THREE.CanvasTexture(canvas))
+        textuerArray.push((canvas))
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
 
     snapShot(download=false){
-        this.snapShotFront (download)
-        this.snapShotBack  (download)
-        this.snapShotRight (download)
-        this.snapShotLeft  (download)
-        this.snapShotTop   (download)
-        this.snapShotBottom(download)
+        this.snapShotRight (download,this.textuerArray)
+        this.snapShotLeft  (download,this.textuerArray)
+        this.snapShotTop   (download,this.textuerArray)
+        this.snapShotBottom(download,this.textuerArray)
+        this.snapShotFront (download,this.textuerArray)
+        this.snapShotBack  (download,this.textuerArray)
     }
+    
+
+}
+
+
+export class CubeMap{
+    constructor(wxh,d,mapType=false){
+        this. displacementCube = new CubeTexture(wxh,d,mapType=false)
+        this. normalCube = new CubeTexture(wxh,d,mapType=false)
+    }
+
+    simplexNoiseFbm(params){
+        this.displacementCube.simplexNoiseFbm(params)
+    }
+
+    build(resoultion=512,renderer){
+        this. displacementCube.build(resoultion,renderer)
+        this. normalCube.build(resoultion,renderer)
+    }
+    async snapShot(download,displaceTex,normal={}){
+        //this.displacementCube.snapShot()
+        ///let displaceArray =  new THREE.CubeTextureLoader()
+        //let displaceTex = await displaceArray.loadAsync(this.displacementCube.textuerArray.map((e)=>{return e.toDataURL()}))
+        //console.log(displaceTex)
+        if(!(Object.keys(normal).length === 0)){
+            this.normalCube.mainCubeSides.map((p,i)=>{
+                var cnt_ = this.normalCube.center.clone()
+                var newPostion = NODE.positionWorld.sub(cnt_)
+                var wp = newPostion;
+                let cubeText = displaceTex
+                let ww = NODE.float(100).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
+                p.material.colorNode = _cubeTextureNormal(cubeText,wp,normal.scale,normal.strength,normal.eps)
+                // (tangent,bitangent,position, normal, texture, vUv)
+                console.log('y')
+            })
+            this.normalCube.snapShotRight (download,this.normalCube.textuerArray)
+            this.normalCube.snapShotLeft  (download,this.normalCube.textuerArray)
+            this.normalCube.snapShotTop   (download,this.normalCube.textuerArray)
+            this.normalCube.snapShotBottom(download,this.normalCube.textuerArray)
+            this.normalCube.snapShotFront (download,this.normalCube.textuerArray)
+            this.normalCube.snapShotBack  (download,this.normalCube.textuerArray)
+        }
+    }
+
+    displaceArray(){
+        return this.displacementCube.textuerArray
+    }
+
+    normalArray(){
+        return this.normalCube.textuerArray
+    }
+    
 
 }

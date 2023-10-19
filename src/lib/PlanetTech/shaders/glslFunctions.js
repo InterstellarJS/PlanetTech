@@ -213,3 +213,37 @@ vec3 displacementNormalNoiseFBM(
     `,[pattern])
 
 
+    export const blackToWhiteGradient = glslFn(`
+    vec3 blackToWhiteGradient(float radius, vec2 vUv){
+        vec2 center = vec2(0.5, 0.5); 
+        vec2 uv = vUv - center; 
+        float f = smoothstep( radius * radius,0.0, dot(uv, uv));
+        return  vec3(f);
+    }
+    `)
+    
+    
+    export  const whiteToBlackGradient = glslFn(`
+    vec3 whiteToBlackGradient(float radius,vec2 vUv){
+        vec2 center = vec2(0.5, 0.5); 
+        vec2 uv = vUv - center;
+        float f = smoothstep(0.0,radius * radius, dot(uv, uv));
+        return  vec3(f);
+    }
+    `)
+    
+    export  const RGBMod = glslFn(`
+    vec3 RGBMod(vec3 color, float r, float g, float b){
+        vec3 c = color;
+        c.r += r;
+        c.g += g;
+        c.b += b;
+        return c;
+    }
+    `)
+  
+    export const uvTransforms = (scale)=>{
+      var uv = NODE.uv()
+      var newUV = uv.mul(scale).add(0.5 * (1.0-scale)).add(NODE.vec2(0.0,0.0))
+      return newUV
+    }

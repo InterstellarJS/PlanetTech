@@ -7,10 +7,11 @@ import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes
 import { Atmosphere } from './WorldSpace/Shaders/atmosphereScattering';
 import { FirstPersonControls }      from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
-import { CubeMap } from './cubeMap/cubeMap';
+import { CubeMap,CubeTexture } from './cubeMap/cubeMap';
 import { Space } from './WorldSpace/space';
 import {SMAAEffect} from "postprocessing";
 
+console.log(NODE)
 
 let N = [
   new THREE.TextureLoader().load('./planet/nf_image.png'),
@@ -44,7 +45,7 @@ class ViewGL {
     this.rend.camera();
     this.rend.updateCamera(0,0,80000*4)
     this.rend.orbitControls()
-    this.rend.renderer.setClearColor('black');
+    this.rend.renderer.setClearColor('white');
     this.space = new Space()
   }
   
@@ -52,12 +53,27 @@ class ViewGL {
   this.canvasViewPort = canvasViewPort;
   }
 
-  initCubeMapPlanet() {
-    const displacmentMaps = new CubeMap(2000,3,true)
+  async initCubeMapPlanet() {
+    const displacmentMaps = new CubeMap(2000,1,false)
     const download = false
-    displacmentMaps.build(2512,this.rend.renderer)
+    displacmentMaps.build(1512,this.rend.renderer)
     displacmentMaps.simplexNoiseFbm({
-      inScale:            3.5,
+      inScale:            0.08,
+      scale:              0.1,
+      radius:             100,
+      scaleHeightOutput:  0.1,
+      seed:               0.0,
+      normalScale:        .09,
+      redistribution:      2.,
+      persistance:        .35,
+      lacunarity:          2.,
+      iteration:           10,
+      terbulance:       false,
+      ridge:            false,
+    })
+
+    displacmentMaps.simplexNoiseFbm({
+      inScale:            2.5,
       scale:              0.1,
       radius:             100,
       scaleHeightOutput:  0.1,
@@ -71,24 +87,48 @@ class ViewGL {
       ridge:            false,
     })
 
-    displacmentMaps.snapShot(download)
-    let N = displacmentMaps.textuerArray
+
+    displacmentMaps.simplexNoiseFbm({
+      inScale:            .5,
+      scale:              0.1,
+      radius:             100,
+      scaleHeightOutput:  0.1,
+      seed:               0.0,
+      normalScale:        .09,
+      redistribution:      1.,
+      persistance:        .35,
+      lacunarity:          2.,
+      iteration:           10,
+      terbulance:       false,
+      ridge:            false,
+    })
+
+   // let loader = new THREE.TextureLoader()
+   // let t = await loader.loadAsync('./planet/hm4.png')
+  //  displacmentMaps.addTexture(0,t)
+displacmentMaps.displacementCube.snapShot()
+  let displaceArray =  new THREE.CubeTextureLoader()
+  let displaceTex = await displaceArray.loadAsync(displacmentMaps.displacementCube.textuerArray.map((e)=>{return e.toDataURL()}))
+
+    displacmentMaps.snapShot(download,displaceTex,{scale:4.,strength:4.,eps:.9})
+    let N = displacmentMaps.displaceArray().map((e)=>{return new THREE.CanvasTexture(e)})
+    let N2 = displacmentMaps.normalArray().map((e)=>{return new THREE.CanvasTexture(e)})
 
     this.planet = new Planet({
       size:            10000,
       polyCount:          30,
       quadTreeDimensions:  1,
       levels:              5,
-      radius:          10000,
-      displacmentScale:    0,
-      lodDistanceOffset: 1.4,
+      radius:          80000,
+      displacmentScale:   220,
+      lodDistanceOffset: 12.4,
+      material: new NODE.MeshBasicNodeMaterial(),
     })
 
-    this.planet.textuers(N,N)
+    this.planet.textuers(N2,N)
     this.planet.light(NODE.vec3(0.0,20.0,20.0))
     this.quads = this.planet.getAllInstance()
     this.rend.scene_.add( this.planet.sphere);
-    console.log(this.planet.metaData())
   }
   
   initPlanet() {
@@ -107,24 +147,24 @@ class ViewGL {
 
     this.space.initComposer()
     this.space.addPlanets(this.planet,{
-      PLANET_CENTER:this.planet.metaData().cnt.clone(),
-      PLANET_RADIUS:this.planet.metaData().radius,
-      ATMOSPHERE_RADIUS:50000*1.68,
-      lightDir:new THREE.Vector3(0,0,1),
-      ulight_intensity:new THREE.Vector3(5.0,5.0,5.0),
-      uray_light_color:new THREE.Vector3(10,10,10),
-      umie_light_color:new THREE.Vector3(5,5,5),
-      RAY_BETA:        new THREE.Vector3(5.5e-6, 13.0e-6, 22.4e-6),
-      MIE_BETA:        new THREE.Vector3(21e-6, 21e-6, 21e-6),
-      AMBIENT_BETA:    new THREE.Vector3(0.0),
-      ABSORPTION_BETA: new THREE.Vector3(2.04e-5, 4.97e-5, 1.95e-6),
-      HEIGHT_RAY:.3e3,
-      HEIGHT_MIE:.15e3,
-      HEIGHT_ABSORPTION:30e3,
-      ABSORPTION_FALLOFF:4e3,
-      PRIMARY_STEPS: 8,
-      LIGHT_STEPS: 4,
-      G: 0.7,
+      PLANET_CENTER:      this.planet.metaData().cnt.clone(),
+      PLANET_RADIUS:      this.planet.metaData().radius,
+      ATMOSPHERE_RADIUS:  50000*2.0,
+      lightDir:           new THREE.Vector3(0,0,1),
+      ulight_intensity:   new THREE.Vector3(7.0,7.0,7.0),
+      uray_light_color:   new THREE.Vector3(5,5,5),
+      umie_light_color:   new THREE.Vector3(5,5,5),
+      RAY_BETA:           new THREE.Vector3(5.5e-6, 13.0e-6, 22.4e-6),
+      MIE_BETA:           new THREE.Vector3(21e-6, 21e-6, 21e-6),
+      AMBIENT_BETA:       new THREE.Vector3(0.0),
+      ABSORPTION_BETA:    new THREE.Vector3(2.04e-5, 4.97e-5, 1.95e-6),
+      HEIGHT_RAY:        .5e3,
+      HEIGHT_MIE:       .25e3,
+      HEIGHT_ABSORPTION: 30e3,
+      ABSORPTION_FALLOFF: 4e3,
+      PRIMARY_STEPS:        8,
+      LIGHT_STEPS:          4,
+      G:                  0.7,
     })
     this.space.setAtmosphere()
     this.space.addEffects([new SMAAEffect()])
@@ -132,7 +172,6 @@ class ViewGL {
     const light = new THREE.AmbientLight( 0x404040,35 ); // soft white light
     this.rend.scene_.add( light );
     this.rend.scene_.add( this.planet.sphere );
-
   }
   
   initPlayer(){
@@ -149,7 +188,7 @@ class ViewGL {
   
   start() {
     this.render(this.canvasViewPort);
-    this.initPlanet()
+    this.initCubeMapPlanet()
     this.initPlayer()
     this.update();
   }
@@ -161,12 +200,12 @@ class ViewGL {
 
   update(t) {
     requestAnimationFrame(this.update.bind(this));
-    if(this.space){
+    if(this.planet){
       this.controls.update(this.clock.getDelta())
-      this.space.update(this.player)
+      this.planet.update(this.player)
     }
     nodeFrame.update();
-    //this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
+    this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
   }
 
 }

@@ -10,7 +10,10 @@ let snoise3DDisplacementNormalFBM
 let pattern
 let displacementNoiseFBMWarp
 let displacementNormalNoiseFBMWarp
-
+let blackToWhiteGradient
+let whiteToBlackGradient 
+let RGBMod 
+let uvTransforms 
 
 
 
@@ -25,6 +28,11 @@ if (renderer.getType() === 'WebGL') {
     displacementNormalNoiseFBMWarp = glslFunctions.displacementNormalNoiseFBMWarp
     pattern = glslFunctions.pattern
     displacementFBM = glslFunctions.displacementFBM
+    blackToWhiteGradient = glslFunctions.blackToWhiteGradient
+    whiteToBlackGradient = glslFunctions.whiteToBlackGradient
+    RGBMod = glslFunctions.RGBMod
+    uvTransforms = glslFunctions.uvTransforms
+
 } else if (renderer.getType() === 'WebGPU') {
     console.log('WebGPU');
     defualtLight = wgslFunctions.defualtLight;
@@ -44,5 +52,9 @@ export {
     snoise3DDisplacementNormalFBM,
     pattern,
     displacementNoiseFBMWarp,
-    displacementNormalNoiseFBMWarp
+    displacementNormalNoiseFBMWarp,
+    blackToWhiteGradient,
+    whiteToBlackGradient, 
+    RGBMod, 
+    uvTransforms, 
 };

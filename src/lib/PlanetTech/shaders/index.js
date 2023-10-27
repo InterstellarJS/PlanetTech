@@ -14,8 +14,8 @@ let blackToWhiteGradient
 let whiteToBlackGradient 
 let RGBMod 
 let uvTransforms 
-
-
+let customNoiseNormal
+let lambertian
 
 
 if (renderer.getType() === 'WebGL') {
@@ -32,7 +32,8 @@ if (renderer.getType() === 'WebGL') {
     whiteToBlackGradient = glslFunctions.whiteToBlackGradient
     RGBMod = glslFunctions.RGBMod
     uvTransforms = glslFunctions.uvTransforms
-
+    customNoiseNormal = glslFunctions.customNoiseNormal
+    lambertian = glslFunctions.Lambertian
 } else if (renderer.getType() === 'WebGPU') {
     console.log('WebGPU');
     defualtLight = wgslFunctions.defualtLight;
@@ -56,5 +57,7 @@ export {
     blackToWhiteGradient,
     whiteToBlackGradient, 
     RGBMod, 
-    uvTransforms, 
+    uvTransforms,
+    customNoiseNormal,
+    lambertian 
 };

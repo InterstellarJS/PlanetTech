@@ -8,40 +8,47 @@ import { displayCanvasesInGrid } from './utils';
 import * as Shaders  from  './../PlanetTech/shaders/index.js'
 
 
-const _cubeTextureNormal = (cubeText,vUV,scale,strength,eps)=>{    
-    let center = NODE.cubeTexture(cubeText, vUV).r;
-    let dx = NODE.cubeTexture(cubeText, vUV.add(NODE.vec3(eps,.0,.0))).r.sub(center);  
-    let dy = NODE.cubeTexture(cubeText, vUV.add(NODE.vec3(.0,eps,.0))).r.sub(center); 
-    //let dz = NODE.cubeTexture(cubeText, vUV.add(NODE.vec3(.0,0,eps))).r.sub(center);  
- 
-    let normalMap = NODE.vec3(dx.mul(scale), dy.mul(scale), 1.).normalize();  
-    normalMap = normalMap.mul(strength);                            
-    return normalMap.mul(0.5).add(0.5);
+
+
+
+let f2 = NODE.glslFn(`
+vec3 normalMap(vec3 n1_,vec3 n2_){
+    vec3 n1 = n1_*2.-1.;
+    vec3 n2 = n2_*2.-1.;
+
+    float a = 1./(1. + n1.z);
+    float b = -n1.x*n1.y*a;
+    
+    // Form a basis
+    vec3 b1 = vec3(1. - n1.x*n1.x*a, b, -n1.x);
+    vec3 b2 = vec3(b, 1. - n1.y*n1.y*a, -n1.y);
+    vec3 b3 = n1;
+    
+    if (n1.z < -0.9999999) // Handle the singularity
+    {
+        b1 = vec3( .0, -1., .0);
+        b2 = vec3(-1.,  .0, .0);
+    }
+    
+    // Rotate n2 via the basis
+    vec3 r = n2.x*b1 + n2.y*b2 + n2.z*b3;
+    
+    return r*.5+.5;
 }
-
-
-/*const _cubeTextureNormal = (cubeText,vUV,scale,strength)=>{    
-    let center = NODE.cubeTexture(cubeText, vUV).r;
-    let dx = NODE.cubeTexture(cubeText, vUV.add(NODE.dFdx(vUV))).r.sub(center);  
-    let dy = NODE.cubeTexture(cubeText, vUV.add(NODE.dFdy(vUV))).r.sub(center);  
-    let normalMap = NODE.vec3(dx.mul(scale), dy.mul(scale), 1.).normalize();  
-    normalMap = normalMap.mul(strength);                            
-    return normalMap.mul(0.5).add(0.5);
-}*/
-
+`)
 
 
 const displace = (tex,uv) =>{
-    return NODE.cubeTexture(tex,uv).r
+    return NODE.texture(tex,uv)
    }
 const textureNormal = (tangent,bitangent,position, normal, texture, vUv) =>{
       let displacedPosition = normal.mul(displace(texture,vUv)).add(position)
-      let texelSize = .008; // temporarily hardcoding texture resolution
+      let texelSize = .005; // temporarily hardcoding texture resolution
       let offset = 0.09;
-      let neighbour1 = tangent.mul(texelSize).add(position)
-      let neighbour2 = bitangent.mul(texelSize).add(position)
-      let neighbour1uv = vUv.add(NODE.vec3(-offset,0,0))
-      let neighbour2uv = vUv.add(NODE.vec3(0,-offset,0))
+      let neighbour1 = tangent.mul(offset).add(position)
+      let neighbour2 = bitangent.mul(offset).add(position)
+      let neighbour1uv = vUv.add(NODE.vec2(-texelSize,0))
+      let neighbour2uv = vUv.add(NODE.vec2(0,-texelSize))
       let displacedNeighbour1 = normal.mul(displace(texture,neighbour1uv)).add(neighbour1)
       let displacedNeighbour2 = normal.mul(displace(texture,neighbour2uv)).add(neighbour2)
       let displacedTangent = displacedNeighbour1.sub(displacedPosition)
@@ -50,7 +57,32 @@ const textureNormal = (tangent,bitangent,position, normal, texture, vUv) =>{
       return displacedNormal.mul(0.5).add(0.5);
     }
 
-export class CubeTexture{
+    const textureNormal1 = (cubeText,vUV,scale,strength,eps)=>{    
+        let center = NODE.texture(cubeText, vUV).r;
+        let dx = NODE.texture(cubeText, vUV.add(NODE.vec3(eps,.0,.0))).r.sub(center);  
+        let dy = NODE.texture(cubeText, vUV.add(NODE.vec3(.0,eps,.0))).r.sub(center); 
+        //let dz = NODE.cubeTexture(cubeText, vUV.add(NODE.vec3(.0,0,eps))).r.sub(center);  
+     
+        let normalMap = NODE.vec3(dx.mul(scale), dy.mul(scale), 1.).normalize();  
+        normalMap = normalMap.mul(strength);                            
+        return normalMap.mul(0.5).add(0.5);
+    }
+    
+
+    const textureNormal2 = (cubeText,vUV,scale,strength,eps)=>{    
+        let center = NODE.texture(cubeText, vUV).r;
+        let dx = NODE.texture(cubeText, vUV.add(NODE.vec3(eps,.0,.0))).r.sub(center);  
+        let dy = NODE.texture(cubeText, vUV.add(NODE.vec3(.0,eps,.0))).r.sub(center); 
+        //let dz = NODE.cubeTexture(cubeText, vUV.add(NODE.vec3(.0,0,eps))).r.sub(center);  
+     
+        let normalMap = NODE.vec3(dx.mul(scale), dy.mul(scale), 1.).normalize();  
+        normalMap = normalMap.mul(strength);                            
+        return normalMap.mul(0.5).add(0.5);
+    }
+    
+
+
+export class CubeMap{
     constructor(wxh,d,mapType=false){
         this.w  = wxh
         this.h  = wxh
@@ -58,10 +90,10 @@ export class CubeTexture{
         this.hs = 1
         this.d  = d
         this.textuerArray = []
-        this.textuerNormalArray = []
         this.mapType = mapType
        }
        
+
 
     log(){}
 
@@ -77,10 +109,58 @@ export class CubeTexture{
     buildRttMesh(size){
         const geometry = new THREE.PlaneGeometry(size,size,1,1);
         const material = new NODE.MeshBasicNodeMaterial();
+        //material.colorNode = NODE.vec3(0,0,0)
         const plane    = new THREE.Mesh( geometry, material );
         plane.geometry.computeTangents()
         return plane
       }
+
+
+    addTexture(face,texture){
+        /*params.vn = NODE.normalLocal
+        params.tangent = NODE.tangentLocal*/
+        let p = this.mainCubeSides[face]
+        var cnt_ = this.center.clone()
+        var newPostion = NODE.positionWorld//NODE.float(100).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
+        /*
+        var cnt_ = this.center.clone()
+        var newPostion = NODE.float(params.radius).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
+        var wp = newPostion;
+        let uvScale = params.uvScale
+        if (!params.hasOwnProperty('wp')) {
+            params.wp = wp.mul(params.inScale);
+            }*/
+        if(this.mapType){
+            if(p.material.colorNode){
+                let uv = Shaders.uvTransforms(8.)     
+                let t1 = p.material.colorNode
+                let t2 = NODE.clamp(NODE.texture(texture,uv),0,1).sub(.01) 
+                let t3 = t2.mul(Shaders.blackToWhiteGradient({radius:.5,vUv:uv}))
+                p.material.colorNode = NODE.clamp(t1.sub(t3),0,1).add(t3)
+            }else{
+                let uv = Shaders.uvTransforms(8.) 
+                let t1 = NODE.texture(texture,uv)// textureNormal2 (texture,uv,.5,1.,.001) //Shaders.snoise3DDisplacementNormalFBM(params)    //tangent,bitangent,position, normal, texture, vUv
+                let t2 = t1.mul(Shaders.blackToWhiteGradient({radius:.5,vUv:uv}))
+                p.material.colorNode = t2
+            }
+        }else{
+            if(p.material.colorNode){
+                /*
+                let uv = Shaders.uvTransforms(uvScale)     
+                let t1 = p.material.colorNode
+                let t2 = NODE.clamp(Shaders.displacementFBM(params).add(params.scaleHeightOutput),0., 1.)
+                let t3 = t2.mul(Shaders.blackToWhiteGradient({radius:params.fallOfRadius,vUv:uv}))
+                p.material.colorNode = t3.add(t1) 
+                */
+            }else{
+                let uv = Shaders.uvTransforms(8.) 
+                let t1 = NODE.texture(texture,uv)// textureNormal2 (texture,uv,.5,1.,.001) //Shaders.snoise3DDisplacementNormalFBM(params)    //tangent,bitangent,position, normal, texture, vUv
+                let t2 = t1.mul(Shaders.blackToWhiteGradient({radius:.5,vUv:uv}))
+                p.material.colorNode = t2
+            }
+        }
+    }
+
 
     simplexNoise(params){
         params.vn = NODE.normalLocal 
@@ -90,8 +170,10 @@ export class CubeTexture{
             var newPostion = NODE.float(params.radius).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
             p.material.colorNode = Shaders.snoise3D({v:newPostion.mul(params.scale)})
         })
+
     }
-    
+
+
     simplexNoiseFbm(params){
         params.vn = NODE.normalLocal
         params.tangent = NODE.tangentLocal
@@ -102,13 +184,72 @@ export class CubeTexture{
             if (!params.hasOwnProperty('wp')) {
                 params.wp = wp.mul(params.inScale);
               }
-            if(p.material.colorNode){
-                let t1 = NODE.clamp(p.material.colorNode,0., 1.)
-                let t2 = NODE.clamp(Shaders.displacementFBM(params).add(params.scaleHeightOutput),0., 1.)//Shaders.displacementFBM(params).add(params.scaleHeightOutput)
-                p.material.colorNode = NODE.mix(t2,t1,t1.a)
+            if(this.mapType){
+                if(p.material.colorNode){
+                    let t1 = p.material.colorNode
+                    let t2 = Shaders.snoise3DDisplacementNormalFBM(params).mul(.5).add(.5)//.mul(2).add(1)
+                    p.material.colorNode = f2({n1_:t1,n2_:t2})//t1.add(t2).normalize().mul(.5).add(.5)
+                }else{
+                    p.material.colorNode = Shaders.snoise3DDisplacementNormalFBM(params).mul(.5).add(.5)//.mul(2).sub(1)
+                }
             }else{
-                p.material.colorNode = Shaders.displacementFBM(params).add(params.scaleHeightOutput)
+                if(p.material.colorNode){
+                    let t1 = p.material.colorNode
+                    let t2 = NODE.clamp(Shaders.displacementFBM(params).add(params.scaleHeightOutput),0., 1.)
+                    p.material.colorNode = NODE.mix(t2,t1,t1.a)
+                }else{
+                    p.material.colorNode =  NODE.clamp(Shaders.displacementFBM(params).add(params.scaleHeightOutput),0., 1.) //Shaders.displacementFBM(params).add(params.scaleHeightOutput)
+                }
             }
+        })
+    }
+
+
+    fallOffNoise(face,params){
+        params.vn = NODE.normalLocal
+        params.tangent = NODE.tangentLocal
+        let p = this.mainCubeSides[face]
+        var cnt_ = this.center.clone()
+        var newPostion = NODE.float(params.radius).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
+        var wp = newPostion;
+        let uvScale = params.uvScale
+        if (!params.hasOwnProperty('wp')) {
+            params.wp = wp.mul(params.inScale);
+            }
+        if(this.mapType){
+            if(p.material.colorNode){
+                let uv = Shaders.uvTransforms(uvScale)     
+                let t1 = p.material.colorNode
+                let t2 = Shaders.snoise3DDisplacementNormalFBM(params)
+                let t3 = t2.mul(Shaders.blackToWhiteGradient({radius:params.fallOfRadius,vUv:uv}))
+                p.material.colorNode = t3.add(t1)
+            }else{
+                let uv = Shaders.uvTransforms(uvScale) 
+                let t1 = Shaders.snoise3DDisplacementNormalFBM(params)    
+                let t2 = t1.mul(Shaders.blackToWhiteGradient({radius:params.fallOfRadius,vUv:uv}))
+                p.material.colorNode = t2
+            }
+        }else{
+            if(p.material.colorNode){
+                let uv = Shaders.uvTransforms(uvScale)     
+                let t1 = p.material.colorNode
+                let t2 = NODE.clamp(Shaders.displacementFBM(params).add(params.scaleHeightOutput),0., 1.)
+                let t3 = t2.mul(Shaders.blackToWhiteGradient({radius:params.fallOfRadius,vUv:uv}))
+                p.material.colorNode = t3.add(t1) 
+            }else{
+                let uv = Shaders.uvTransforms(uvScale)     
+                let t1 = NODE.clamp(Shaders.displacementFBM(params).add(params.scaleHeightOutput),0., 1.) 
+                let t2 = t1.mul(Shaders.blackToWhiteGradient({radius:params.fallOfRadius,vUv:uv}))
+                p.material.colorNode = t2
+            }
+        }
+    }
+
+
+    mix(color){
+        this.mainCubeSides.map((p)=>{
+            let t1 = p.material.colorNode
+            p.material.colorNode = NODE.mix(color, t1, t1.a)
         })
     }
 
@@ -123,18 +264,62 @@ export class CubeTexture{
                 params.wp = wp.mul(params.inScale);
               }
             if(this.mapType){
-                p.material.colorNode = Shaders.displacementNormalNoiseFBMWarp(params).mul(.5).add(.5)
+                if(p.material.colorNode){
+                    let t1 = p.material.colorNode
+                    let t2 = Shaders.displacementNormalNoiseFBMWarp(params).mul(.5).add(.5)//.mul(2).add(1)
+                    p.material.colorNode = f2({n1_:t1,n2_:t2})//t1.add(t2).normalize().mul(.5).add(.5)
+                }else{
+                    p.material.colorNode = Shaders.displacementNormalNoiseFBMWarp(params).mul(.5).add(.5)//.mul(2).sub(1)
+                }
             }else{
-                p.material.colorNode = Shaders.displacementNoiseFBMWarp(params).add(params.scaleHeightOutput)
+                if(p.material.colorNode){
+                    let t1 = p.material.colorNode
+                    let t2 = NODE.clamp(Shaders.displacementNoiseFBMWarp(params).add(params.scaleHeightOutput),0., 1.)
+                    p.material.colorNode = NODE.mix(t2,t1,t1.a)
+                }else{
+                    p.material.colorNode =  NODE.clamp(Shaders.displacementNoiseFBMWarp(params).add(params.scaleHeightOutput),0., 1.) //Shaders.displacementFBM(params).add(params.scaleHeightOutput)
+                }
             }
+
         })
     }
+    defNoise(params,callBack){
+        params.vn = NODE.normalLocal
+        params.tangent = NODE.tangentLocal
+        this.mainCubeSides.map((p)=>{
+            var cnt_ = this.center.clone()
+            var newPostion = NODE.float(params.radius).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
+            var wp = newPostion;
+            if (!params.hasOwnProperty('wp')) {
+                params.wp = wp.mul(params.inScale);
+              }
+            if(this.mapType){
+                if(p.material.colorNode){
+                    let t1 = p.material.colorNode
+                    let t2 = Shaders.customNoiseNormal(callBack)(params).mul(.5).add(.5)
+                    p.material.colorNode = f2({n1_:t1,n2_:t2})
+                }else{
+                    p.material.colorNode = Shaders.customNoiseNormal(callBack)(params).mul(.5).add(.5)
+                }
+            }else{
+                if(p.material.colorNode){
+                    let t1 = p.material.colorNode
+                    let t2 = NODE.clamp(Shaders.displacementNoiseFBMWarp(params).add(params.scaleHeightOutput),0., 1.)
+                    p.material.colorNode = NODE.mix(t2,t1,t1.a)
+                }else{
+                    p.material.colorNode =  NODE.clamp(Shaders.displacementNoiseFBMWarp(params).add(params.scaleHeightOutput),0., 1.) 
+                }
+            }
 
-    addTexture(face,text){
-        let f  = this.mainCubeSides[face]
-        let t1 = NODE.clamp(NODE.texture(text,NODE.uv()).r,0., 1.) 
-        let t2 = f.material.colorNode
-        f.material.colorNode = t2.add(t1)
+        })  
+    }
+
+
+    invert(){
+        this.mainCubeSides.map((p)=>{
+            let t1 = p.material.colorNode
+            p.material.colorNode = NODE.float(1).sub(t1)
+        })
     }
 
     buildCube(){
@@ -248,7 +433,7 @@ export class CubeTexture{
         }
       
 
-    snapShotFront(download=false,textuerArray){
+    snapShotFront(download=false){
         let canvases = []
         this.cube.children[0].children.map((e,i)=>{
             this.rtt.rtCamera.position.set(...e.position.toArray());
@@ -265,12 +450,12 @@ export class CubeTexture{
                 this.rtt.download(canvas,`f`)
             }
         }
-        textuerArray.push((canvas))
+        this.textuerArray.push(new THREE.CanvasTexture(canvas))
         this.rtt.rtCamera.position.set(0,0,0)
 
     }
 
-    snapShotBack(download=false,textuerArray){
+    snapShotBack(download=false){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[1].children.map((e,i)=>{
@@ -291,13 +476,13 @@ export class CubeTexture{
                 this.rtt.download(canvas,`b`)
             }
         }
-        textuerArray.push((canvas))
+        this.textuerArray.push(new THREE.CanvasTexture(canvas))
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
 
-    snapShotRight(download=false,textuerArray){
+    snapShotRight(download=false){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[2].children.map((e,i)=>{
@@ -318,12 +503,12 @@ export class CubeTexture{
                 this.rtt.download(canvas,`r`)
             }
         } 
-        textuerArray.push((canvas))
+        this.textuerArray.push(new THREE.CanvasTexture(canvas))
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-    snapShotLeft(download=false,textuerArray){
+    snapShotLeft(download=false){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[3].children.map((e,i)=>{
@@ -344,12 +529,12 @@ export class CubeTexture{
                 this.rtt.download(canvas,`l`)
             }
         } 
-        textuerArray.push((canvas))
+        this.textuerArray.push( new THREE.CanvasTexture(canvas))
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-    snapShotTop(download=false,textuerArray){
+    snapShotTop(download=false){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[4].children.map((e,i)=>{
@@ -370,12 +555,12 @@ export class CubeTexture{
                 this.rtt.download(canvas,`t`)
             }
         } 
-        textuerArray.push((canvas))
+        this.textuerArray.push( new THREE.CanvasTexture(canvas))
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-    snapShotBottom(download=false,textuerArray){
+    snapShotBottom(download=false){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[5].children.map((e,i)=>{
@@ -396,71 +581,19 @@ export class CubeTexture{
                 this.rtt.download(canvas,`bo`)
             }
         } 
-        textuerArray.push((canvas))
+        this.textuerArray.push(new THREE.CanvasTexture(canvas))
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
 
     snapShot(download=false){
-        this.snapShotRight (download,this.textuerArray)
-        this.snapShotLeft  (download,this.textuerArray)
-        this.snapShotTop   (download,this.textuerArray)
-        this.snapShotBottom(download,this.textuerArray)
-        this.snapShotFront (download,this.textuerArray)
-        this.snapShotBack  (download,this.textuerArray)
+        this.snapShotRight (download)
+        this.snapShotLeft  (download)
+        this.snapShotTop   (download)
+        this.snapShotBottom(download)
+        this.snapShotFront (download)
+        this.snapShotBack  (download)
     }
-    
-
-}
-
-
-export class CubeMap{
-    constructor(wxh,d,mapType=false){
-        this. displacementCube = new CubeTexture(wxh,d,mapType=false)
-        this. normalCube = new CubeTexture(wxh,d,mapType=false)
-    }
-
-    simplexNoiseFbm(params){
-        this.displacementCube.simplexNoiseFbm(params)
-    }
-
-    build(resoultion=512,renderer){
-        this. displacementCube.build(resoultion,renderer)
-        this. normalCube.build(resoultion,renderer)
-    }
-    async snapShot(download,displaceTex,normal={}){
-        //this.displacementCube.snapShot()
-        ///let displaceArray =  new THREE.CubeTextureLoader()
-        //let displaceTex = await displaceArray.loadAsync(this.displacementCube.textuerArray.map((e)=>{return e.toDataURL()}))
-        //console.log(displaceTex)
-        if(!(Object.keys(normal).length === 0)){
-            this.normalCube.mainCubeSides.map((p,i)=>{
-                var cnt_ = this.normalCube.center.clone()
-                var newPostion = NODE.positionWorld.sub(cnt_)
-                var wp = newPostion;
-                let cubeText = displaceTex
-                let ww = NODE.float(100).mul((NODE.positionWorld.sub(cnt_).normalize())).add(cnt_) 
-                p.material.colorNode = _cubeTextureNormal(cubeText,wp,normal.scale,normal.strength,normal.eps)
-                // (tangent,bitangent,position, normal, texture, vUv)
-                console.log('y')
-            })
-            this.normalCube.snapShotRight (download,this.normalCube.textuerArray)
-            this.normalCube.snapShotLeft  (download,this.normalCube.textuerArray)
-            this.normalCube.snapShotTop   (download,this.normalCube.textuerArray)
-            this.normalCube.snapShotBottom(download,this.normalCube.textuerArray)
-            this.normalCube.snapShotFront (download,this.normalCube.textuerArray)
-            this.normalCube.snapShotBack  (download,this.normalCube.textuerArray)
-        }
-    }
-
-    displaceArray(){
-        return this.displacementCube.textuerArray
-    }
-
-    normalArray(){
-        return this.normalCube.textuerArray
-    }
-    
 
 }

@@ -6,7 +6,7 @@ export const defualtLight = glslFn(`
     vec3 lightDirection = normalize(lightPosition - normalMap.xyz);
     vec3 viewDirection  = normalize(cP - normalMap.xyz);
     vec3 ambientColor   = vec3(0.0, 0.0, 0.0);  // Ambient light color
-    vec3 diffuseColor   = vec3(0.5, 0.5, 0.5);  // Diffuse light color
+    vec3 diffuseColor   = vec3(-0.4, -0.4, 0.5);  // Diffuse light color
     vec3 specularColor  = vec3(0.0, 0.0, 0.0);  // Specular light color
     float shininess     = 0.0;                  // Material shininess factor
 
@@ -183,8 +183,34 @@ vec3 displacementNormalNoiseFBM(
   
     `,[snoise3Dfbm])
 
+
+
+    export  const  customNoiseNormal = (custom) =>{
+      return glslFn(` 
+      vec3 customNoiseNormal(
+          vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float normalScale, float persistance,float lacunarity,float redistribution,  int iteration,bool terbulance, bool ridge){
+          float n = customNoise(wp);  
+          vec3 displacedPosition = wp + vn * n;
+          float offset = normalScale;
+          vec3 tangent_ = tangent.xyz;
+          vec3 bitangent = normalize(cross(vn, tangent_));
+          vec3 neighbour1 = wp + tangent_ * offset;
+          vec3 neighbour2 = wp + bitangent * offset;
+          vec3 displacedNeighbour1 = neighbour1 + vn * customNoise(neighbour1);
+          vec3 displacedNeighbour2 = neighbour2 + vn * customNoise(neighbour2);
+          vec3 displacedTangent = displacedNeighbour1 - displacedPosition;
+          vec3 displacedBitangent = displacedNeighbour2 - displacedPosition;
+          vec3 displacedNormal = normalize(cross(displacedTangent, displacedBitangent));
+          return displacedNormal;
+        }
+      
+        `,[glslFn(custom,[snoise3Dfbm])])
+    }
+    
+
+
   export  const  displacementNormalNoiseFBMWarp = glslFn(` 
-  vec3 displacementNormalNoiseFBM(
+  vec3 displacementNormalNoiseFBMWarp(
       vec3 wp, vec3 vn,vec3 tangent, float seed, float scale, float normalScale, float persistance,float lacunarity,float redistribution,  int iteration,bool terbulance, bool ridge){
       float n = pattern(wp,  seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge);  
       vec3 displacedPosition = wp + vn * n;
@@ -247,3 +273,20 @@ vec3 displacementNormalNoiseFBM(
       var newUV = uv.mul(scale).add(0.5 * (1.0-scale)).add(NODE.vec2(0.0,0.0))
       return newUV
     }
+
+
+    export const Lambertian = glslFn(`
+    vec3 Lambertian(vec3 Normal,vec3 LightDir,vec3 LightColor,vec4 AmbientColor, vec3 Falloff){
+      vec3 N = normalize(Normal.xyz);
+      vec3 L = normalize(LightDir.xyz);
+      vec3 Diffuse = LightColor * max(dot(N, L), 0.0);
+      float D = length(LightDir);
+      vec3 Ambient = AmbientColor.rgb * AmbientColor.a;
+      float Attenuation = 1.0 / ( Falloff.x + (Falloff.y*D) + (Falloff.z*D*D) );
+      vec3 Intensity = Ambient + Diffuse * Attenuation;
+      vec3 FinalColor = Diffuse.rgb * Intensity;
+
+      return FinalColor;
+    }
+
+    `)

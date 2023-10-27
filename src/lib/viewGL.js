@@ -7,27 +7,29 @@ import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes
 import { Atmosphere } from './WorldSpace/Shaders/atmosphereScattering';
 import { FirstPersonControls }      from 'three/examples/jsm/controls/FirstPersonControls';
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
-import { CubeMap,CubeTexture } from './cubeMap/cubeMap';
+import { CubeMap } from './cubeMap/cubeMap';
 import { Space } from './WorldSpace/space';
 import {SMAAEffect} from "postprocessing";
+import * as Shaders  from  './PlanetTech/shaders/index.js'
 
-console.log(NODE)
+
+ console.log(NODE)
 
 let N = [
-  new THREE.TextureLoader().load('./planet/nf_image.png'),
-  new THREE.TextureLoader().load('./planet/nb_image.png'),
   new THREE.TextureLoader().load('./planet/nr_image.png'),
   new THREE.TextureLoader().load('./planet/nl_image.png'),
   new THREE.TextureLoader().load('./planet/nt_image.png'),
   new THREE.TextureLoader().load('./planet/nbo_image.png'),
+  new THREE.TextureLoader().load('./planet/1nf_image.png'),
+  new THREE.TextureLoader().load('./planet/nb_image.png'),
   ]
 let D = [
-  new THREE.TextureLoader().load('./planet/f_image.png'),
-  new THREE.TextureLoader().load('./planet/b_image.png'),
   new THREE.TextureLoader().load('./planet/r_image.png'),
   new THREE.TextureLoader().load('./planet/l_image.png'),
   new THREE.TextureLoader().load('./planet/t_image.png'),
   new THREE.TextureLoader().load('./planet/bo_image.png'),
+  new THREE.TextureLoader().load('./planet/1f_image.png'),
+  new THREE.TextureLoader().load('./planet/b_image.png'),
 ]
 
 class ViewGL {
@@ -54,81 +56,158 @@ class ViewGL {
   }
 
   async initCubeMapPlanet() {
-    const displacmentMaps = new CubeMap(2000,1,false)
+    const displacmentMaps = new CubeMap(2000,2,true)
     const download = false
     displacmentMaps.build(1512,this.rend.renderer)
     displacmentMaps.simplexNoiseFbm({
-      inScale:            0.08,
-      scale:              0.1,
-      radius:             100,
+      inScale:            0.008,
+      scale:              0.05,
+      radius:             400,
       scaleHeightOutput:  0.1,
       seed:               0.0,
-      normalScale:        .09,
+      normalScale:        .08,
       redistribution:      2.,
       persistance:        .35,
       lacunarity:          2.,
       iteration:           10,
       terbulance:       false,
-      ridge:            false,
+      ridge:            true,
     })
-
-    displacmentMaps.simplexNoiseFbm({
-      inScale:            2.5,
-      scale:              0.1,
+    
+    displacmentMaps.fallOffNoise(0,{
+      uvScale:            1.,
+      fallOfRadius:        .4,
+      inScale:            1.01,
+      scale:              0.01,
       radius:             100,
       scaleHeightOutput:  0.1,
       seed:               0.0,
-      normalScale:        .09,
-      redistribution:      1.,
-      persistance:        .35,
+      normalScale:        .5,
+      redistribution:      3.,
+      persistance:        .25,
       lacunarity:          2.,
+      iteration:           5,
+      terbulance:       false,
+      ridge:            false,
+    })
+
+    displacmentMaps.fallOffNoise(3,{
+      uvScale:            1.,
+      fallOfRadius:        .4,
+      inScale:            3.5,
+      scale:              0.01,
+      radius:             100,
+      scaleHeightOutput:  0.1,
+      seed:               0.0,
+      normalScale:        .5,
+      redistribution:      3.,
+      persistance:        .35,
+      lacunarity:          3.,
       iteration:           10,
       terbulance:       false,
       ridge:            false,
     })
 
 
-    displacmentMaps.simplexNoiseFbm({
-      inScale:            .5,
+
+    displacmentMaps.fallOffNoise(4,{
+      uvScale:            1.,
+      fallOfRadius:        .4,
+      inScale:            .01,
       scale:              0.1,
       radius:             100,
       scaleHeightOutput:  0.1,
       seed:               0.0,
-      normalScale:        .09,
-      redistribution:      1.,
+      normalScale:        .5,
+      redistribution:      2.,
       persistance:        .35,
-      lacunarity:          2.,
+      lacunarity:          3.,
       iteration:           10,
       terbulance:       false,
       ridge:            false,
     })
 
-   // let loader = new THREE.TextureLoader()
-   // let t = await loader.loadAsync('./planet/hm4.png')
-  //  displacmentMaps.addTexture(0,t)
-displacmentMaps.displacementCube.snapShot()
-  let displaceArray =  new THREE.CubeTextureLoader()
-  let displaceTex = await displaceArray.loadAsync(displacmentMaps.displacementCube.textuerArray.map((e)=>{return e.toDataURL()}))
+    displacmentMaps.fallOffNoise(4,{
+      uvScale:            1.,
+      fallOfRadius:        .4,
+      inScale:            .001,
+      scale:              0.01,
+      radius:             100,
+      scaleHeightOutput:  0.1,
+      seed:               0.0,
+      normalScale:        .05,
+      redistribution:      1.,
+      persistance:        .25,
+      lacunarity:          3.,
+      iteration:           10,
+      terbulance:       false,
+      ridge:            false,
+    })
 
-    displacmentMaps.snapShot(download,displaceTex,{scale:4.,strength:4.,eps:.9})
-    let N = displacmentMaps.displaceArray().map((e)=>{return new THREE.CanvasTexture(e)})
-    let N2 = displacmentMaps.normalArray().map((e)=>{return new THREE.CanvasTexture(e)})
 
+
+    displacmentMaps.fallOffNoise(5,{
+      uvScale:            1.,
+      fallOfRadius:        .4,
+      inScale:            3.1,
+      scale:              0.01,
+      radius:             100,
+      scaleHeightOutput:  0.1,
+      seed:               0.0,
+      normalScale:        .05,
+      redistribution:      1.,
+      persistance:        .25,
+      lacunarity:          3.,
+      iteration:           10,
+      terbulance:       false,
+      ridge:            false,
+    })
+
+    let loader3 = new THREE.TextureLoader()
+    let text3 =  await loader3.loadAsync('./planet/nf_image.png')
+    displacmentMaps.addTexture(0,text3)
+
+
+
+    displacmentMaps.fallOffNoise(0,{
+      uvScale:            1.,
+      fallOfRadius:        .4,
+      inScale:            1.01,
+      scale:              0.01,
+      radius:             100,
+      scaleHeightOutput:  0.1,
+      seed:               0.0,
+      normalScale:        .08,
+      redistribution:      3.,
+      persistance:        .35,
+      lacunarity:          3.,
+      iteration:           10,
+      terbulance:       false,
+      ridge:            false,
+    })
+
+
+    displacmentMaps.snapShot(download)
+    let N = displacmentMaps.textuerArray
+    
     this.planet = new Planet({
       size:            10000,
       polyCount:          30,
       quadTreeDimensions:  1,
-      levels:              5,
+      levels:              1,
       radius:          80000,
-      displacmentScale:   220,
+      displacmentScale: 0.5,
       lodDistanceOffset: 12.4,
       material: new NODE.MeshBasicNodeMaterial(),
     })
 
-    this.planet.textuers(N2,N)
-    this.planet.light(NODE.vec3(0.0,20.0,20.0))
+    this.planet.textuers(N,N)
+    this.planet.light(NODE.vec3(0.0,8.5,8.5))
     this.quads = this.planet.getAllInstance()
     this.rend.scene_.add( this.planet.sphere);
+    const light = new THREE.AmbientLight( 0x404040,35 ); // soft white light
+    this.rend.scene_.add( light );
+
   }
   
   initPlanet() {
@@ -143,7 +222,7 @@ displacmentMaps.displacementCube.snapShot()
       material: new NODE.MeshPhysicalNodeMaterial(),
         },'Terranox')
     this.planet.textuers(N,D)
-    this.planet.light   (NODE.vec3(0.0,100.0,100.0))
+    this.planet.light   (NODE.vec3(0.0,8.0,8.0))
 
     this.space.initComposer()
     this.space.addPlanets(this.planet,{
@@ -202,7 +281,7 @@ displacmentMaps.displacementCube.snapShot()
     requestAnimationFrame(this.update.bind(this));
     if(this.planet){
       this.controls.update(this.clock.getDelta())
-      this.planet.update(this.player)
+      //this.planet.update(this.player)
     }
     nodeFrame.update();
     this.rend.renderer.render(this.rend.scene_, this.rend.camera_);

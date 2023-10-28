@@ -16,12 +16,12 @@ import * as Shaders  from  './PlanetTech/shaders/index.js'
  console.log(NODE)
 
 let N = [
-  new THREE.TextureLoader().load('./planet/nr_image.png'),
-  new THREE.TextureLoader().load('./planet/nl_image.png'),
-  new THREE.TextureLoader().load('./planet/nt_image.png'),
-  new THREE.TextureLoader().load('./planet/nbo_image.png'),
-  new THREE.TextureLoader().load('./planet/1nf_image.png'),
-  new THREE.TextureLoader().load('./planet/nb_image.png'),
+  new THREE.TextureLoader().load(''),
+  new THREE.TextureLoader().load('./planet/1nl_image.png'),
+  new THREE.TextureLoader().load('./planet/1nt_image.png'),
+  new THREE.TextureLoader().load(''),
+  new THREE.TextureLoader().load(''),
+  new THREE.TextureLoader().load('./planet/1nb_image.png'),
   ]
 let D = [
   new THREE.TextureLoader().load('./planet/r_image.png'),
@@ -56,139 +56,11 @@ class ViewGL {
   }
 
   async initCubeMapPlanet() {
-    const displacmentMaps = new CubeMap(2000,2,true)
-    const download = false
-    displacmentMaps.build(1512,this.rend.renderer)
-    displacmentMaps.simplexNoiseFbm({
-      inScale:            0.008,
-      scale:              0.05,
-      radius:             400,
-      scaleHeightOutput:  0.1,
-      seed:               0.0,
-      normalScale:        .08,
-      redistribution:      2.,
-      persistance:        .35,
-      lacunarity:          2.,
-      iteration:           10,
-      terbulance:       false,
-      ridge:            true,
-    })
-    
-    displacmentMaps.fallOffNoise(0,{
-      uvScale:            1.,
-      fallOfRadius:        .4,
-      inScale:            1.01,
-      scale:              0.01,
-      radius:             100,
-      scaleHeightOutput:  0.1,
-      seed:               0.0,
-      normalScale:        .5,
-      redistribution:      3.,
-      persistance:        .25,
-      lacunarity:          2.,
-      iteration:           5,
-      terbulance:       false,
-      ridge:            false,
-    })
+ 
 
-    displacmentMaps.fallOffNoise(3,{
-      uvScale:            1.,
-      fallOfRadius:        .4,
-      inScale:            3.5,
-      scale:              0.01,
-      radius:             100,
-      scaleHeightOutput:  0.1,
-      seed:               0.0,
-      normalScale:        .5,
-      redistribution:      3.,
-      persistance:        .35,
-      lacunarity:          3.,
-      iteration:           10,
-      terbulance:       false,
-      ridge:            false,
-    })
+    //displacmentMaps.snapShotFrontC(download)
 
 
-
-    displacmentMaps.fallOffNoise(4,{
-      uvScale:            1.,
-      fallOfRadius:        .4,
-      inScale:            .01,
-      scale:              0.1,
-      radius:             100,
-      scaleHeightOutput:  0.1,
-      seed:               0.0,
-      normalScale:        .5,
-      redistribution:      2.,
-      persistance:        .35,
-      lacunarity:          3.,
-      iteration:           10,
-      terbulance:       false,
-      ridge:            false,
-    })
-
-    displacmentMaps.fallOffNoise(4,{
-      uvScale:            1.,
-      fallOfRadius:        .4,
-      inScale:            .001,
-      scale:              0.01,
-      radius:             100,
-      scaleHeightOutput:  0.1,
-      seed:               0.0,
-      normalScale:        .05,
-      redistribution:      1.,
-      persistance:        .25,
-      lacunarity:          3.,
-      iteration:           10,
-      terbulance:       false,
-      ridge:            false,
-    })
-
-
-
-    displacmentMaps.fallOffNoise(5,{
-      uvScale:            1.,
-      fallOfRadius:        .4,
-      inScale:            3.1,
-      scale:              0.01,
-      radius:             100,
-      scaleHeightOutput:  0.1,
-      seed:               0.0,
-      normalScale:        .05,
-      redistribution:      1.,
-      persistance:        .25,
-      lacunarity:          3.,
-      iteration:           10,
-      terbulance:       false,
-      ridge:            false,
-    })
-
-    let loader3 = new THREE.TextureLoader()
-    let text3 =  await loader3.loadAsync('./planet/nf_image.png')
-    displacmentMaps.addTexture(0,text3)
-
-
-
-    displacmentMaps.fallOffNoise(0,{
-      uvScale:            1.,
-      fallOfRadius:        .4,
-      inScale:            1.01,
-      scale:              0.01,
-      radius:             100,
-      scaleHeightOutput:  0.1,
-      seed:               0.0,
-      normalScale:        .08,
-      redistribution:      3.,
-      persistance:        .35,
-      lacunarity:          3.,
-      iteration:           10,
-      terbulance:       false,
-      ridge:            false,
-    })
-
-
-    displacmentMaps.snapShot(download)
-    let N = displacmentMaps.textuerArray
     
     this.planet = new Planet({
       size:            10000,
@@ -208,6 +80,8 @@ class ViewGL {
     const light = new THREE.AmbientLight( 0x404040,35 ); // soft white light
     this.rend.scene_.add( light );
 
+
+    
   }
   
   initPlanet() {

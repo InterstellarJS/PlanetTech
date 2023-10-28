@@ -50,6 +50,13 @@ export class RtTexture {
     return pixels
   }
 
+  getSpherePixels(face){
+    var pixels = new Uint8Array(this.rtWidth * this.rtHeight * 4);
+    this.renderer_.readRenderTargetPixels(this.renderTarget, 0, 0, this.rtWidth, this.rtHeight, pixels,face);
+    return pixels
+  }
+
+
   toImage(pixels){
     // Create a canvas element
     var canvas    = document.createElement('canvas');

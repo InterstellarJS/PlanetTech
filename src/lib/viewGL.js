@@ -24,12 +24,12 @@ let N = [
   new THREE.TextureLoader().load('./planet/1nb_image.png'),
   ]
 let D = [
-  new THREE.TextureLoader().load('./planet/r_image.png'),
-  new THREE.TextureLoader().load('./planet/l_image.png'),
-  new THREE.TextureLoader().load('./planet/t_image.png'),
-  new THREE.TextureLoader().load('./planet/bo_image.png'),
-  new THREE.TextureLoader().load('./planet/1f_image.png'),
-  new THREE.TextureLoader().load('./planet/b_image.png'),
+  new THREE.TextureLoader().load('./planet2/nr_image.png'),
+  new THREE.TextureLoader().load('./planet2/nl_image.png'),
+  new THREE.TextureLoader().load('./planet2/nt_image.png'),
+  new THREE.TextureLoader().load('./planet2/nbo_image.png'),
+  new THREE.TextureLoader().load('./planet2/nf_image.png'),
+  new THREE.TextureLoader().load('./planet2/nb_image.png'),
 ]
 
 class ViewGL {
@@ -56,12 +56,37 @@ class ViewGL {
   }
 
   async initCubeMapPlanet() {
- 
+    const displacmentMaps = new CubeMap(2000,2,true)
+    const download = false
+    displacmentMaps.build(1512,this.rend.renderer)
+    displacmentMaps.simplexNoiseFbm('+',{
+      inScale:            4.5,
+      scale:              4.5,
+      seed:               0.0,
+      normalScale:        .08,
+      redistribution:      3.,
+      persistance:        .35,
+      lacunarity:          2.,
+      iteration:           10,
+      terbulance:       false,
+      ridge:            false,
+    })
 
-    //displacmentMaps.snapShotFrontC(download)
+    displacmentMaps.simplexNoiseFbm('*',{
+      inScale:            1.5,
+      scale:              1.5,
+      seed:               0.0,
+      normalScale:        .08,
+      redistribution:      2.,
+      persistance:        .35,
+      lacunarity:          2.,
+      iteration:           10,
+      terbulance:       false,
+      ridge:            false,
+    })
 
-
-    
+    displacmentMaps.snapShot(true,download)
+    let N = displacmentMaps.textuerArray
     this.planet = new Planet({
       size:            10000,
       polyCount:          30,

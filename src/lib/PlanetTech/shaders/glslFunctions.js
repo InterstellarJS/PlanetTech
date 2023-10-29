@@ -290,3 +290,17 @@ vec3 displacementNormalNoiseFBM(
     }
 
     `)
+
+
+    let nt = (displacementMap,vUv) =>{
+      let scale    = 0.9;   // Adjust this to control the amount of displacement
+      let epsilon  = 0.009;  // Small value for calculating gradients
+      let strength = 1.;   
+    
+      let center = NODE.texture(displacementMap, vUv).r; // Sample displacement map
+      let dx = NODE.texture(displacementMap, vUv.add(NODE.vec2(epsilon, 0.0))).r.sub(center);  // Calculate gradients in the X  directions
+      let dy = NODE.texture(displacementMap, vUv.add(NODE.vec2(0.0, epsilon))).r.sub(center);  // Calculate gradients in the Y directions
+      let normalMap = NODE.normalize(NODE.vec3(dx.mul(scale), dy.mul(scale), 1.0));               // Calculate the normal vector
+      normalMap = normalMap.mul(strength);                                                       // Apply strength to the normal vector
+      return normalMap.mul(0.5 ).add(0.5)
+    }

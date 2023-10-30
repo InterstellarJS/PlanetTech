@@ -6,7 +6,7 @@ import {RtTexture} from './rTtexture'
 import { displayCanvasesInGrid } from './utils';
 //import {snoise,normals, sdfbm2,} from '../../shaders/analyticalNormals';
 import * as Shaders  from  './../PlanetTech/shaders/index.js'
-
+import { TileMap } from './tileMap';
 
 
 let calculateNormal  = NODE.glslFn(
@@ -82,7 +82,6 @@ export class CubeMap{
         return center
       }
     
-
     buildRttMesh(size){
         const geometry = new THREE.PlaneGeometry(size,size,1,1);
         const material = new NODE.MeshBasicNodeMaterial();
@@ -96,14 +95,8 @@ export class CubeMap{
         p.material.colorNode =calculateNormal({position:newPostion.mul(params.scale),epsilon_:.5})
     }
 
-
     simplexNoiseFbm(op=`+`,params){
         let p = this.cube
-        //var newPostion  = NODE.positionLocal
-        //params.position = newPostion.mul(params.inScale)
-        //params.epsilon_ = .005
-        //seed,  scale, persistance, lacunarity, redistribution,  iteration, terbulance,  ridge
-        //float seed_, float scale_,float persistance_,float lacunarity_,float redistribution_, int iteration_,bool terbulance_, bool ridge_  
         const newNoiseCode = `
           noise  ${op}= clamp(fbm(
             (
@@ -119,17 +112,28 @@ export class CubeMap{
             ${params.ridge}
             ),0.,1.);
         `
-
         noiseGenorater = noiseGenorater.replace("float noise;", "float noise;");
         noiseGenorater = noiseGenorater.replace("return noise;", newNoiseCode + "\n  return noise;");
-        console.log(noiseGenorater)
-
         let fNoiseGen = NODE.glslFn(noiseGenorater,[Shaders.snoise3Dfbm])
-
         p.material.colorNode = fNoiseGen({position:NODE.positionLocal,eps:NODE.vec3(0,0,0)})  
-
     }
 
+    toNormal(params){
+        params.position = NODE.positionLocal
+        let p = this.cube
+        let fNoiseGen = NODE.glslFn(noiseGenorater,[Shaders.snoise3Dfbm])
+        let calculateNormalFbm  = NODE.glslFn(`
+             vec3 calculateNormal(vec3 position, float scale, float epsilon, float strength){               
+              float center = noiseGenorater(position,vec3(0.0, 0.0, 0.0)); // Sample displacement map
+              float dx     = noiseGenorater(position,vec3(epsilon, 0.0, 0.0)) - center; 
+              float dy     = noiseGenorater(position,vec3(0.0, epsilon,0.0)) - center; 
+              vec3 normalMap = normalize(vec3(dx * scale, dy * scale, 1.0));              
+              normalMap *= strength;                                                       
+              return vec3(normalMap * 0.5 + 0.5);                                     
+            }
+          `,[fNoiseGen])
+          p.material.colorNode=calculateNormalFbm(params)
+    }
 
     buildCube(){
         const geometry = new THREE.IcosahedronGeometry(1, 250);
@@ -138,10 +142,9 @@ export class CubeMap{
         return mesh            
     }
 
-
     build(resoultion=512,renderer){
         this.cube  = this.buildCube()
-        let cubeRT = new THREE.WebGLCubeRenderTarget( resoultion, { generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter } );
+        let cubeRT = new THREE.WebGLCubeRenderTarget( resoultion );
         let camera = new THREE.CubeCamera( .0001, 100000,cubeRT);
         this.rtt   = new RtTexture(resoultion,renderer)
         this.rtt.initRenderTraget()
@@ -150,15 +153,15 @@ export class CubeMap{
         this.rtt.rtScene.add(this.cube)
         }
       
-
     snapShotRight(download=false){
         this.rtt.rtCamera.update(this.rtt.renderer_,this.rtt.rtScene)
         let fpixels = this.rtt.getSpherePixels(0)
         let canvas = this.rtt.toImage(fpixels)
         canvasFlip(canvas,this.rtt)
         this.textuerArray.push(new THREE.CanvasTexture(canvas))
-
-        //this.rtt.download(fcanvas,`nr`)
+        if(download){
+            this.rtt.download(canvas,`r`)
+        }
     }
 
     snapShotLeft(download=false){
@@ -167,7 +170,9 @@ export class CubeMap{
         let canvas = this.rtt.toImage(fpixels)
         canvasFlip(canvas,this.rtt)
         this.textuerArray.push(new THREE.CanvasTexture(canvas))
-        //this.rtt.download(fcanvas,`nl`)
+        if(download){
+            this.rtt.download(canvas,`l`)
+        }    
     }
 
     snapShotTop(download=false){
@@ -176,8 +181,9 @@ export class CubeMap{
         let canvas = this.rtt.toImage(fpixels)
         canvasFlip(canvas,this.rtt)
         this.textuerArray.push(new THREE.CanvasTexture(canvas))
-        //this.rtt.download(fcanvas,`nt`)
-    }
+        if(download){
+            this.rtt.download(canvas,`t`)
+        }    }
 
 
     snapShotBottom(download=false){
@@ -186,7 +192,9 @@ export class CubeMap{
         let canvas = this.rtt.toImage(fpixels)
         canvasFlip(canvas,this.rtt)
         this.textuerArray.push(new THREE.CanvasTexture(canvas))
-        //this.rtt.download(fcanvas,`nbo`)
+        if(download){
+            this.rtt.download(canvas,`bo`)
+        }
     }
 
 
@@ -196,7 +204,9 @@ export class CubeMap{
         let canvas = this.rtt.toImage(fpixels)
         canvasFlip(canvas,this.rtt)
         this.textuerArray.push(new THREE.CanvasTexture(canvas))
-        //this.rtt.download(fcanvas,`nf`)
+        if(download){
+            this.rtt.download(canvas,`f`)
+        }
     }
 
 
@@ -206,34 +216,14 @@ export class CubeMap{
         let canvas = this.rtt.toImage(fpixels)
         canvasFlip(canvas,this.rtt)
         this.textuerArray.push(new THREE.CanvasTexture(canvas))
-        //this.rtt.download(fcanvas,`nb`)
+        if(download){
+            this.rtt.download(canvas,`b`)
+        }
     }
 
-
-    toNormal(){
-        let p = this.cube
-        let fNoiseGen = NODE.glslFn(noiseGenorater,[Shaders.snoise3Dfbm])
-        let calculateNormalFbm  = NODE.glslFn(
-            `
-             vec3 calculateNormal(vec3 position){
-              float scalen   = 2.25;   
-              float epsilon  = .005;  
-              float strength = 2.;                   
-              float center = noiseGenorater(position,vec3(0.0, 0.0, 0.0)); // Sample displacement map
-              float dx     = noiseGenorater(position,vec3(epsilon, 0.0, 0.0)) - center; 
-              float dy     = noiseGenorater(position,vec3(0.0, epsilon,0.0)) - center; 
-              vec3 normalMap = normalize(vec3(dx * scalen, dy * scalen, 1.0));              
-              normalMap *= strength;                                                       
-              return vec3(normalMap * 0.5 + 0.5);                                     
-            }
-          `,[fNoiseGen]
-          )
-          p.material.colorNode=calculateNormalFbm({position:NODE.positionLocal})
-    }
-
-    snapShot(normal=false,download=false){
-        if (normal){
-            this.toNormal()
+    snapShot(download=false,normal={}){
+        if (!(Object.keys(normal).length === 0)){
+            this.toNormal(normal)
         }
         this.snapShotRight (download)
         this.snapShotLeft  (download)

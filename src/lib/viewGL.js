@@ -3,6 +3,8 @@ import * as THREE     from 'three';
 import renderer       from './render';
 import Sphere         from './PlanetTech/sphere/sphere'
 import { Planet }     from './PlanetTech/celestialBodies/planet';
+import { Moon }     from './PlanetTech/celestialBodies/moon';
+
 import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
 import { Atmosphere } from './WorldSpace/Shaders/atmosphereScattering';
 import { FirstPersonControls }      from 'three/examples/jsm/controls/FirstPersonControls';
@@ -11,7 +13,7 @@ import { CubeMap } from './cubeMap/cubeMap';
 import { Space } from './WorldSpace/space';
 import {SMAAEffect} from "postprocessing";
 import * as Shaders  from  './PlanetTech/shaders/index.js'
-
+import { TileMap } from './cubeMap/tileMap';
 
  console.log(NODE)
 
@@ -56,25 +58,14 @@ class ViewGL {
   }
 
   async initCubeMapPlanet() {
+
     const displacmentMaps = new CubeMap(2000,2,true)
     const download = false
-    displacmentMaps.build(1512,this.rend.renderer)
+    const tileMapDownload = false
+    displacmentMaps.build(2512,this.rend.renderer)
     displacmentMaps.simplexNoiseFbm('+',{
       inScale:            4.5,
       scale:              4.5,
-      seed:               0.0,
-      normalScale:        .08,
-      redistribution:      3.,
-      persistance:        .35,
-      lacunarity:          2.,
-      iteration:           10,
-      terbulance:       false,
-      ridge:            false,
-    })
-
-    displacmentMaps.simplexNoiseFbm('*',{
-      inScale:            1.5,
-      scale:              1.5,
       seed:               0.0,
       normalScale:        .08,
       redistribution:      2.,
@@ -84,29 +75,59 @@ class ViewGL {
       terbulance:       false,
       ridge:            false,
     })
+    displacmentMaps.snapShot(download)
+    
+    let tileMap = new TileMap(2,2,false)
+    tileMap.build(2512,displacmentMaps.rtt.renderer_)
+    tileMap.addTextures(displacmentMaps.textuerArray) 
+    tileMap.snapShot(tileMapDownload)
+    this.textuerArray = tileMap.textuerArray
+    let D = tileMap.textuerArray
 
-    displacmentMaps.snapShot(true,download)
-    let N = displacmentMaps.textuerArray
-    this.planet = new Planet({
+
+    const normalMaps = new CubeMap(2000,2,true)
+    normalMaps.build(1512,this.rend.renderer)
+    normalMaps.simplexNoiseFbm('+',{
+      inScale:            4.5,
+      scale:              4.5,
+      seed:               0.0,
+      normalScale:        .08,
+      redistribution:      2.,
+      persistance:        .35,
+      lacunarity:          2.,
+      iteration:           10,
+      terbulance:       false,
+      ridge:            false,
+    })
+    normalMaps.snapShot(download,{
+      scale:    2.25,  
+      epsilon: 0.0008,  
+      strength:   1.,    
+      })
+    
+    let tileMapN = new TileMap(2,2,false)
+    tileMapN.build(1512,normalMaps.rtt.renderer_)
+    tileMapN.addTextures(normalMaps.textuerArray) 
+    tileMapN.snapShot(tileMapDownload)
+    this.textuerArray = tileMap.textuerArray
+    let N = tileMapN.textuerArray
+
+    this.moon = new Moon({
       size:            10000,
       polyCount:          30,
       quadTreeDimensions:  1,
-      levels:              1,
+      levels:              5,
       radius:          80000,
-      displacmentScale: 0.5,
+      displacmentScale: 120.5,
       lodDistanceOffset: 12.4,
       material: new NODE.MeshBasicNodeMaterial(),
     })
-
-    this.planet.textuers(N,N)
-    this.planet.light(NODE.vec3(0.0,8.5,8.5))
-    this.quads = this.planet.getAllInstance()
-    this.rend.scene_.add( this.planet.sphere);
+    this.moon.textuers(N,D)
+    this.moon.light(NODE.vec3(0.0,-8.5,8.5))
+    this.quads = this.moon.getAllInstance()
+    this.rend.scene_.add( this.moon.sphere);
     const light = new THREE.AmbientLight( 0x404040,35 ); // soft white light
     this.rend.scene_.add( light );
-
-
-    
   }
   
   initPlanet() {
@@ -178,9 +199,9 @@ class ViewGL {
 
   update(t) {
     requestAnimationFrame(this.update.bind(this));
-    if(this.planet){
+    if(this.moon){
       this.controls.update(this.clock.getDelta())
-      //this.planet.update(this.player)
+      this.moon.update(this.player)
     }
     nodeFrame.update();
     this.rend.renderer.render(this.rend.scene_, this.rend.camera_);

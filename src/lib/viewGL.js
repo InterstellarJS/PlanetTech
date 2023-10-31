@@ -58,12 +58,12 @@ class ViewGL {
   }
 
   async initCubeMapPlanet() {
-
-    const displacmentMaps = new CubeMap(2000,2,true)
     const download = false
     const tileMapDownload = false
+
+    /*const displacmentMaps = new CubeMap(false)
     displacmentMaps.build(2512,this.rend.renderer)
-    displacmentMaps.simplexNoiseFbm('+',{
+    displacmentMaps.simplexNoiseFbm({
       inScale:            4.5,
       scale:              4.5,
       seed:               0.0,
@@ -77,52 +77,68 @@ class ViewGL {
     })
     displacmentMaps.snapShot(download)
     
-    let tileMap = new TileMap(2,2,false)
+    let tileMap = new TileMap(2,3,false)
     tileMap.build(2512,displacmentMaps.rtt.renderer_)
     tileMap.addTextures(displacmentMaps.textuerArray) 
     tileMap.snapShot(tileMapDownload)
     this.textuerArray = tileMap.textuerArray
-    let D = tileMap.textuerArray
+    let D = tileMap.textuerArray*/
+    //----------------
 
-
-    const normalMaps = new CubeMap(2000,2,true)
+    const normalMaps = new CubeMap(true)
     normalMaps.build(1512,this.rend.renderer)
-    normalMaps.simplexNoiseFbm('+',{
+    normalMaps.simplexNoiseFbm({
       inScale:            4.5,
-      scale:              4.5,
-      seed:               0.0,
+      scale_:              4.5,
+      seed_:               0.0,
       normalScale:        .08,
-      redistribution:      2.,
-      persistance:        .35,
-      lacunarity:          2.,
-      iteration:           10,
-      terbulance:       false,
-      ridge:            false,
+      redistribution_:      2.,
+      persistance_:        .35,
+      lacunarity_:          2.,
+      iteration_:           10,
+      terbulance_:       false,
+      ridge_:            false,
     })
+
+    normalMaps.simplexNoiseFbm({
+      inScale:             0.5,
+      scale_:              0.5,
+      seed_:               0.0,
+      normalScale:        .08,
+      redistribution_:      2.,
+      persistance_:        .35,
+      lacunarity_:          2.,
+      iteration_:           10,
+      terbulance_:       false,
+      ridge_:            false,
+    },(t1,t2)=>{
+      return NODE.mix(t2,t1,t1)
+    })
+
     normalMaps.snapShot(download,{
       scale:    2.25,  
-      epsilon: 0.0008,  
+      epsilon: 0.0055,  
       strength:   1.,    
       })
     
-    let tileMapN = new TileMap(2,2,false)
+    let tileMapN = new TileMap(2,3,false)
     tileMapN.build(1512,normalMaps.rtt.renderer_)
     tileMapN.addTextures(normalMaps.textuerArray) 
     tileMapN.snapShot(tileMapDownload)
-    this.textuerArray = tileMap.textuerArray
     let N = tileMapN.textuerArray
+    //-----------------
 
     this.moon = new Moon({
       size:            10000,
       polyCount:          30,
       quadTreeDimensions:  1,
-      levels:              5,
+      levels:              1,
       radius:          80000,
-      displacmentScale: 120.5,
+      displacmentScale: 0.0,
       lodDistanceOffset: 12.4,
       material: new NODE.MeshBasicNodeMaterial(),
     })
-    this.moon.textuers(N,D)
+    this.moon.textuers(N,N)
     this.moon.light(NODE.vec3(0.0,-8.5,8.5))
     this.quads = this.moon.getAllInstance()
     this.rend.scene_.add( this.moon.sphere);
@@ -201,7 +217,7 @@ class ViewGL {
     requestAnimationFrame(this.update.bind(this));
     if(this.moon){
       this.controls.update(this.clock.getDelta())
-      this.moon.update(this.player)
+      //this.moon.update(this.player)
     }
     nodeFrame.update();
     this.rend.renderer.render(this.rend.scene_, this.rend.camera_);

@@ -1,36 +1,12 @@
 
 import * as THREE  from 'three'
 import * as NODE   from 'three/nodes';
-import Quad        from './../PlanetTech/engine/quad';
 import {RtTexture} from './rTtexture'
-import { displayCanvasesInGrid } from './utils';
-//import {snoise,normals, sdfbm2,} from '../../shaders/analyticalNormals';
 import * as Shaders  from  './../PlanetTech/shaders/index.js'
-import { TileMap } from './tileMap';
-
-
-let calculateNormal  = NODE.glslFn(
-  `
-   vec3 calculateNormal(vec3 position, float epsilon_){
-    float scale    = 0.9;   
-    float epsilon  = epsilon_;  
-    float strength = 1.;                   
-    float center = snoise3D(position); // Sample displacement map
-    float dx     = snoise3D(position + vec3(epsilon, 0.0, 0.0)) - center; 
-    float dy     = snoise3D(position + vec3(0.0, epsilon,0.0)) - center; 
-    vec3 normalMap = normalize(vec3(dx * scale, dy * scale, 1.0));              
-    normalMap *= strength;                                                       
-    return vec3(normalMap * 0.5 + 0.5);                                     
-  }
-`,[Shaders.snoise3D]
-)
-
-
 
 
 let canvasFlip = (fcanvas, rtt)=>{
         var ctx = fcanvas.getContext('2d');
-
         //https://jsfiddle.net/miguelmyers8/n5trq07w/3/
         var scaleH =  -1 
         var scaleV =  1 
@@ -56,20 +32,8 @@ let canvasFlip = (fcanvas, rtt)=>{
 }
 
 
-
-let noiseGenorater = `
-        float noiseGenorater(vec3 position,vec3 eps){
-          float noise;
-          return noise;
-        }`
-
 export class CubeMap{
-    constructor(wxh,d,mapType=false){
-        this.w  = wxh
-        this.h  = wxh
-        this.ws = 1
-        this.hs = 1
-        this.d  = d
+    constructor(mapType=false){
         this.textuerArray = []
         this.mapType = mapType
        }
@@ -89,56 +53,65 @@ export class CubeMap{
         return plane
       }
 
-    simplexNoise(params){
+    /*simplexNoise(params){
         let p = this.cube
         var newPostion = NODE.positionLocal
         p.material.colorNode =calculateNormal({position:newPostion.mul(params.scale),epsilon_:.5})
-    }
+    }*/
 
-    simplexNoiseFbm(op=`+`,params){
-        let p = this.cube
-        const newNoiseCode = `
-          noise  ${op}= clamp(fbm(
-            (
-                (position + vec3(${0},${0},${0})) * float(${params.inScale})
-            )+eps, 
-            float(${params.seed}), 
-            float(${params.scale}),
-            float(${params.persistance}),
-            float(${params.lacunarity}), 
-            float(${params.redistribution}),
-            int(${params.iteration}),
-            ${params.terbulance}, 
-            ${params.ridge}
-            ),0.,1.);
-        `
-        noiseGenorater = noiseGenorater.replace("float noise;", "float noise;");
-        noiseGenorater = noiseGenorater.replace("return noise;", newNoiseCode + "\n  return noise;");
-        let fNoiseGen = NODE.glslFn(noiseGenorater,[Shaders.snoise3Dfbm])
-        p.material.colorNode = fNoiseGen({position:NODE.positionLocal,eps:NODE.vec3(0,0,0)})  
+    simplexNoiseFbm(params,callBack,op=`add`){
+       let p = this.cube
+        let f = (eps_,color) =>{
+            let cloneParams = Object.assign({}, params) 
+            let offSet = NODE.vec3(0,0,0)
+            let eps = (eps_) ? eps_ : NODE.vec3(0,0,0)
+            cloneParams.v_ = ((NODE.positionLocal.add(offSet)).mul(cloneParams.inScale)).add(eps)
+            let t1 = NODE.clamp(Shaders.snoise3Dfbm(cloneParams),0,1)
+            let t2 = (callBack) ? callBack(t1,color) : t1[op](color)
+            return t2
+        }
+        p.userData.funcList.push(f)
     }
 
     toNormal(params){
-        params.position = NODE.positionLocal
+          let p = this.cube
+          let calculateNormal =()=>{
+            let sumCenter = NODE.vec3(0)
+            let sumDx     = NODE.vec3(0)
+            let sumDy     = NODE.vec3(0)
+            p.userData.funcList.forEach(func => {
+                sumCenter = func(NODE.vec3(0.0, 0.0, 0.0), sumCenter)
+                sumDx     = func(NODE.vec3(params.epsilon, 0.0, 0.0),sumDx)
+                sumDy     = func(NODE.vec3(0.0, params.epsilon, 0.0),sumDy)
+            });
+           sumDx = sumDx.sub(sumCenter)
+           sumDy = sumDy.sub(sumCenter)
+           let normalMap = NODE.vec3(sumDx.r.mul(params.scale), sumDy.r.mul(params.scale), 1.0).normalize()
+           normalMap     = normalMap.mul(params.strength) 
+           return normalMap.mul(0.5).add(0.5)  
+          }
+          p.material.colorNode = calculateNormal()
+    }
+
+    toDisplace(){
         let p = this.cube
-        let fNoiseGen = NODE.glslFn(noiseGenorater,[Shaders.snoise3Dfbm])
-        let calculateNormalFbm  = NODE.glslFn(`
-             vec3 calculateNormal(vec3 position, float scale, float epsilon, float strength){               
-              float center = noiseGenorater(position,vec3(0.0, 0.0, 0.0)); // Sample displacement map
-              float dx     = noiseGenorater(position,vec3(epsilon, 0.0, 0.0)) - center; 
-              float dy     = noiseGenorater(position,vec3(0.0, epsilon,0.0)) - center; 
-              vec3 normalMap = normalize(vec3(dx * scale, dy * scale, 1.0));              
-              normalMap *= strength;                                                       
-              return vec3(normalMap * 0.5 + 0.5);                                     
-            }
-          `,[fNoiseGen])
-          p.material.colorNode=calculateNormalFbm(params)
+        let calculateDisplace = ()=>{
+          let sumCenter = NODE.vec3(0)
+          p.userData.funcList.forEach(arr => {
+              let func = arr[0]
+              sumCenter= func(NODE.vec3(0.0, 0.0, 0.0),sumCenter)
+          });
+         return sumCenter 
+        }
+        p.material.colorNode = calculateDisplace()
     }
 
     buildCube(){
         const geometry = new THREE.IcosahedronGeometry(1, 250);
         const material = new NODE.MeshBasicNodeMaterial({side: THREE.DoubleSide});
         const mesh = new THREE.Mesh( geometry, material );
+        mesh.userData.funcList = []
+        mesh.material.colorNode = NODE.float(0)
         return mesh            
     }
 
@@ -160,7 +133,11 @@ export class CubeMap{
         canvasFlip(canvas,this.rtt)
         this.textuerArray.push(new THREE.CanvasTexture(canvas))
         if(download){
-            this.rtt.download(canvas,`r`)
+            if(this.mapType){
+                this.rtt.download(canvas,`nr`)
+            }else{
+                this.rtt.download(canvas,`r`)
+            }
         }
     }
 
@@ -171,7 +148,11 @@ export class CubeMap{
         canvasFlip(canvas,this.rtt)
         this.textuerArray.push(new THREE.CanvasTexture(canvas))
         if(download){
-            this.rtt.download(canvas,`l`)
+            if(this.mapType){
+                this.rtt.download(canvas,`nl`)
+            }else{
+                this.rtt.download(canvas,`l`)
+            }
         }    
     }
 
@@ -182,9 +163,13 @@ export class CubeMap{
         canvasFlip(canvas,this.rtt)
         this.textuerArray.push(new THREE.CanvasTexture(canvas))
         if(download){
-            this.rtt.download(canvas,`t`)
-        }    }
-
+            if(this.mapType){
+                this.rtt.download(canvas,`nt`)
+            }else{
+                this.rtt.download(canvas,`t`)
+            }
+        }    
+    }
 
     snapShotBottom(download=false){
         this.rtt.rtCamera.update(this.rtt.renderer_,this.rtt.rtScene)
@@ -193,10 +178,13 @@ export class CubeMap{
         canvasFlip(canvas,this.rtt)
         this.textuerArray.push(new THREE.CanvasTexture(canvas))
         if(download){
-            this.rtt.download(canvas,`bo`)
+            if(this.mapType){
+                this.rtt.download(canvas,`nbo`)
+            }else{
+                this.rtt.download(canvas,`bo`)
+            }
         }
     }
-
 
     snapShotFront(download=false){
         this.rtt.rtCamera.update(this.rtt.renderer_,this.rtt.rtScene)
@@ -205,10 +193,13 @@ export class CubeMap{
         canvasFlip(canvas,this.rtt)
         this.textuerArray.push(new THREE.CanvasTexture(canvas))
         if(download){
-            this.rtt.download(canvas,`f`)
+            if(this.mapType){
+                this.rtt.download(canvas,`nf`)
+            }else{
+                this.rtt.download(canvas,`f`)
+            }
         }
     }
-
 
     snapShotBack(download=false){
         this.rtt.rtCamera.update(this.rtt.renderer_,this.rtt.rtScene)
@@ -224,6 +215,8 @@ export class CubeMap{
     snapShot(download=false,normal={}){
         if (!(Object.keys(normal).length === 0)){
             this.toNormal(normal)
+        }else{
+            this.toDisplace()
         }
         this.snapShotRight (download)
         this.snapShotLeft  (download)

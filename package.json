@@ -20,7 +20,7 @@
   "scripts": {
     "start": "WATCHPACK_POLLING=true PORT=3001 react-scripts start",
     "build": "react-scripts build",
-    "test": "jest",
+    "test": "jest -- --maxWorkers=4 --runInBand --testPathPattern=./test/",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

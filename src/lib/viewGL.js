@@ -17,15 +17,15 @@ import { TileMap } from './cubeMap/tileMap';
 
  console.log(NODE)
 
-let N = [
-  new THREE.TextureLoader().load(''),
-  new THREE.TextureLoader().load('./planet/1nl_image.png'),
-  new THREE.TextureLoader().load('./planet/1nt_image.png'),
-  new THREE.TextureLoader().load(''),
-  new THREE.TextureLoader().load(''),
-  new THREE.TextureLoader().load('./planet/1nb_image.png'),
-  ]
 let D = [
+  new THREE.TextureLoader().load('./planet2/r_image.png'),
+  new THREE.TextureLoader().load('./planet2/l_image.png'),
+  new THREE.TextureLoader().load('./planet2/t_image.png'),
+  new THREE.TextureLoader().load('./planet2/bo_image.png'),
+  new THREE.TextureLoader().load('./planet2/f_image.png'),
+  new THREE.TextureLoader().load('./planet2/b_image.png'),
+  ]
+let N = [
   new THREE.TextureLoader().load('./planet2/nr_image.png'),
   new THREE.TextureLoader().load('./planet2/nl_image.png'),
   new THREE.TextureLoader().load('./planet2/nt_image.png'),
@@ -47,7 +47,7 @@ class ViewGL {
     this.rend.scene();
     this.rend.stats();
     this.rend.camera();
-    this.rend.updateCamera(0,0,80000*4)
+    this.rend.updateCamera(0,0,12756000*1.2)
     this.rend.orbitControls()
     this.rend.renderer.setClearColor('white');
     this.space = new Space()
@@ -84,44 +84,43 @@ class ViewGL {
     this.textuerArray = tileMap.textuerArray
     let D = tileMap.textuerArray*/
     //----------------
-
     const normalMaps = new CubeMap(true)
     normalMaps.build(1512,this.rend.renderer)
-    normalMaps.simplexNoiseFbm({
-      inScale:            4.5,
-      scale_:              4.5,
+    normalMaps.simplexFbm({
+      inScale:          4.5,
+      scale_:           4.5,
+      seed_:            0.0,
+      normalScale:      .08,
+      redistribution_:   2.,
+      persistance_:     .35,
+      lacunarity_:       2.,
+      iteration_:        10,
+      terbulance_:    false,
+      ridge_:         false,
+    })
+    normalMaps.simplexFbm({
+      inScale:             2.5,
+      scale_:              2.5,
       seed_:               0.0,
       normalScale:        .08,
       redistribution_:      2.,
       persistance_:        .35,
-      lacunarity_:          2.,
-      iteration_:           10,
-      terbulance_:       false,
+      lacunarity_:          3.,
+      iteration_:           15,
+      terbulance_:       true,
       ridge_:            false,
+    },
+    (previous,current)=>{
+      current = NODE.float(1).sub(current)
+      let t1 = NODE.mix(current,previous,previous)
+      return   t1  
     })
-
-    normalMaps.simplexNoiseFbm({
-      inScale:             0.5,
-      scale_:              0.5,
-      seed_:               0.0,
-      normalScale:        .08,
-      redistribution_:      2.,
-      persistance_:        .35,
-      lacunarity_:          2.,
-      iteration_:           10,
-      terbulance_:       false,
-      ridge_:            false,
-    },(t1,t2)=>{
-      return NODE.mix(t2,t1,t1)
-    })
-
     normalMaps.snapShot(download,{
       scale:    2.25,  
-      epsilon: 0.0055,  
+      epsilon: 0.0025,  
       strength:   1.,    
       })
-    
-    let tileMapN = new TileMap(2,3,false)
+    let tileMapN = new TileMap(2,4,true)
     tileMapN.build(1512,normalMaps.rtt.renderer_)
     tileMapN.addTextures(normalMaps.textuerArray) 
     tileMapN.snapShot(tileMapDownload)
@@ -129,13 +128,13 @@ class ViewGL {
     //-----------------
 
     this.moon = new Moon({
-      size:            10000,
-      polyCount:          30,
-      quadTreeDimensions:  1,
-      levels:              1,
-      radius:          80000,
-      displacmentScale: 0.0,
-      lodDistanceOffset: 12.4,
+      size:                21000,
+      polyCount:              30,
+      quadTreeDimensions:      1,
+      levels:                  5,
+      radius:           12756000,
+      displacmentScale:  20000.0,
+      lodDistanceOffset:   818.0,
       material: new NODE.MeshBasicNodeMaterial(),
     })
     this.moon.textuers(N,N)
@@ -144,6 +143,7 @@ class ViewGL {
     this.rend.scene_.add( this.moon.sphere);
     const light = new THREE.AmbientLight( 0x404040,35 ); // soft white light
     this.rend.scene_.add( light );
+    console.log(this.moon.metaData())
   }
   
   initPlanet() {
@@ -193,9 +193,9 @@ class ViewGL {
     var boxGeometry        = new THREE.BoxGeometry( 10.1, 10.1, 10.1, 1 )
     var boxMaterial        = new THREE.MeshBasicMaterial({color:'red'});
     this.player            = new THREE.Mesh( boxGeometry, boxMaterial );
-    this.player.position.z = 110000
+    this.player.position.z = this.rend.camera_.position.z
     this.controls               = new FirstPersonControls( this.player, document.body );
-    this.controls.movementSpeed = 500
+    this.controls.movementSpeed = 500*250
     this.controls.lookSpeed     = 0
     this.clock = new THREE.Clock();
     this.rend.scene_.add(this.player)

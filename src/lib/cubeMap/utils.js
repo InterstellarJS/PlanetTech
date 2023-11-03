@@ -36,3 +36,28 @@ export function downloadFile(data, filename_=`0`) {
     URL.revokeObjectURL(link.href);
   }
   
+  export let canvasFlip = (fcanvas, rtt)=>{
+    var ctx = fcanvas.getContext('2d');
+    //https://jsfiddle.net/miguelmyers8/n5trq07w/3/
+    var scaleH =  -1 
+    var scaleV =  1 
+
+    var posX =  rtt.rtWidth * -1  // Set x position to -100% if flip horizontal 
+    var posY =  0; // Set y position to -100% if flip vertical
+
+    ctx.save(); // Save the current state
+    ctx.scale(scaleH, scaleV); // Set scale to flip the image
+    ctx.drawImage(fcanvas, posX, posY, rtt.rtWidth, rtt.rtWidth); // draw the image
+    ctx.restore(); // Restore the last saved state
+
+    var scaleH =  -1 
+    var scaleV =  -1 
+
+    var posX =  rtt.rtWidth * -1  // Set x position to -100% if flip horizontal 
+    var posY =  rtt.rtWidth * -1; // Set y position to -100% if flip vertical
+
+    ctx.save(); // Save the current state
+    ctx.scale(scaleH, scaleV); // Set scale to flip the image
+    ctx.drawImage(fcanvas, posX, posY, rtt.rtWidth, rtt.rtWidth); // draw the image
+    ctx.restore(); // Restore the last saved state
+}

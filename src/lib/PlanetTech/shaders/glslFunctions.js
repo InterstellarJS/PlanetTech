@@ -268,9 +268,9 @@ vec3 displacementNormalNoiseFBM(
     }
     `)
   
-    export const uvTransforms = (scale)=>{
+    export const uvTransforms = (scale,offset=NODE.vec2(0.0,0.0))=>{
       var uv = NODE.uv()
-      var newUV = uv.mul(scale).add(0.5 * (1.0-scale)).add(NODE.vec2(0.0,0.0))
+      var newUV = uv.mul(scale).add(0.5 * (1.0-scale)).add(offset)
       return newUV
     }
 

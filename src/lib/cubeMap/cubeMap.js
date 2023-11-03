@@ -1,35 +1,9 @@
 
 import * as THREE  from 'three'
-import * as NODE   from 'three/nodes';
+import * as NODE   from 'three/nodes'
 import {RtTexture} from './rTtexture'
+import { canvasFlip } from './utils'
 import * as Shaders  from  './../PlanetTech/shaders/index.js'
-
-
-let canvasFlip = (fcanvas, rtt)=>{
-        var ctx = fcanvas.getContext('2d');
-        //https://jsfiddle.net/miguelmyers8/n5trq07w/3/
-        var scaleH =  -1 
-        var scaleV =  1 
-
-        var posX =  rtt.rtWidth * -1  // Set x position to -100% if flip horizontal 
-        var posY =  0; // Set y position to -100% if flip vertical
-
-        ctx.save(); // Save the current state
-        ctx.scale(scaleH, scaleV); // Set scale to flip the image
-        ctx.drawImage(fcanvas, posX, posY, rtt.rtWidth, rtt.rtWidth); // draw the image
-        ctx.restore(); // Restore the last saved state
-
-        var scaleH =  -1 
-        var scaleV =  -1 
-
-        var posX =  rtt.rtWidth * -1  // Set x position to -100% if flip horizontal 
-        var posY =  rtt.rtWidth * -1; // Set y position to -100% if flip vertical
-
-        ctx.save(); // Save the current state
-        ctx.scale(scaleH, scaleV); // Set scale to flip the image
-        ctx.drawImage(fcanvas, posX, posY, rtt.rtWidth, rtt.rtWidth); // draw the image
-        ctx.restore(); // Restore the last saved state
-}
 
 
 export class CubeMap{
@@ -53,13 +27,7 @@ export class CubeMap{
         return plane
       }
 
-    /*simplexNoise(params){
-        let p = this.cube
-        var newPostion = NODE.positionLocal
-        p.material.colorNode =calculateNormal({position:newPostion.mul(params.scale),epsilon_:.5})
-    }*/
-
-    simplexNoiseFbm(params,callBack,op=`add`){
+    simplexFbm(params,callBack,op=`add`){
        let p = this.cube
         let f = (eps_,color) =>{
             let cloneParams = Object.assign({}, params) 
@@ -97,8 +65,7 @@ export class CubeMap{
         let p = this.cube
         let calculateDisplace = ()=>{
           let sumCenter = NODE.vec3(0)
-          p.userData.funcList.forEach(arr => {
-              let func = arr[0]
+          p.userData.funcList.forEach(func => {
               sumCenter= func(NODE.vec3(0.0, 0.0, 0.0),sumCenter)
           });
          return sumCenter 

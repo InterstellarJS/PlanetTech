@@ -73,7 +73,6 @@ function update(t) {
 
 <p align="center">
   <img src="./public/readmeImg/planet1.png" />
-  <img src="./public/readmeImg/planet3.png" />
   <img src="./public/readmeImg/planet2.png" />
   <img src="./public/readmeImg/planet4.png" />
   <img src="./public/readmeImg/planet5.png" />

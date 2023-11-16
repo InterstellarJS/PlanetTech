@@ -13,7 +13,7 @@ PlanetTechJS is an open-source JavaScript library built using vanilla THREE.js, 
 What sets this library apart is its utilization of the GPU for all tasks. This includes generating textures for each facet, performing displacement, and shaping PlaneGeometries into spherical forms; the entire process occurs on the GPU. Consequently, there is no need for WebWorkers at this stage.
 
 ## Doc
-Read the ![Doc](./DOC.md) for a low level understanding of how things work.
+Read the [Doc](./DOC.md) for a low level understanding of how things work.
 
 ## Getting Started
 Download and run the project. Go to http://localhost:3001/. The file for the demo is located at src/lib/viewGL.js. If things aren't working, open an issue, and I will try to correct any problems.

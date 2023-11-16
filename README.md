@@ -19,55 +19,54 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 
 ```javascript
 import renderer from './render';
-import Sphere   from './PlanetTech/sphere/sphere'
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
+import { Moon } from './PlanetTech/celestialBodies/moon';
 
 let rend = renderer;
 rend.WebGLRenderer(canvasViewPort);
 rend.scene();
 rend.stats();
 rend.camera();
-rend.updateCamera(0,0,20000)
+rend.updateCamera(0,0,110005)
 rend.orbitControls()
 
-const params = {
-  width:          10000,
-  height:         10000,
-  widthSegment:      50,
-  heightSegment:     50,
-  quadTreeDimensions: 1,
-  levels:             1,
-  radius:         10000,
-  displacmentScale:   1,
-  lodDistanceOffset:1.4,
+let D = await Promise.all([
+    new THREE.TextureLoader().loadAsync('./planet/displacement/right_displacement_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/displacement/left_displacement_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/displacement/top_displacement_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/displacement/bottom_displacement_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/displacement/front_displacement_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/displacement/back_displacement_image.png'),
+  ])
+
+let N = await Promise.all([
+    new THREE.TextureLoader().loadAsync('./planet/normal/right_normal_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/normal/left_normal_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/normal/top_normal_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/normal/bottom_normal_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/normal/front_normal_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/normal/back_normal_image.png'),
+  ])
+
+let moon = new Moon({
+  size:            10000,
+  polyCount:          50,
+  quadTreeDimensions:  4,
+  levels:              4,
+  radius:          80000,
+  displacmentScale: 80.5,
+  lodDistanceOffset: 7.4,
   material: new NODE.MeshBasicNodeMaterial(),
-  color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
-}
-
-let s = new Sphere(
-  params.width,
-  params.height,
-  params.widthSegment,
-  params.heightSegment,
-  params.quadTreeDimensions
-)
-
-s.build(
-  params.levels,
-  params.radius,
-  params.displacmentScale,
-  params.lodDistanceOffset,
-  params.material,
-  params.color,
-)
-
-rend.scene_.add(s.sphere);
-
+})
+moon.textuers(N,D)
+moon.light(NODE.vec3(0.0,-6.5,6.5))
+rend.scene_.add(moon.sphere);
 let player = /*player or camera object*/
 
 function update(t) {
-  requestAnimationFrame(update);
-  s.update(player);
+  if(moon){
+    moon.update(player)
+  }
   nodeFrame.update();
   rend.renderer.render(rend.scene_, rend.camera_);
 }

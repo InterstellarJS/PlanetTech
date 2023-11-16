@@ -64,9 +64,7 @@ rend.scene_.add(moon.sphere);
 let player = /*player or camera object*/
 
 function update(t) {
-  if(moon){
-    moon.update(player)
-  }
+  moon.update(player)
   nodeFrame.update();
   rend.renderer.render(rend.scene_, rend.camera_);
 }
@@ -75,8 +73,8 @@ function update(t) {
 
 <p align="center">
   <img src="./public/readmeImg/planet1.png" />
-  <img src="./public/readmeImg/planet2.png" />
   <img src="./public/readmeImg/planet3.png" />
+  <img src="./public/readmeImg/planet2.png" />
   <img src="./public/readmeImg/planet4.png" />
   <img src="./public/readmeImg/planet5.png" />
 </p>

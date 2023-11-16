@@ -12,6 +12,7 @@ class QuadTreeLoDCore  {
     maxLevelSize:1,
     minLevelSize:1,
     minPolyCount:1,
+    maxPolyCount:undefined,
     dimensions:1,
     arrybuffers:{},
     shardedUniforms:{}, // TODO:
@@ -28,7 +29,7 @@ class QuadTreeLoDCore  {
     color: NODE.vec3(0,0,0),
     light:{},
     lodDistanceOffset: 1,
-    material: NODE.MeshBasicNodeMaterial,
+    material: new NODE.MeshBasicNodeMaterial(),
     displacmentScale:1
   }
 
@@ -50,6 +51,7 @@ class QuadTreeLoDCore  {
         minPoly = Math.floor( minPoly * 2 )
     }
     this.config['levels'] = {numOflvls,levelsArray,polyPerLevel}
+    this.config['maxPolyCount'] = polyPerLevel[polyPerLevel.length - 1]
   }
 
   createArrayBuffers(){

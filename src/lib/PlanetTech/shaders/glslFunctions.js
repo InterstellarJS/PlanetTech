@@ -6,7 +6,7 @@ export const defualtLight = glslFn(`
     vec3 lightDirection = normalize(lightPosition - normalMap.xyz);
     vec3 viewDirection  = normalize(cP - normalMap.xyz);
     vec3 ambientColor   = vec3(0.0, 0.0, 0.0);  // Ambient light color
-    vec3 diffuseColor   = vec3(-0.4, -0.4, 0.5);  // Diffuse light color
+    vec3 diffuseColor   = vec3(0.6, 0.6, 0.6);  // Diffuse light color
     vec3 specularColor  = vec3(0.0, 0.0, 0.0);  // Specular light color
     float shininess     = 0.0;                  // Material shininess factor
 
@@ -240,9 +240,8 @@ vec3 displacementNormalNoiseFBM(
 
 
     export const blackToWhiteGradient = glslFn(`
-    vec3 blackToWhiteGradient(float radius, vec2 vUv){
-        vec2 center = vec2(0.5, 0.5); 
-        vec2 uv = vUv - center; 
+    vec3 blackToWhiteGradient(float radius, vec3 vUv){
+        vec3 uv = vUv; 
         float f = smoothstep( radius * radius,0.0, dot(uv, uv));
         return  vec3(f);
     }
@@ -304,3 +303,23 @@ vec3 displacementNormalNoiseFBM(
       normalMap = normalMap.mul(strength);                                                       // Apply strength to the normal vector
       return normalMap.mul(0.5 ).add(0.5)
     }
+
+
+    const displace = (tex,uv) =>{
+      return NODE.texture(tex,uv)
+     }
+  const textureNormal = (tangent,bitangent,position, normal, texture, vUv) =>{
+        let displacedPosition = normal.mul(displace(texture,vUv)).add(position)
+        let texelSize = .0001; // temporarily hardcoding texture resolution
+        let offset = 1.;
+        let neighbour1 = tangent.mul(offset).add(position)
+        let neighbour2 = bitangent.mul(offset).add(position)
+        let neighbour1uv = vUv.add(NODE.vec2(-texelSize,0))
+        let neighbour2uv = vUv.add(NODE.vec2(0,-texelSize))
+        let displacedNeighbour1 = normal.mul(displace(texture,neighbour1uv)).add(neighbour1)
+        let displacedNeighbour2 = normal.mul(displace(texture,neighbour2uv)).add(neighbour2)
+        let displacedTangent = displacedNeighbour1.sub(displacedPosition)
+        let displacedBitangent = displacedNeighbour2.sub(displacedPosition)
+        let displacedNormal = NODE.normalize(NODE.cross(displacedTangent, displacedBitangent));
+        return displacedNormal.mul(0.5).add(0.5);
+      }

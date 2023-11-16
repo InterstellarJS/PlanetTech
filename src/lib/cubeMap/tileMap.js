@@ -4,8 +4,14 @@ import * as NODE   from 'three/nodes';
 import Quad        from './../PlanetTech/engine/quad';
 import {RtTexture} from './rTtexture'
 import { displayCanvasesInGrid } from './utils';
+import * as Shaders  from  './../PlanetTech/shaders/index.js'
 
-
+let f2 = NODE.glslFn(`
+vec3 blend_whiteout(vec3 n1_,vec3 n2_){
+    vec3 r = (n1_ + n2_)*2. - 2.;
+    return normalize(r)*.5+.5;
+}
+`)
 
 export class TileMap{
     constructor(wxh,d,mapType=false){
@@ -49,6 +55,15 @@ export class TileMap{
         let uv = NODE.uv() 
         let t  = NODE.texture(texture,uv)
         p.material.colorNode = t
+    }
+
+
+    addMask(idx,texture){
+        let uv = Shaders.uvTransforms(12,NODE.vec2(-.5,0))
+        let p = this.mainCubeSides[idx]
+        let t1 = NODE.texture(texture,uv)
+        let t2 = p.material.colorNode
+        p.material.colorNode = f2({n1_:t2,n2_:t1})
     }
 
     buildCube(){
@@ -162,7 +177,7 @@ export class TileMap{
         }
       
 
-    snapShotFront(download=false){
+    snapShotFront(download=false,downloadTiles=false){
         let canvases = []
         this.cube.children[0].children.map((e,i)=>{
             this.rtt.rtCamera.position.set(...e.position.toArray());
@@ -174,17 +189,27 @@ export class TileMap{
         let canvas = displayCanvasesInGrid(canvases,this.d)
         if(download){
             if(this.mapType){
-                this.rtt.download(canvas,`nf`)
+                this.rtt.download(canvas,`front/normal`)
             }else{
-                this.rtt.download(canvas,`f`)
+                this.rtt.download(canvas,`front/displacement`)
             }
         }
-        this.textuerArray.push(new THREE.CanvasTexture(canvas))
+        if(downloadTiles){
+            if(this.mapType){
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/front/normal`)
+                })
+            }else{
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/front/displacement`)
+                })
+            }
+        }
+        this.textuerArray.push(canvas)
         this.rtt.rtCamera.position.set(0,0,0)
-
     }
 
-    snapShotBack(download=false){
+    snapShotBack(download=false,downloadTiles=false){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[1].children.map((e,i)=>{
@@ -200,18 +225,28 @@ export class TileMap{
         let canvas = displayCanvasesInGrid(canvases,this.d)
         if(download){
             if(this.mapType){
-                this.rtt.download(canvas,`nb`)
+                this.rtt.download(canvas,`back/normal`)
             }else{
-                this.rtt.download(canvas,`b`)
+                this.rtt.download(canvas,`back/displacement`)
             }
         }
-        this.textuerArray.push(new THREE.CanvasTexture(canvas))
+        if(downloadTiles){
+            if(this.mapType){
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/back/normal`)
+                })
+            }else{
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/back/displacement`)
+                })
+            }
+        }
+        this.textuerArray.push(canvas)
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-
-    snapShotRight(download=false){
+    snapShotRight(download=false,downloadTiles=false){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[2].children.map((e,i)=>{
@@ -227,17 +262,28 @@ export class TileMap{
         let canvas = displayCanvasesInGrid(canvases,this.d)
         if(download){
             if(this.mapType){
-                this.rtt.download(canvas,`nr`)
+                this.rtt.download(canvas,`right/normal`)
             }else{
-                this.rtt.download(canvas,`r`)
+                this.rtt.download(canvas,`right/displacement`)
             }
-        } 
-        this.textuerArray.push(new THREE.CanvasTexture(canvas))
+        }
+        if(downloadTiles){
+            if(this.mapType){
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/right/normal`)
+                })
+            }else{
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/right/displacement`)
+                })
+            }
+        }
+        this.textuerArray.push(canvas)
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-    snapShotLeft(download=false){
+    snapShotLeft(download=false,downloadTiles=false){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[3].children.map((e,i)=>{
@@ -253,17 +299,28 @@ export class TileMap{
         let canvas = displayCanvasesInGrid(canvases,this.d)
         if(download){
             if(this.mapType){
-                this.rtt.download(canvas,`nl`)
+                this.rtt.download(canvas,`left/normal`)
             }else{
-                this.rtt.download(canvas,`l`)
+                this.rtt.download(canvas,`left/displacement`)
             }
-        } 
-        this.textuerArray.push( new THREE.CanvasTexture(canvas))
+        }
+        if(downloadTiles){
+            if(this.mapType){
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/left/normal`)
+                })
+            }else{
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/left/displacement`)
+                })
+            }
+        }
+        this.textuerArray.push( canvas)
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-    snapShotTop(download=false){
+    snapShotTop(download=false,downloadTiles=false){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[4].children.map((e,i)=>{
@@ -279,17 +336,28 @@ export class TileMap{
         let canvas = displayCanvasesInGrid(canvases,this.d)
         if(download){
             if(this.mapType){
-                this.rtt.download(canvas,`nt`)
+                this.rtt.download(canvas,`top/normal`)
             }else{
-                this.rtt.download(canvas,`t`)
+                this.rtt.download(canvas,`top/displacement`)
             }
-        } 
-        this.textuerArray.push( new THREE.CanvasTexture(canvas))
+        }
+        if(downloadTiles){
+            if(this.mapType){
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/top/normal`)
+                })
+            }else{
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/top/displacement`)
+                })
+            }
+        }
+        this.textuerArray.push(canvas)
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-    snapShotBottom(download=false){
+    snapShotBottom(download=false,downloadTiles=false){
         let position = new THREE.Vector3()
         let canvases = []
         this.cube.children[5].children.map((e,i)=>{
@@ -305,24 +373,35 @@ export class TileMap{
         let canvas = displayCanvasesInGrid(canvases,this.d)
         if(download){
             if(this.mapType){
-                this.rtt.download(canvas,`nbo`)
+                this.rtt.download(canvas,`bottom/normal`)
             }else{
-                this.rtt.download(canvas,`bo`)
+                this.rtt.download(canvas,`bottom/displacement`)
             }
-        } 
-        this.textuerArray.push(new THREE.CanvasTexture(canvas))
+        }
+        if(downloadTiles){
+            if(this.mapType){
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/bottom/normal`)
+                })
+            }else{
+                canvases.forEach((e,i)=>{
+                    this.rtt.download(e,`${i}/bottom/displacement`)
+                })
+            }
+        }
+        this.textuerArray.push(canvas)
         this.rtt.rtCamera.position.set(0,0,0)
         this.rtt.rtCamera.rotation.set(0,0,0)
     }
 
-
-    snapShot(download=false){
-        this.snapShotRight (download)
-        this.snapShotLeft  (download)
-        this.snapShotTop   (download)
-        this.snapShotBottom(download)
-        this.snapShotFront (download)
-        this.snapShotBack  (download)
+    snapShot(download=false,downloadTiles=false){
+        // images are downloaded in col order
+        this.snapShotRight (download,downloadTiles)
+        this.snapShotLeft  (download,downloadTiles)
+        this.snapShotTop   (download,downloadTiles)
+        this.snapShotBottom(download,downloadTiles)
+        this.snapShotFront (download,downloadTiles)
+        this.snapShotBack  (download,downloadTiles)
     }
 
 }

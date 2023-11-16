@@ -1,3 +1,6 @@
+import * as THREE     from 'three';
+
+
 export function displayCanvasesInGrid(canvasArray,  gridSize) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -61,3 +64,21 @@ export function downloadFile(data, filename_=`0`) {
     ctx.drawImage(fcanvas, posX, posY, rtt.rtWidth, rtt.rtWidth); // draw the image
     ctx.restore(); // Restore the last saved state
 }
+
+
+export const createTextureFromImage = (imageUrl) => {
+    const canvas = document.createElement('canvas');
+    const texture = new THREE.CanvasTexture(canvas);
+  
+    new THREE.ImageLoader().load(imageUrl, image => {
+      const ctx = canvas.getContext('2d');
+  
+      canvas.width = image.width;
+      canvas.height = image.height;
+      ctx.clearRect(0.0, 0.0, canvas.width, canvas.height);
+  
+      ctx.drawImage(image, 0.0, 0.0, image.width, image.height);
+    });
+  
+    return texture;
+  };

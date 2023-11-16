@@ -20,7 +20,7 @@
   "scripts": {
     "start": "WATCHPACK_POLLING=true PORT=3001 react-scripts start",
     "build": "react-scripts build",
-    "test": "jest -- --maxWorkers=4 --runInBand --testPathPattern=./test/",
+    "test": "vitest  --environment jsdom ./test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -44,6 +44,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.23.2",
     "babel-jest": "^29.7.0",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "vitest": "^0.34.6"
   }
 }

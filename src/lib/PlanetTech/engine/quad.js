@@ -81,7 +81,41 @@ import * as Shaders from '../shaders/index.js';
         }
         this.count++
       }
+/*      
+      addTextureTiles(Texturetitles,displacementScale){
+        let tt = Texturetitles['0'][0]
+        let dd = Texturetitles['0'][1]
 
+        this.textures.push(tt)
+        this.quadTreeconfig.config.dataTransfer[this.side] = {textuers:tt}
+        //var w = this.quadData.width
+        //var d = this.quadData.dimensions
+        //var testscaling = w / ( w * d )
+        //var halfScale   = testscaling / 2
+        for (var i = 0; i < this.instances.length; i++) {
+          var q = this.instances[i]
+          var p = q.plane
+          let tilenormal = tt[i]
+          let tiledisplacement = dd[i]
+
+          //var wp = p.position.clone()//todo
+          //var nxj = norm(wp.x,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
+          //var nyj = norm(wp.y,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
+          //var offSets = NODE.vec2(nxj-halfScale,nyj-halfScale)
+          //var newUV   = NODE.uv().mul(testscaling).add(offSets)
+          var cnt = this.quadTreeconfig.config.cnt.clone()
+          p.worldToLocal(cnt)
+          var textureNodeN = NODE.texture(tilenormal,NODE.uv()).mul(2).sub(1)
+          var textureNodeD = NODE.texture(tiledisplacement,NODE.uv()).r
+          if(p.material.positionNode){
+            p.material.colorNode = textureNodeN
+            const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
+            p.material.positionNode =  p.material.positionNode.add( displace );
+          }else{
+          }
+          }
+      }
+*/
 
     createNewMesh(shardedGeometry){
       const width  = shardedGeometry.parameters.width

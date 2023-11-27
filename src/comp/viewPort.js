@@ -12,6 +12,9 @@ const ViewPort = () => {
     let ccr = canvasContainerRef.current
     viewGL.initViewPort(canvasRef.current)
     viewGL.start()
+    viewGL.initPlayer()
+    viewGL.update()
+
 
     window.addEventListener('resize',function resizing() {
           viewGL.onWindowResize(ccr.offsetWidth,ccr.offsetHeight)

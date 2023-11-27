@@ -8,7 +8,7 @@ import { getRandomColor } from '../PlanetTech/engine/utils';
 
 export function tileMap         (renderer_){
     let cubeMapDownload  = false
-    let tileMapFull      = true
+    let tileMapFull      = false
     let tileMapFullTiles = false
 
     const cubeMap = new CubeMap()
@@ -292,41 +292,37 @@ export function tileMapCubeMapFront    (renderer_){
     let tileMapFull      = false
     let tileMapFullTiles = false
 
-    const cubeMap = new CubeMap(true)
+    const cubeMap = new CubeMap()
     cubeMap.build(3000,renderer_.renderer)
     cubeMap.simplexFbm({
-        inScale:          8.5,
+        inScale:          7.0,
         scale_:           5.5,
-        seed_:            6.0,
+        outScale:         0.3,
+        seed_:            1.0,
         normalScale:      .08,
-        redistribution_:   5.,
+        redistribution_:   6.,
         persistance_:     .35,
         lacunarity_:       2.,
+        iteration_:        15,
+        terbulance_:    false,
+        ridge_:         false,
+    })
+    cubeMap.simplexFbm({
+        inScale:          7.0,
+        scale_:           2.0,
+        outScale:         1.0,
+        seed_:            1.0,
+        normalScale:      .08,
+        redistribution_:   4.,
+        persistance_:     .35,
+        lacunarity_:       2.2,
         iteration_:        10,
         terbulance_:    false,
         ridge_:         false,
     })
-
-    cubeMap.simplexFbm({
-        inScale:             1.5,
-        scale_:              0.5,
-        seed_:               0.0,
-        normalScale:        .08,
-        redistribution_:      4.,
-        persistance_:        .35,
-        lacunarity_:          3.,
-        iteration_:           15,
-        terbulance_:        true,
-        ridge_:            false,
-    },
-    (previous,current)=>{
-        current = NODE.float(1).sub(current)
-        let t1  = NODE.mix(current,previous,previous)
-        return t1  
-    })
-    cubeMap.toNormal({
-        scale:    2.25,  
-        epsilon: 0.0008,  
+    cubeMap.snapShot(cubeMapDownload,{
+        scale:    3.5,  
+        epsilon: 0.0015,  
         strength:   1.,    
     })
     cubeMap.snapShotFront(cubeMapDownload)
@@ -448,14 +444,21 @@ async function _tileTextuerWorld(renderer_,NF,ND){
 }
 export const tileTextuerWorld = _tileTextuerWorld
 
- function _tileTextuerLoad(renderer_,array){
+ function _tileTextuerLoad(renderer_,array,maskArray){
     let tileMapFull      = false
     let tileMapFullTiles = false
     let tileMapN = new TileMap(2,4,false)
-    tileMapN.build(2512,renderer_.renderer)
+    tileMapN.build(3000,renderer_.renderer)
     tileMapN.addTextures(array)
+    tileMapN.addMask({
+        scale:12,
+        offsetX:0,
+        offsetY:0
+        },
+        maskArray)
     tileMapN.snapShotFront(tileMapFull,tileMapFullTiles)
-    tileMapN.snapShotBack(tileMapFull,tileMapFullTiles)
+    return tileMapN.textuerArray.map((canvas)=>{return new THREE.CanvasTexture(canvas)})[0]
+
 
 }
 export const tileTextuerLoad = _tileTextuerLoad

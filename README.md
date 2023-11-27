@@ -60,15 +60,17 @@ let moon = new Moon({
   lodDistanceOffset: 7.4,
   material: new NODE.MeshBasicNodeMaterial(),
 })
+
 moon.textuers(N,D)
 moon.light(NODE.vec3(0.0,-6.5,6.5))
-rend.scene_.add(moon.sphere);
+rend.scene_.add(moon.sphere)
+
 let player = /*player or camera object*/
 
 function update(t) {
   moon.update(player)
-  nodeFrame.update();
-  rend.renderer.render(rend.scene_, rend.camera_);
+  nodeFrame.update()
+  rend.renderer.render(rend.scene_, rend.camera_)
 }
 ```
 

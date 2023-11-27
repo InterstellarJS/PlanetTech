@@ -81,7 +81,7 @@ import * as Shaders from '../shaders/index.js';
         }
         this.count++
       }
-/*      
+  
       addTextureTiles(Texturetitles,displacementScale){
         let tt = Texturetitles['0'][0]
         let dd = Texturetitles['0'][1]
@@ -115,7 +115,8 @@ import * as Shaders from '../shaders/index.js';
           }
           }
       }
-*/
+
+
 
     createNewMesh(shardedGeometry){
       const width  = shardedGeometry.parameters.width

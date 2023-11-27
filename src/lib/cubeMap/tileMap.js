@@ -13,6 +13,17 @@ vec3 blend_whiteout(vec3 n1_,vec3 n2_){
 }
 `)
 
+
+let blend_udn = NODE.glslFn(`
+vec3 blend_udn(vec3 n1_, vec3 n2_){
+    vec3 n1 = n1_.xyz*2.0-1.0;
+    vec3 n2 = n2_.xyz*2.0-1.0;
+    vec3 n  = normalize(vec3(n1.xy + n2.xy, n1.z));
+    return n * 0.5 + 0.5;
+    }
+`)
+
+
 export class TileMap{
     constructor(wxh,d,mapType=false){
         this.w  = wxh
@@ -41,7 +52,6 @@ export class TileMap{
         return plane
       }
 
-
     addTextures(textureArray){
         this.mainCubeSides.forEach((p,i) => {
             let uv = NODE.uv() 
@@ -57,13 +67,13 @@ export class TileMap{
         p.material.colorNode = t
     }
 
-
-    addMask(idx,texture){
-        let uv = Shaders.uvTransforms(12,NODE.vec2(-.5,0))
-        let p = this.mainCubeSides[idx]
-        let t1 = NODE.texture(texture,uv)
-        let t2 = p.material.colorNode
-        p.material.colorNode = f2({n1_:t2,n2_:t1})
+    addMask(params,textureArray){
+        this.mainCubeSides.forEach((p,i) => {
+            let uv = Shaders.uvTransforms(params.scale,NODE.vec2(params.offsetX,params.offsetY))
+            let t1 = NODE.texture(textureArray[i],uv)
+            let t2 = p.material.colorNode
+            p.material.colorNode = blend_udn({n1_:t2,n2_:t1})
+        });
     }
 
     buildCube(){

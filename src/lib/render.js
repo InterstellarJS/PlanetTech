@@ -8,6 +8,7 @@ import * as Nodes     from 'three/nodes';
 import {global}       from 'three/nodes';
 import WebGPU         from 'three/addons/capabilities/WebGPU.js';
 import WebGPURenderer from 'three/addons/renderers/webgpu/WebGPURenderer.js';
+import Stats  from 'stats-js';
 
 global.set('TSL', Nodes);
 
@@ -84,13 +85,19 @@ class Renderer {
     console.log('Geometries in Memory', this.renderer.info.memory.geometries);
   }
 
+  stats() {
+    this.stats_ = new Stats();
+    this.stats_.showPanel( 0 );
+    this.stats_.showPanel( 1 );
+    document.body.appendChild( this.stats_.dom );
+  }
+
   updateControlsSpeed(movementSpeed, lookSpeed) {}
   createcomposer() {}
   runVFX() {}
   PLControls() {}
   physics() {}
   clock() {}
-  stats() {}
   FPSControls() {}
 
 }

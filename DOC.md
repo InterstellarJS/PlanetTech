@@ -278,7 +278,7 @@ https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/b6ad90b5-5664-4a3a-
 
 # Celestial Bodies
 The `celestialBodies` is simply a wrapper around the process we just completed.
-It is meant to serve as the main interface for a user to create celestial bodies such as `Planet`, `Moon`, and `Sun`.
+It is meant to serve as the main interface for a user to create celestial bodies such as `Planet`, and `Moon`.
 A `celestialBodies` is initialize with a `object` and a `name`.
 
 ```javaScript

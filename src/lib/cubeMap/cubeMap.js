@@ -54,7 +54,7 @@ export class CubeMap{
         }
         p.userData.funcList.push(f)
     }
-
+/*
     noiseMask(params,noiseType,op=`add`){
         let p = this.cube
         let f = (eps_,color) =>{
@@ -75,6 +75,7 @@ export class CubeMap{
         }
         p.userData.funcList.push(f)   
     }
+    */
 
     toNormal(params){
         this.mapType = true

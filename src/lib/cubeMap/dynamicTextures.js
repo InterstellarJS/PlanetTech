@@ -28,6 +28,42 @@ export class DynamicTextures{
         this.rtt.renderTarget.setSize(res,res)
      }
 
+    
+     async updateTileTexture(idx,scr){
+        //let loader = new THREE.ImageBitmapLoader()
+        //loader.setOptions({imageOrientation: 'flipY' });
+        //let imageBitmap = await loader.loadAsync(scr)
+        //const texture   = new THREE.CanvasTexture( imageBitmap );
+        //texture.needsUpdate = true
+        //console.log(tile.material.colorNode)
+        //tile.material.colorNode = null//NODE.texture(texture,NODE.uv())
+        //tile.material.map = null
+       // texture.onUpdate = function() {imageBitmap.close()};
+       //console.log(this.rtt.rtScene.children[0])
+       let g = new THREE.PlaneGeometry(this.w,this.h)
+       let pos = this.rtt.rtScene.children[0].children[idx].position.clone()
+       let mat  = new NODE.MeshBasicNodeMaterial()
+       let mesh = new THREE.Mesh(g,mat)
+       mesh.position.copy(pos)
+       let group = this.rtt.rtScene.children[0]
+       let oldMesh = this.rtt.rtScene.children[0].children[idx]
+       oldMesh.geometry.dispose()
+       oldMesh.material.dispose()
+       this.rtt.rtScene.remove(oldMesh)
+       //oldMesh.material.colorNode.dispose()
+       let loader = new THREE.ImageBitmapLoader()
+       loader.setOptions( { imageOrientation: 'flipY' } );
+       let imageBitmap = await loader.loadAsync(scr)
+       const texture = new THREE.CanvasTexture( imageBitmap );
+       texture.needsUpdate = true
+       texture.minFilter = THREE.LinearFilter
+       texture.generateMipmaps  = false
+       mesh.material.colorNode = NODE.texture(texture,NODE.uv())
+       texture.onUpdate = function() {imageBitmap.close()};
+       group.add(mesh)
+     }
+     
+
     async build(srcs){
         let qf = new Quad(this.w,this.h,this.ws,this.hs,this.d)
         qf.createQuadTree(1)
@@ -40,7 +76,6 @@ export class DynamicTextures{
             let loader = new THREE.ImageBitmapLoader()
             loader.setOptions( { imageOrientation: 'flipY' } );
             let imageBitmap = await loader.loadAsync(srcs[index])
-            //console.log(imageBitmap)
             const texture = new THREE.CanvasTexture( imageBitmap );
             texture.needsUpdate = true
             texture.minFilter = THREE.LinearFilter
@@ -52,35 +87,8 @@ export class DynamicTextures{
             texture.onUpdate = function() {imageBitmap.close()};
             tileGroup.add(mesh);
         }
-       // qf.instances.forEach(async (e,i)=>{
-            /*
-            let mat  = new NODE.MeshBasicNodeMaterial()
-            let mesh = new THREE.Mesh(g,mat)
-            mesh.position.copy(e.position.clone())
-            mesh.material.colorNode = NODE.vec3(...hexToRgbA(getRandomColor()))
-            tileGroup.add(mesh);
-            */
-
-
-            /*loader.load( srcs[i] , function ( imageBitmap ) {
-                const texture = new THREE.CanvasTexture( imageBitmap );
-                texture.needsUpdate = true
-                texture.minFilter = THREE.LinearFilter
-                texture.generateMipmaps  = false
-                let mat  = new NODE.MeshBasicNodeMaterial()
-                let mesh = new THREE.Mesh(g,mat)
-                mesh.position.copy(e.position.clone())
-                mesh.material.colorNode = NODE.texture(texture,NODE.uv())
-                texture.onUpdate = function() {imageBitmap.close()};
-                tileGroup.add(mesh);
-            }, function ( p ) {
-                console.log( p );
-            }, function ( e ) {
-                console.log( e );
-            } );*/
-        //})
-        qf.instances = []
-        return this.rtt.renderTarget.texture
+        //qf.instances = []
+        //return tileGroup
      }
 
      update(){

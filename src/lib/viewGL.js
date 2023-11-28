@@ -200,72 +200,73 @@ class ViewGL {
       ('./planet/tileFront/normal/15_front_normal_image.png'),
     ]
   
-  let tts = []
-  for (let index = 0; index < 16; index++) {
-    let dt = new DynamicTextures(5,1)
-    dt.initRt(126,this.rend.renderer)
-    let tt = await dt.build([srcs[index]])
-    dt.update()
-    tts.push(tt)
-  }
-  let tts1 = []
+  var tts = []
 
   for (let index = 0; index < 16; index++) {
     let dt = new DynamicTextures(5,1)
     dt.initRt(126,this.rend.renderer)
     let tt = await dt.build([srcs[index]])
     dt.update()
-    tts1.push(tt)
+    tts.push(dt)
   }
 
-  let tts2 = []
+  let jj = []
+ tts.forEach((e,i)=>{jj.push(e.getTexture())})
 
-
+console.log(jj)
+  var tts1 = []
   for (let index = 0; index < 16; index++) {
     let dt = new DynamicTextures(5,1)
     dt.initRt(126,this.rend.renderer)
     let tt = await dt.build([srcs[index]])
     dt.update()
-    tts2.push(tt)
+    tts1.push(dt)
   }
+  tts1 = tts1.map((e,i)=>{return e.getTexture()})
+
+
+  var tts2 = []
   for (let index = 0; index < 16; index++) {
     let dt = new DynamicTextures(5,1)
     dt.initRt(126,this.rend.renderer)
     let tt = await dt.build([srcs[index]])
     dt.update()
-    tts.push(tt)
+    tts2.push(dt)
   }
-  let tts3 = []
+  tts2 = tts2.map((e,i)=>{return e.getTexture()})
 
-
+  var tts3 = []
   for (let index = 0; index < 16; index++) {
     let dt = new DynamicTextures(5,1)
     dt.initRt(126,this.rend.renderer)
     let tt = await dt.build([srcs[index]])
     dt.update()
-    tts3.push(tt)
+    tts3.push(dt)
   }
-  let tts4 = []
+  tts3 = tts3.map((e,i)=>{return e.getTexture()})
 
 
+  var tts4 = []
   for (let index = 0; index < 16; index++) {
     let dt = new DynamicTextures(5,1)
     dt.initRt(126,this.rend.renderer)
     let tt = await dt.build([srcs[index]])
     dt.update()
-    tts4.push(tt)
+    tts4.push(dt)
+  }
+  tts4 =  tts4.map((e,i)=>{return e.getTexture()})
+
+
+  var tts5 = []
+  for (let index = 0; index < 16; index++) {
+    let dt = new DynamicTextures(5,1)
+    dt.initRt(126,this.rend.renderer)
+    let tt = await dt.build([srcs[index]])
+    dt.update()
+    tts5.push(dt)
   } 
+  tts5 = tts5.map((e,i)=>{return e.getTexture()})
 
-  let tts5 = []
-
-
-  for (let index = 0; index < 16; index++) {
-    let dt = new DynamicTextures(5,1)
-    dt.initRt(126,this.rend.renderer)
-    let tt = await dt.build([srcs[index]])
-    dt.update()
-    tts5.push(tt)
-  } 
 
 
    /* const renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -292,19 +293,25 @@ class ViewGL {
 
     let g = new THREE.Group()
 
-    moon.front.addTextureTiles({'0':[tts,tts]},1.)
+ 
+
+    moon.front.addTextureTiles({'0':[jj,jj]},1.)
     moon.back.addTextureTiles({'0':[tts1,tts1]},1.)
     moon.right.addTextureTiles({'0':[tts2,tts2]},1.)
     moon.left.addTextureTiles({'0':[tts3,tts3]},1.)
     moon.top.addTextureTiles({'0':[tts4,tts4]},1.)
     moon.bottom.addTextureTiles({'0':[tts5,tts5]},1.)
 
-    moon.front.lighting(NODE.vec3(0.0,-6.5,6.5))
+    //moon.front.lighting(NODE.vec3(0.0,-6.5,6.5))
     moon.back.lighting(NODE.vec3(0.0,-6.5,6.5))
     moon.right.lighting(NODE.vec3(0.0,-6.5,6.5))
     moon.left.lighting(NODE.vec3(0.0,-6.5,6.5))
     moon.top.lighting(NODE.vec3(0.0,-6.5,6.5))
     moon.bottom.lighting(NODE.vec3(0.0,-6.5,6.5))
+
+    await tts[0].updateTileTexture(0,'./hm4.png')
+    tts[0].setResoultion(800)
+    tts[0].update()
 
     this.rend.scene_.add(moon.sphere)
 

@@ -10,7 +10,7 @@ import Quad from './PlanetTech/engine/quad';
 import { tileMap,tileMapFront,tileTextuerTop, tileTextuerWorld,tileTextuerFront, tileMapCubeMapFront,tileTextuerLoad} from './examples/tileMap';
 import {cubeMap, cubeMapTop,cubeMapFront } from './examples/cubeMap';
 import { Moon } from './PlanetTech/celestialBodies/moon';
-import { DynamicTextures } from './cubeMap/dynamicTextures';
+import { DynamicTextures, DynamicTileTextureManager} from './cubeMap/dynamicTextures';
 
 class ViewGL {
   constructor() {
@@ -200,7 +200,7 @@ class ViewGL {
       ('./planet/tileFront/normal/15_front_normal_image.png'),
     ]
   
-  var tts = []
+  /*var tts = []
 
   for (let index = 0; index < 16; index++) {
     let dt = new DynamicTextures(5,1)
@@ -265,7 +265,7 @@ console.log(jj)
     dt.update()
     tts5.push(dt)
   } 
-  tts5 = tts5.map((e,i)=>{return e.getTexture()})
+  tts5 = tts5.map((e,i)=>{return e.getTexture()})*/
 
 
 
@@ -279,6 +279,15 @@ console.log(jj)
         //let n = cubeMap({renderer})
         //let n = tileMapCubeMapFront({renderer})
     */
+
+    /*const renderer = new THREE.WebGLRenderer( { antialias: true } );
+    renderer.setClearColor('blue')
+    renderer.setSize( window.innerWidth, window.innerHeight );*/
+
+    let dttm = new DynamicTileTextureManager(5,1,this.rend.renderer)
+    await dttm.init([srcs,srcs,srcs,srcs,srcs,srcs],126)
+    let textarray = dttm.getTexture()
+    console.log(textarray)
 
     let moon = new Moon({
       size:            10000,
@@ -295,12 +304,12 @@ console.log(jj)
 
  
 
-    moon.front.addTextureTiles({'0':[jj,jj]},1.)
-    moon.back.addTextureTiles({'0':[tts1,tts1]},1.)
-    moon.right.addTextureTiles({'0':[tts2,tts2]},1.)
-    moon.left.addTextureTiles({'0':[tts3,tts3]},1.)
-    moon.top.addTextureTiles({'0':[tts4,tts4]},1.)
-    moon.bottom.addTextureTiles({'0':[tts5,tts5]},1.)
+    moon.front.addTextureTiles({'0':[textarray[0],textarray[0]]},1.)
+    moon.back.addTextureTiles({'0':[textarray[1],textarray[1]]},1.)
+    moon.right.addTextureTiles({'0':[textarray[2],textarray[2]]},1.)
+    moon.left.addTextureTiles({'0':[textarray[3],textarray[3]]},1.)
+    moon.top.addTextureTiles({'0':[textarray[4],textarray[4]]},1.)
+    moon.bottom.addTextureTiles({'0':[textarray[5],textarray[5]]},1.)
 
     //moon.front.lighting(NODE.vec3(0.0,-6.5,6.5))
     moon.back.lighting(NODE.vec3(0.0,-6.5,6.5))
@@ -309,9 +318,23 @@ console.log(jj)
     moon.top.lighting(NODE.vec3(0.0,-6.5,6.5))
     moon.bottom.lighting(NODE.vec3(0.0,-6.5,6.5))
 
-    await tts[0].updateTileTexture(0,'./hm4.png')
+    setTimeout(async ()=>{
+      await dttm.fa[0].updateTileTexture(0,'./planet/hm4.png')
+      dttm.fa[0].setResoultion(800)
+      dttm.fa[0].update()
+    },4900)
+
+
+    setTimeout(async ()=>{
+      await dttm.fa[5].updateTileTexture(0,'./planet/hm4.png')
+      dttm.fa[5].setResoultion(800)
+      dttm.fa[5].update()
+    },3900)
+
+
+   /* await tts[0].updateTileTexture(0,'./planet/hm4.png')
     tts[0].setResoultion(800)
-    tts[0].update()
+    tts[0].update()*/
 
     this.rend.scene_.add(moon.sphere)
 

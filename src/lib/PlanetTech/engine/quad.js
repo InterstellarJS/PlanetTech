@@ -4,9 +4,16 @@ import {QuadTrees}  from './quadtree'
 import {norm}       from './utils'
 import * as Shaders from '../shaders/index.js';
 
+function checkDivisible(w, h, ws, hs) {
+  if (w % 2 !== 0 || h % 2 !== 0 || ws % 2 !== 0 || hs % 2 !== 0) {
+      throw new Error('One or more values are not divisible by two.');
+  }
+}
 
   export default class Quad{
     constructor(w,h,ws,hs,d){
+    //checkDivisible(w,h,ws,hs)
+
       this.quadData  = {
         width:          w,
         height:         h,
@@ -18,7 +25,6 @@ import * as Shaders from '../shaders/index.js';
        this.instances = []
        this.textures  = [] 
        this.quadTreeconfig = new QuadTrees.QuadTreeLoDCore()
-       this.count     = 1 
       }
   
     update(player){
@@ -62,58 +68,30 @@ import * as Shaders from '../shaders/index.js';
         p.worldToLocal(cnt)
         var textureNodeN = NODE.texture(texture_[0],newUV).mul(2).sub(1)
         var textureNodeD = NODE.texture(texture_[1],newUV).r
-        if(p.material.positionNode){
-          p.material.colorNode = textureNodeN
-          const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
-          p.material.positionNode =  p.material.positionNode.add( displace );
-        }else{
-          //var mouse = p.material.uniforms[`displacementScale_${this.count}`]
-          //var ld    = p.material.uniforms[`lightDirection_${this.count}`]
-          //const screenFXNode = NODE.uniform( mouse )
-          //var ld  = NODE.uniform( ld ).add(NODE.vec3(.0, .0, 0))
-          //const displace = textureNode.x.mul(screenFXNode.x).mul(NODE.normalLocal)
-          //p.material.colorNode = textureNode .mul(2.0).sub(1.0)//lighting((displacedNormal(textureNode,newUV)),ld )
-          //p.material.positionNode = NODE.positionLocal.add(displace);
-          //const displace = textureNode.z.mul(displacementScale).mul(NODE.normalLocal)
-          //p.material.colorNode = textureNode
-          //p.material.positionNode = NODE.positionLocal.add( displace );
+        p.material.colorNode = textureNodeN
+        const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
+        p.material.positionNode =  p.material.positionNode.add( displace );
         }
-        }
-        this.count++
       }
   
       addTextureTiles(Texturetitles,displacementScale){
-        let tt = Texturetitles['0'][0]
-        let dd = Texturetitles['0'][1]
-
+        let tt = Texturetitles[0]
+        let dd = Texturetitles[1]
         this.textures.push(tt)
         this.quadTreeconfig.config.dataTransfer[this.side] = {textuers:tt}
-        //var w = this.quadData.width
-        //var d = this.quadData.dimensions
-        //var testscaling = w / ( w * d )
-        //var halfScale   = testscaling / 2
         for (var i = 0; i < this.instances.length; i++) {
           var q = this.instances[i]
           var p = q.plane
           let tilenormal = tt[i]
           let tiledisplacement = dd[i]
-
-          //var wp = p.position.clone()//todo
-          //var nxj = norm(wp.x,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
-          //var nyj = norm(wp.y,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
-          //var offSets = NODE.vec2(nxj-halfScale,nyj-halfScale)
-          //var newUV   = NODE.uv().mul(testscaling).add(offSets)
           var cnt = this.quadTreeconfig.config.cnt.clone()
           p.worldToLocal(cnt)
           var textureNodeN = NODE.texture(tilenormal,NODE.uv()).mul(2).sub(1)
           var textureNodeD = NODE.texture(tiledisplacement,NODE.uv()).r
-          if(p.material.positionNode){
-            p.material.colorNode = textureNodeN
-            const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
-            p.material.positionNode =  p.material.positionNode.add( displace );
-          }else{
-          }
-          }
+          p.material.colorNode = textureNodeN
+          const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
+          p.material.positionNode =  p.material.positionNode.add( displace );
+        }
       }
 
 
@@ -133,7 +111,7 @@ import * as Shaders from '../shaders/index.js';
     createQuadTree(lvl){
       Object.assign(this.quadTreeconfig.config,{
         maxLevelSize:  this.quadData.width,
-        minLevelSize:  Math.floor(this.quadData.width/Math.pow(2,lvl-1)),
+        minLevelSize:  Math.floor(this.quadData.width/Math.pow(2,lvl-1)), // this create a vizual bug when not divisable pay 2 
         minPolyCount:  this.quadData.widthSegments,
         dimensions:    this.quadData.dimensions,
         }

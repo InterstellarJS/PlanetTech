@@ -7,10 +7,14 @@ import { FirstPersonControls }  from 'three/examples/jsm/controls/FirstPersonCon
 import { Space } from './WorldSpace/space';
 import {SMAAEffect} from "postprocessing";
 import Quad from './PlanetTech/engine/quad';
+import { Moon } from './PlanetTech/celestialBodies/moon';
+import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
+
 import { tileMap,tileMapFront,tileTextuerTop, tileTextuerWorld,tileTextuerFront, tileMapCubeMapFront,tileTextuerLoad} from './examples/tileMap';
 import {cubeMap, cubeMapTop,cubeMapFront } from './examples/cubeMap';
-import { Moon } from './PlanetTech/celestialBodies/moon';
 import { DynamicTextures, DynamicTileTextureManager} from './cubeMap/dynamicTextures';
+import { dynamicTileTextureManagerExample,dynamicTextureExample } from './examples/dynamicTileTextureManager';
+
 
 class ViewGL {
   constructor() {
@@ -25,7 +29,7 @@ class ViewGL {
     this.rend.scene();
     this.rend.stats();
     this.rend.camera();
-    this.rend.updateCamera(0,0,110005)
+    this.rend.updateCamera(0,0,110005*2)
     this.rend.orbitControls()
     this.rend.renderer.setClearColor('white');
     this.space = new Space()
@@ -103,249 +107,14 @@ class ViewGL {
   async start() {
     this.render(this.canvasViewPort);
 
-
-      /*let ND = await Promise.all([
-        new THREE.TextureLoader().loadAsync('./planet/5000_displacement/right_displacement_image.png'),
-        new THREE.TextureLoader().loadAsync('./planet/5000_displacement/left_displacement_image.png'),
-        new THREE.TextureLoader().loadAsync('./planet/5000_displacement/top_displacement_image.png'),
-        new THREE.TextureLoader().loadAsync('./planet/5000_displacement/bottom_displacement_image.png'),
-        new THREE.TextureLoader().loadAsync('./planet/5000_displacement/front_displacement_image.png'),
-        new THREE.TextureLoader().loadAsync('./planet/5000_displacement/back_displacement_image.png'),
-      ])
-
-
-      */
-
-      /*let NF = await Promise.all([
-        new THREE.TextureLoader().loadAsync('./planet/4000_normal/right_normal_image.png'),
-        new THREE.TextureLoader().loadAsync('./planet/4000_normal/left_normal_image.png'),
-        new THREE.TextureLoader().loadAsync('./planet/4000_normal/top_normal_image.png'),
-        new THREE.TextureLoader().loadAsync('./planet/4000_normal/bottom_normal_image.png'),
-        new THREE.TextureLoader().loadAsync('./planet/4000_normal/front_normal_image.png'),
-        new THREE.TextureLoader().loadAsync('./planet/4000_normal/back_normal_image.png'),
-      ])*/
-
-
-
-
-
-
-    //let n = await new THREE.TextureLoader().loadAsync('./planet/front_normal_image.png')
-    //let d = await new THREE.TextureLoader().loadAsync('./planet/front_displacement_image.png')
-
-  /*let ND = await Promise.all([
-      new THREE.TextureLoader().loadAsync('./planet/displacement/right_displacement_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/displacement/left_displacement_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/displacement/top_displacement_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/displacement/bottom_displacement_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/displacement/front_displacement_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/displacement/back_displacement_image.png'),
-    ])*/
-
-
-  /*let NF = await Promise.all([
-      new THREE.TextureLoader().loadAsync('./planet/normal/right_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/normal/left_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/normal/top_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/normal/bottom_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/normal/front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/normal/back_normal_image.png'),
-    ])
-
-    let NM = await Promise.all([
-      new THREE.TextureLoader().loadAsync('./planet/mask1/normal/right_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/mask1/normal/left_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/mask1/normal/top_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/mask1/normal/bottom_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/mask1/normal/front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/mask1/normal/back_normal_image.png'),
-    ])*/
-    
-    let NF = await Promise.all([
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/0_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/1_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/2_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/3_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/4_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/5_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/6_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/7_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/8_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/9_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/10_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/11_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/12_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/13_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/14_front_normal_image.png'),
-      new THREE.TextureLoader().loadAsync('./planet/tileFront/normal/15_front_normal_image.png'),
-    ])
-    
-
-    let srcs = [
-      ('./planet/tileFront/normal/0_front_normal_image.png'),
-      ('./planet/tileFront/normal/1_front_normal_image.png'),
-      ('./planet/tileFront/normal/2_front_normal_image.png'),
-      ('./planet/tileFront/normal/3_front_normal_image.png'),
-      ('./planet/tileFront/normal/4_front_normal_image.png'),
-      ('./planet/tileFront/normal/5_front_normal_image.png'),
-      ('./planet/tileFront/normal/6_front_normal_image.png'),
-      ('./planet/tileFront/normal/7_front_normal_image.png'),
-      ('./planet/tileFront/normal/8_front_normal_image.png'),
-      ('./planet/tileFront/normal/9_front_normal_image.png'),
-      ('./planet/tileFront/normal/10_front_normal_image.png'),
-      ('./planet/tileFront/normal/11_front_normal_image.png'),
-      ('./planet/tileFront/normal/12_front_normal_image.png'),
-      ('./planet/tileFront/normal/13_front_normal_image.png'),
-      ('./planet/tileFront/normal/14_front_normal_image.png'),
-      ('./planet/tileFront/normal/15_front_normal_image.png'),
-    ]
-  
-  /*var tts = []
-
-  for (let index = 0; index < 16; index++) {
-    let dt = new DynamicTextures(5,1)
-    dt.initRt(126,this.rend.renderer)
-    let tt = await dt.build([srcs[index]])
-    dt.update()
-    tts.push(dt)
-  }
-
-  let jj = []
- tts.forEach((e,i)=>{jj.push(e.getTexture())})
-
-console.log(jj)
-  var tts1 = []
-  for (let index = 0; index < 16; index++) {
-    let dt = new DynamicTextures(5,1)
-    dt.initRt(126,this.rend.renderer)
-    let tt = await dt.build([srcs[index]])
-    dt.update()
-    tts1.push(dt)
-  }
-  tts1 = tts1.map((e,i)=>{return e.getTexture()})
-
-
-  var tts2 = []
-  for (let index = 0; index < 16; index++) {
-    let dt = new DynamicTextures(5,1)
-    dt.initRt(126,this.rend.renderer)
-    let tt = await dt.build([srcs[index]])
-    dt.update()
-    tts2.push(dt)
-  }
-  tts2 = tts2.map((e,i)=>{return e.getTexture()})
-
-  var tts3 = []
-  for (let index = 0; index < 16; index++) {
-    let dt = new DynamicTextures(5,1)
-    dt.initRt(126,this.rend.renderer)
-    let tt = await dt.build([srcs[index]])
-    dt.update()
-    tts3.push(dt)
-  }
-  tts3 = tts3.map((e,i)=>{return e.getTexture()})
-
-
-  var tts4 = []
-  for (let index = 0; index < 16; index++) {
-    let dt = new DynamicTextures(5,1)
-    dt.initRt(126,this.rend.renderer)
-    let tt = await dt.build([srcs[index]])
-    dt.update()
-    tts4.push(dt)
-  }
-  tts4 =  tts4.map((e,i)=>{return e.getTexture()})
-
-
-  var tts5 = []
-  for (let index = 0; index < 16; index++) {
-    let dt = new DynamicTextures(5,1)
-    dt.initRt(126,this.rend.renderer)
-    let tt = await dt.build([srcs[index]])
-    dt.update()
-    tts5.push(dt)
-  } 
-  tts5 = tts5.map((e,i)=>{return e.getTexture()})*/
-
-
-
-   /* const renderer = new THREE.WebGLRenderer( { antialias: true } );
-    renderer.setClearColor('white')
-    renderer.setSize( window.innerWidth, window.innerHeight );
-
-        //let n = tileTextuerWorld(this.rend,NF,ND)
-        //let n = tileTextuerLoad({renderer},NF,NM)
-        //let n = tileMap({renderer})
-        //let n = cubeMap({renderer})
-        //let n = tileMapCubeMapFront({renderer})
-    */
-
-    /*const renderer = new THREE.WebGLRenderer( { antialias: true } );
-    renderer.setClearColor('blue')
-    renderer.setSize( window.innerWidth, window.innerHeight );*/
-
-    let dttm = new DynamicTileTextureManager(5,1,this.rend.renderer)
-    await dttm.init([srcs,srcs,srcs,srcs,srcs,srcs],126)
-    let textarray = dttm.getTexture()
-    console.log(textarray)
-
-    let moon = new Moon({
-      size:            10000,
-      polyCount:          50,
-      quadTreeDimensions:  4,
-      levels:              1,
-      radius:          80000,
-      displacmentScale: 1.5,
-      lodDistanceOffset: 7.4,
-      material: new NODE.MeshBasicNodeMaterial(),
-    })
-
-    let g = new THREE.Group()
-
- 
-
-    moon.front.addTextureTiles({'0':[textarray[0],textarray[0]]},1.)
-    moon.back.addTextureTiles({'0':[textarray[1],textarray[1]]},1.)
-    moon.right.addTextureTiles({'0':[textarray[2],textarray[2]]},1.)
-    moon.left.addTextureTiles({'0':[textarray[3],textarray[3]]},1.)
-    moon.top.addTextureTiles({'0':[textarray[4],textarray[4]]},1.)
-    moon.bottom.addTextureTiles({'0':[textarray[5],textarray[5]]},1.)
-
-    //moon.front.lighting(NODE.vec3(0.0,-6.5,6.5))
-    moon.back.lighting(NODE.vec3(0.0,-6.5,6.5))
-    moon.right.lighting(NODE.vec3(0.0,-6.5,6.5))
-    moon.left.lighting(NODE.vec3(0.0,-6.5,6.5))
-    moon.top.lighting(NODE.vec3(0.0,-6.5,6.5))
-    moon.bottom.lighting(NODE.vec3(0.0,-6.5,6.5))
-
-    setTimeout(async ()=>{
-      await dttm.fa[0].updateTileTexture(0,'./planet/hm4.png')
-      dttm.fa[0].setResoultion(800)
-      dttm.fa[0].update()
-    },4900)
-
-
-    setTimeout(async ()=>{
-      await dttm.fa[5].updateTileTexture(0,'./planet/hm4.png')
-      dttm.fa[5].setResoultion(800)
-      dttm.fa[5].update()
-    },3900)
-
-
-   /* await tts[0].updateTileTexture(0,'./planet/hm4.png')
-    tts[0].setResoultion(800)
-    tts[0].update()*/
+    let moon = await dynamicTileTextureManagerExample(this.rend.renderer)
 
     this.rend.scene_.add(moon.sphere)
-
-    //this.celestialBodie = moon
-    //this.initPlayer()
-    //this.update();
   }
   
 
   onWindowResize(vpW, vpH) {
-    this.rend.renderer.setSize(vpW, vpH);
+    //this.rend.renderer.setSize(vpW, vpH);
   }
 
   update(t) {

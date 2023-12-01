@@ -23,7 +23,10 @@ Download and run the project. Go to http://localhost:3001/. The file for the dem
 import renderer from './render';
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 import { Moon } from './PlanetTech/celestialBodies/moon';
+import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
 
+let moon 
+let player = /*object that can move, camera or object3D.*/
 let rend = renderer;
 rend.WebGLRenderer(canvasViewPort);
 rend.scene();
@@ -32,7 +35,8 @@ rend.camera();
 rend.updateCamera(0,0,110005)
 rend.orbitControls()
 
-let D = await Promise.all([
+async function init(){
+  let D = await Promise.all([
     new THREE.TextureLoader().loadAsync('./planet/displacement/right_displacement_image.png'),
     new THREE.TextureLoader().loadAsync('./planet/displacement/left_displacement_image.png'),
     new THREE.TextureLoader().loadAsync('./planet/displacement/top_displacement_image.png'),
@@ -50,7 +54,7 @@ let N = await Promise.all([
     new THREE.TextureLoader().loadAsync('./planet/normal/back_normal_image.png'),
   ])
 
-let moon = new Moon({
+moon = new Moon({
   size:            10000,
   polyCount:          50,
   quadTreeDimensions:  4,
@@ -64,14 +68,16 @@ let moon = new Moon({
 moon.textuers(N,D)
 moon.light(NODE.vec3(0.0,-6.5,6.5))
 rend.scene_.add(moon.sphere)
-
-let player = /*player or camera object*/
+}
 
 function update(t) {
   moon.update(player)
   nodeFrame.update()
   rend.renderer.render(rend.scene_, rend.camera_)
 }
+
+init()
+update()
 ```
 
 

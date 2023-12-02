@@ -11,9 +11,9 @@ export async function dynamicTileTextureManagerExample(renderer){
     await colorDt.init([srcs.color,srcs.color,srcs.color,srcs.color,srcs.color,srcs.color],256)
     let colorText = colorDt.getTexture()
 
-    let displacementDt = new DynamicTileTextureManager(5,1,renderer)
+    /*let displacementDt = new DynamicTileTextureManager(5,1,renderer)
     await displacementDt.init([srcs.displacement,srcs.displacement,srcs.displacement,srcs.displacement,srcs.displacement,srcs.displacement],1)
-    let displacementText = displacementDt.getTexture()
+    let displacementText = displacementDt.getTexture()*/
 
     let moon = new Moon({
         size:            10000,
@@ -27,12 +27,12 @@ export async function dynamicTileTextureManagerExample(renderer){
       })
    
   
-      moon.front.addTextureTiles ([colorText[0],displacementText[0]],1.)
-      moon.back.addTextureTiles  ([colorText[1],displacementText[1]],1.)
-      moon.right.addTextureTiles ([colorText[2],displacementText[2]],1.)
-      moon.left.addTextureTiles  ([colorText[3],displacementText[3]],1.)
-      moon.top.addTextureTiles   ([colorText[4],displacementText[4]],1.)
-      moon.bottom.addTextureTiles([colorText[5],displacementText[5]],1.)
+      moon.front.addTextureTiles ([colorText[0],colorText[0]],1.)
+      moon.back.addTextureTiles  ([colorText[1],colorText[1]],1.)
+      moon.right.addTextureTiles ([colorText[2],colorText[2]],1.)
+      moon.left.addTextureTiles  ([colorText[3],colorText[3]],1.)
+      moon.top.addTextureTiles   ([colorText[4],colorText[4]],1.)
+      moon.bottom.addTextureTiles([colorText[5],colorText[5]],1.)
   
       moon.front.lighting(NODE.vec3(0.0,-6.5,6.5))
       moon.back.lighting(NODE.vec3(0.0,-6.5,6.5))
@@ -56,7 +56,7 @@ export async function dynamicTileTextureManagerExample(renderer){
 
 
       setTimeout(async ()=>{
-        colorDt.fa[5].active(0,1)
+        colorDt.fa[5].active(0,0)
         colorDt.fa[5].update()
       },8900)      
 
@@ -127,6 +127,43 @@ export async function dynamicTextureExample(renderer){
       colorText.active(0,1)
       colorText.update()
     },8900)*/      
+
+    return moon
+}
+
+
+export async function quadDynamicTileExample(renderer){
+  let srcs = [SrcManager('right').color[0],SrcManager('left').color[0],SrcManager('top').color[0],SrcManager('bottom').color[0],SrcManager('front').color[0],SrcManager('back').color[0]] 
+
+console.log(srcs)
+
+  let moon = new Moon({
+      size:            10000,
+      polyCount:          50,
+      quadTreeDimensions:  4,
+      levels:              1,
+      radius:          80000,
+      displacmentScale: 1.5,
+      lodDistanceOffset: 7.4,
+      material: new NODE.MeshBasicNodeMaterial(),
+    })
+ 
+
+
+    await moon.right.addTextureTiles ([srcs[0],srcs[0]],1.)
+    await moon.left.addTextureTiles  ([srcs[1],srcs[1]],1.)
+    await moon.top.addTextureTiles   ([srcs[2],srcs[2]],1.)
+    await moon.bottom.addTextureTiles([srcs[3],srcs[3]],1.)
+    await moon.front.addTextureTiles ([srcs[4],srcs[4]],1.)
+    await moon.back.addTextureTiles  ([srcs[5],srcs[5]],1.)
+
+    moon.right.lighting(NODE.vec3(0.0,-6.5,6.5))
+    moon.left.lighting(NODE.vec3(0.0,-6.5,6.5))
+    moon.front.lighting(NODE.vec3(0.0,-6.5,6.5))
+    moon.back.lighting(NODE.vec3(0.0,-6.5,6.5))
+    moon.top.lighting(NODE.vec3(0.0,-6.5,6.5))
+    moon.bottom.lighting(NODE.vec3(0.0,-6.5,6.5))
+
 
     return moon
 }

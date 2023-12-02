@@ -74,7 +74,7 @@ function checkDivisible(w, h, ws, hs) {
         }
       }
   
-      addTextureTiles(Texturetitles,displacementScale){
+      /*addTextureTiles(Texturetitles,displacementScale){
         let tt = Texturetitles[0]
         let dd = Texturetitles[1]
         this.textures.push(tt)
@@ -92,7 +92,36 @@ function checkDivisible(w, h, ws, hs) {
           const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
           p.material.positionNode =  p.material.positionNode.add( displace );
         }
+      }*/
+
+      
+      async  addTextureTiles(Texturetitles,displacementScale){
+        let tt = Texturetitles[0]
+        let dd = Texturetitles[1]
+        this.textures.push(tt)
+        this.quadTreeconfig.config.dataTransfer[this.side] = {textuers:tt}
+        for (var i = 0; i < this.instances.length; i++) {
+          var q = this.instances[i]
+          var p = q.plane
+          let tilenormal = tt[i]
+          var cnt = this.quadTreeconfig.config.cnt.clone()
+          p.worldToLocal(cnt)
+ 
+          let loader = new THREE.ImageBitmapLoader()
+          loader.setOptions( { imageOrientation: 'flipY' } );
+          let imageBitmap = await loader.loadAsync(tilenormal)
+          const texture = new THREE.CanvasTexture( imageBitmap );
+          texture.needsUpdate = true
+          texture.minFilter = THREE.LinearFilter
+          texture.generateMipmaps  = false
+          p.material.colorNode =  NODE.texture(texture,NODE.uv()).mul(2).sub(1)
+
+          texture.onUpdate = function() {imageBitmap.close()};
+          const displace =  NODE.texture(texture,NODE.uv()).mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
+          p.material.positionNode =  p.material.positionNode.add( displace );
+        }
       }
+      
 
 
 

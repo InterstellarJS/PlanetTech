@@ -13,8 +13,8 @@ import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 import { tileMap,tileMapFront,tileTextuerTop, tileTextuerWorld,tileTextuerFront, tileMapCubeMapFront,tileTextuerLoad} from './examples/tileMap';
 import {cubeMap, cubeMapTop,cubeMapFront } from './examples/cubeMap';
 import { DynamicTextures, DynamicTileTextureManager} from './cubeMap/dynamicTextures';
-import { dynamicTileTextureManagerExample,dynamicTextureExample } from './examples/dynamicTileTextureManager';
-
+import { quadDynamicTileExample,dynamicTileTextureManagerExample,dynamicTextureExample } from './examples/dynamicTileTextureManager';
+import { addTextureTiles } from './examples/basic';
 
 class ViewGL {
   constructor() {
@@ -107,7 +107,7 @@ class ViewGL {
   async start() {
     this.render(this.canvasViewPort);
 
-    let moon = await dynamicTileTextureManagerExample(this.rend.renderer)
+    let moon = await quadDynamicTileExample(this.rend.renderer)
 
     this.rend.scene_.add(moon.sphere)
   }

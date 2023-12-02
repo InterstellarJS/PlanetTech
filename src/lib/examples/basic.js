@@ -1,6 +1,7 @@
 import { Moon } from "../PlanetTech/celestialBodies/moon"
 import * as NODE  from 'three/nodes';
 import * as THREE from 'three';
+import {SrcManager} from './utils'
 
 export async function basic(){
     let moon = new Moon({
@@ -33,5 +34,36 @@ export async function basic(){
     
       moon.textuers(N,D)
       moon.light(NODE.vec3(0.0,-6.5,6.5))
-      return moon.sphere
+      return moon
+}
+
+
+export async function addTextureTiles(){
+  let src = SrcManager()
+  let colorText = src.color[0]
+
+  let moon = new Moon({
+      size:            10000,
+      polyCount:          50,
+      quadTreeDimensions:  4,
+      levels:              1,
+      radius:          80000,
+      displacmentScale: 1.5,
+      lodDistanceOffset: 7.4,
+      material: new NODE.MeshBasicNodeMaterial(),
+    })
+
+  
+    await moon.front.addTextureTiles ([colorText,colorText],1.)
+    await moon.back.addTextureTiles  ([colorText,colorText],1.)
+    //await moon.right.addTextureTiles ([colorText,colorText],1.)
+    //await moon.left.addTextureTiles  ([colorText,colorText],1.)
+    //await moon.top.addTextureTiles   ([colorText,colorText],1.)
+    //await moon.bottom.addTextureTiles([colorText,colorText],1.)
+
+    //moon.light(NODE.vec3(0.0,-6.5,6.5))
+
+    moon.front .lighting(NODE.vec3(0.0,-6.5,6.5))
+    moon.back  .lighting(NODE.vec3(0.0,-6.5,6.5))
+    return moon
 }

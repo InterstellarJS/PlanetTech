@@ -31,7 +31,8 @@ export class DynamicTextures{
      active(idx,layer){
         let oldMesh = this.rtt.rtScene.children[0].children[idx]
         oldMesh.material.visible = true
-        let currentMesh = this.rtt.rtScene.children[0].children[layer]
+        console.log(oldMesh)
+        let currentMesh = oldMesh.children[layer]
         currentMesh.material.visible = false
      }
 
@@ -89,6 +90,7 @@ export class DynamicTextures{
         }else{
             let oldMesh = this.rtt.rtScene.children[0].children[idx]
             oldMesh.material.visible = false
+            oldMesh.children.forEach((e)=>{e.material.visible = false})
             let pos   = oldMesh.position.clone()
             let mesh  = new THREE.Mesh(new THREE.PlaneGeometry(this.w,this.h),new NODE.MeshBasicNodeMaterial())
             let group = this.rtt.rtScene.children[0]
@@ -108,7 +110,7 @@ export class DynamicTextures{
             texture.generateMipmaps  = false
             mesh.material.colorNode = NODE.texture(texture,NODE.uv())
             texture.onUpdate = function() {imageBitmap.close()};
-            group.add(mesh)   
+            oldMesh.add(mesh)   
         }
      }
 

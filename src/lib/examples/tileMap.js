@@ -290,10 +290,10 @@ export function tileMapCubeMapBottom   (renderer_){
 export function tileMapCubeMapFront    (renderer_){
     let cubeMapDownload  = false
     let tileMapFull      = false
-    let tileMapFullTiles = false
+    let tileMapTiles     = false
 
     const cubeMap = new CubeMap()
-    cubeMap.build(3000,renderer_.renderer)
+    cubeMap.build(3000,renderer_)
     cubeMap.simplexFbm({
         inScale:          7.0,
         scale_:           5.5,
@@ -320,22 +320,20 @@ export function tileMapCubeMapFront    (renderer_){
         terbulance_:    false,
         ridge_:         false,
     })
-    cubeMap.snapShot(cubeMapDownload,{
+    cubeMap.toNormal({
         scale:    3.5,  
         epsilon: 0.0015,  
         strength:   1.,    
     })
-    cubeMap.snapShotFront(cubeMapDownload)
+    cubeMap.snapShotBack(cubeMapDownload)
 
     cubeMap.dispose()
     let cN = cubeMap.textuerArray.map((canvas)=>{return new THREE.CanvasTexture(canvas)})
-
+    
     let tileMapN = new TileMap(2,4,true)
-    tileMapN.build(3000,cubeMap.rtt.renderer_)
-    tileMapN.addTexture(4,cN[0]) 
-    tileMapN.snapShotFront(tileMapFull,tileMapFullTiles)
-    let N = tileMapN.textuerArray.map((canvas)=>{return new THREE.CanvasTexture(canvas)})
-    return N
+    tileMapN.build(1024,cubeMap.rtt.renderer_)
+    tileMapN.addTexture(5,cN[0]) 
+    tileMapN.snapShotBack(tileMapFull,tileMapTiles)
 }
 
 export function tileMapCubeMapBack     (renderer_){

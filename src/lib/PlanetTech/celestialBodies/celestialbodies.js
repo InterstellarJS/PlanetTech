@@ -23,22 +23,22 @@ export class CelestialBodies extends Sphere{
         this.type   = type
     }
 
-    textuers(N,D){
-        this.right.addTexture  ([N[0],D[0]], this.params.displacmentScale)
-        this.left.addTexture   ([N[1],D[1]], this.params.displacmentScale)
-        this.top.addTexture    ([N[2],D[2]], this.params.displacmentScale)
-        this.bottom.addTexture ([N[3],D[3]], this.params.displacmentScale)
-        this.front.addTexture  ([N[4],D[4]], this.params.displacmentScale)
-        this.back.addTexture   ([N[5],D[5]], this.params.displacmentScale)
+    textuers(N,D,isTiles=false){
+        this.right .addTexture([N[0],D[0]], this.params.displacmentScale,isTiles)
+        this.left  .addTexture([N[1],D[1]], this.params.displacmentScale,isTiles)
+        this.top   .addTexture([N[2],D[2]], this.params.displacmentScale,isTiles)
+        this.bottom.addTexture([N[3],D[3]], this.params.displacmentScale,isTiles)
+        this.front .addTexture([N[4],D[4]], this.params.displacmentScale,isTiles)
+        this.back  .addTexture([N[5],D[5]], this.params.displacmentScale,isTiles)
     }
 
     light(ld){
-        this.front.lighting  (ld)
-        this.back.lighting   (ld)
-        this.right.lighting  (ld)
-        this.left.lighting   (ld)
-        this.top.lighting    (ld)
-        this.bottom.lighting (ld)
+        this.front .lighting(ld)
+        this.back  .lighting(ld)
+        this.right .lighting(ld)
+        this.left  .lighting(ld)
+        this.top   .lighting(ld)
+        this.bottom.lighting(ld)
     }
 
 

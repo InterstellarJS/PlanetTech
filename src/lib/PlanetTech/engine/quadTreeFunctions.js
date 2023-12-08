@@ -2,17 +2,24 @@ import * as THREE  from 'three';
 import {norm}      from './utils'
 import * as NODE   from 'three/nodes';
 import * as Shaders from '../shaders/index.js';
+import { getRandomColor,hexToRgbA  } from './utils';
+
+
+function tileTransformer(obj){
+  let position = obj.config.position
+  let initTileRotation = obj.config.dataTransfer[obj.child.side][obj.child.idx].rotation.clone()
+  let planetPosition   = new THREE.Vector3(position.x,position.y,position.z) 
+  let initTilePosition = obj.config.dataTransfer[obj.child.side][obj.child.idx].position.clone()
+  let fposition = initTilePosition.multiplyScalar(obj.config.scale).applyEuler(initTileRotation).add(planetPosition)
+  return fposition
+}
 
 export function frontsetData(obj){
     console.log('f')
-    var position = obj.config.position
+    var position = (obj.config.isTiles) ? tileTransformer(obj) : obj.config.position
     var scale = obj.config.scale
-    var p = new THREE.Vector3(position.x,position.y,position.z)
-    var radius = obj.config.radius
-    var wp = new THREE.Vector3();
-    obj.child.plane.localToWorld(wp)
-    wp = wp.sub(p).divideScalar(scale)
-
+    var wp =  obj.child.plane.localToWorld(new THREE.Vector3())
+    wp = wp.sub(position).divideScalar(scale)
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
@@ -25,19 +32,16 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)}).mul(NODE.vec3(...hexToRgbA(getRandomColor())))
   }  
 
 
   export function  backsetData(obj){
     console.log('b')
+    var position = (obj.config.isTiles) ? tileTransformer(obj) : obj.config.position
     var scale = obj.config.scale
-    var position = obj.config.position
-    var p = new THREE.Vector3(position.x,position.y,position.z)
-    var radius = obj.config.radius
-    var wp = new THREE.Vector3();
-    obj.child.plane.localToWorld(wp)
-    wp = wp.sub(p).divideScalar(scale)
+    var wp =  obj.child.plane.localToWorld(new THREE.Vector3())
+    wp = wp.sub(position).divideScalar(scale)
     wp.x = - wp.x
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
@@ -57,15 +61,12 @@ export function frontsetData(obj){
   
   export function rightsetData(obj){
     console.log('r')
+    var position = (obj.config.isTiles) ? tileTransformer(obj) : obj.config.position
     var scale = obj.config.scale
-    var position = obj.config.position
-    var p = new THREE.Vector3(position.x,position.y,position.z)
-    var radius = obj.config.radius
-    var wp = new THREE.Vector3();
-    obj.child.plane.localToWorld(wp)
-    wp = wp.sub(p)
+    var wp =  obj.child.plane.localToWorld(new THREE.Vector3())
+    wp = wp.sub(position)
     wp.x = -1*(wp.x + wp.z)
-    wp.divideScalar(scale)
+    wp.divideScalar(scale) 
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
@@ -84,13 +85,10 @@ export function frontsetData(obj){
   
   export function  leftsetData(obj){
     console.log('l')
+    var position = (obj.config.isTiles) ? tileTransformer(obj) : obj.config.position
     var scale = obj.config.scale
-    var position = obj.config.position
-    var p = new THREE.Vector3(position.x,position.y,position.z)
-    var radius = obj.config.radius
-    var wp = new THREE.Vector3();
-    obj.child.plane.localToWorld(wp)
-    wp = wp.sub(p)
+    var wp =  obj.child.plane.localToWorld(new THREE.Vector3())
+    wp = wp.sub(position)
     wp.x = (wp.z - wp.x)
     wp.divideScalar(scale)
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
@@ -111,13 +109,10 @@ export function frontsetData(obj){
   
   export function topsetData(obj){
     console.log('t')
+    var position = (obj.config.isTiles) ? tileTransformer(obj) : obj.config.position
     var scale = obj.config.scale
-    var position = obj.config.position
-    var p = new THREE.Vector3(position.x,position.y,position.z)
-    var radius = obj.config.radius
-    var wp = new THREE.Vector3();
-    obj.child.plane.localToWorld(wp)
-    wp = wp.sub(p)
+    var wp =  obj.child.plane.localToWorld(new THREE.Vector3())
+    wp = wp.sub(position)
     wp.y = -1*(wp.z + wp.y)
     wp.divideScalar(scale)
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
@@ -130,21 +125,17 @@ export function frontsetData(obj){
     var cnt = obj.cnt
     p.worldToLocal(obj.cnt)
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
-    var newP = NODE.float(radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    p.material.positionNode = newP.add( displace );
+    p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)}) .mul(NODE.vec3(...hexToRgbA(getRandomColor()))) 
   } 
   
   export function  bottomsetData(obj){
     console.log('bo')
+    var position = (obj.config.isTiles) ? tileTransformer(obj) : obj.config.position
     var scale = obj.config.scale
-    var position = obj.config.position
-    var p = new THREE.Vector3(position.x,position.y,position.z)
-    var radius = obj.config.radius
-    var wp = new THREE.Vector3();
-    obj.child.plane.localToWorld(wp)
-    wp = wp.sub(p)
+    var wp =  obj.child.plane.localToWorld(new THREE.Vector3())
+    wp = wp.sub(position)
     wp.y = (-wp.y + wp.z)
     wp.divideScalar(scale)
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))

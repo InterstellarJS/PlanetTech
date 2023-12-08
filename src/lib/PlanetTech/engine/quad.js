@@ -12,20 +12,18 @@ function checkDivisible(w, h, ws, hs) {
 
   export default class Quad{
     constructor(w,h,ws,hs,d){
-    //checkDivisible(w,h,ws,hs)
-
-      this.quadData  = {
-        width:          w,
-        height:         h,
-        widthSegments:  ws,
-        heightSegments: hs,
-        dimensions:     d,
-       }
-       this.children  = []
-       this.instances = []
-       this.textures  = [] 
-       this.quadTreeconfig = new QuadTrees.QuadTreeLoDCore()
-      }
+    
+    this.quadData  = {
+    width:          w,
+    height:         h,
+    widthSegments:  ws,
+    heightSegments: hs,
+    dimensions:     d,
+    }
+    this.children  = []
+    this.instances = []
+    this.quadTreeconfig = new QuadTrees.QuadTreeLoDCore()
+    }
   
     update(player){
       this.quadTree.update(player,this)
@@ -48,82 +46,50 @@ function checkDivisible(w, h, ws, hs) {
       }
     }
 
-
-    addTexture(texture_, displacementScale){
-      this.textures.push(texture_)
-      this.quadTreeconfig.config.dataTransfer[this.side] = {textuers:this.textures}
-      var w = this.quadData.width
-      var d = this.quadData.dimensions
-      var testscaling = w / ( w * d )
-      var halfScale   = testscaling / 2
-      for (var i = 0; i < this.instances.length; i++) {
-        var q = this.instances[i]
-        var p = q.plane
-        var wp = p.position.clone()//todo
-        var nxj = norm(wp.x,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
-        var nyj = norm(wp.y,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
-        var offSets = NODE.vec2(nxj-halfScale,nyj-halfScale)
-        var newUV   = NODE.uv().mul(testscaling).add(offSets)
-        var cnt = this.quadTreeconfig.config.cnt.clone()
-        p.worldToLocal(cnt)
-        var textureNodeN = NODE.texture(texture_[0],newUV).mul(2).sub(1)
-        var textureNodeD = NODE.texture(texture_[1],newUV).r
-        p.material.colorNode = textureNodeN
-        const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
-        p.material.positionNode =  p.material.positionNode.add( displace );
-        }
-      }
-  
-      /*addTextureTiles(Texturetitles,displacementScale){
-        let tt = Texturetitles[0]
-        let dd = Texturetitles[1]
-        this.textures.push(tt)
-        this.quadTreeconfig.config.dataTransfer[this.side] = {textuers:tt}
+    addTexture(texture_, displacementScale, tiles){
+      this.quadTreeconfig.config.isTiles = tiles
+      if(tiles){
         for (var i = 0; i < this.instances.length; i++) {
-          var q = this.instances[i]
-          var p = q.plane
-          let tilenormal = tt[i]
-          let tiledisplacement = dd[i]
+          var q   = this.instances[i]
+          this.quadTreeconfig.config.dataTransfer[this.side][i] = {
+            textuers:[[texture_[0][i],texture_[0][i]]],
+            position:q.plane.position.clone(),
+            rotation:new THREE.Euler().setFromQuaternion(q.plane.getWorldQuaternion(new THREE.Quaternion()))
+          }
+          var p   = q.plane
+          var wp  = p.position.clone()//todo
           var cnt = this.quadTreeconfig.config.cnt.clone()
           p.worldToLocal(cnt)
-          var textureNodeN = NODE.texture(tilenormal,NODE.uv()).mul(2).sub(1)
-          var textureNodeD = NODE.texture(tiledisplacement,NODE.uv()).r
+          var textureNodeN = NODE.texture(texture_[0][i],NODE.uv()).mul(2).sub(1)
+          var textureNodeD = NODE.texture(texture_[0][i],NODE.uv()).r
           p.material.colorNode = textureNodeN
           const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
           p.material.positionNode =  p.material.positionNode.add( displace );
-        }
-      }*/
-
-      
-      async  addTextureTiles(Texturetitles,displacementScale){
-        let tt = Texturetitles[0]
-        let dd = Texturetitles[1]
-        this.textures.push(tt)
-        this.quadTreeconfig.config.dataTransfer[this.side] = {textuers:tt}
-        for (var i = 0; i < this.instances.length; i++) {
-          var q = this.instances[i]
-          var p = q.plane
-          let tilenormal = tt[i]
-          var cnt = this.quadTreeconfig.config.cnt.clone()
-          p.worldToLocal(cnt)
- 
-          let loader = new THREE.ImageBitmapLoader()
-          loader.setOptions( { imageOrientation: 'flipY' } );
-          let imageBitmap = await loader.loadAsync(tilenormal)
-          const texture = new THREE.CanvasTexture( imageBitmap );
-          texture.needsUpdate = true
-          texture.minFilter = THREE.LinearFilter
-          texture.generateMipmaps  = false
-          p.material.colorNode =  NODE.texture(texture,NODE.uv()).mul(2).sub(1)
-
-          texture.onUpdate = function() {imageBitmap.close()};
-          const displace =  NODE.texture(texture,NODE.uv()).mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
-          p.material.positionNode =  p.material.positionNode.add( displace );
-        }
-      }
-      
-
-
+          }
+        }else{
+          this.quadTreeconfig.config.dataTransfer[this.side] = {textuers:[texture_]}
+          var w = this.quadData.width
+          var d = this.quadData.dimensions
+          var testscaling = w / ( w * d )
+          var halfScale   = testscaling / 2
+          for (var i = 0; i < this.instances.length; i++) {
+            var q = this.instances[i]
+            var p = q.plane
+            var wp = p.position.clone()//todo
+            var nxj = norm(wp.x,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
+            var nyj = norm(wp.y,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
+            var offSets = NODE.vec2(nxj-halfScale,nyj-halfScale)
+            var newUV   = NODE.uv().mul(testscaling).add(offSets)
+            var cnt = this.quadTreeconfig.config.cnt.clone()
+            p.worldToLocal(cnt)
+            var textureNodeN = NODE.texture(texture_[0],newUV).mul(2).sub(1)
+            var textureNodeD = NODE.texture(texture_[1],newUV).r
+            p.material.colorNode = textureNodeN
+            const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
+            p.material.positionNode =  p.material.positionNode.add( displace );
+            }
+          }
+        } 
 
     createNewMesh(shardedGeometry){
       const width  = shardedGeometry.parameters.width
@@ -140,7 +106,7 @@ function checkDivisible(w, h, ws, hs) {
     createQuadTree(lvl){
       Object.assign(this.quadTreeconfig.config,{
         maxLevelSize:  this.quadData.width,
-        minLevelSize:  Math.floor(this.quadData.width/Math.pow(2,lvl-1)), // this create a vizual bug when not divisable pay 2 
+        minLevelSize:  Math.floor(this.quadData.width/Math.pow(2,lvl-1)), // this create a vizual bug when not divisible pay 2 
         minPolyCount:  this.quadData.widthSegments,
         dimensions:    this.quadData.dimensions,
         }
@@ -162,6 +128,7 @@ function checkDivisible(w, h, ws, hs) {
           var q = this.createNewMesh(shardedGeometry).setPosition( [i_,-j_,0], 'dimensions')
           q.quadTree = new QuadTrees.QuadTreeLoD()
           q.side = sideName
+          q.idx = i * d + j;
           this.instances.push(q)
         }
       }
@@ -183,7 +150,6 @@ function checkDivisible(w, h, ws, hs) {
       }
     }
   
-
     setPosition( params, quadrent){
       this.plane.updateMatrixWorld(true)
       if       (quadrent=='NW')  {

@@ -119,8 +119,10 @@ class QuadTreeLoDCore  {
   front(w,h,rw,rh,quad){
     console.log(rw,rh)
     var side  = quad.side
+    var idx   = quad.idx
     var cnt   = this.config.cnt
-    var textures = this.config.dataTransfer[side].textuers
+    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
+
     var shardedGeometry = this.config.arrybuffers[w] 
     var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
     var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
@@ -134,9 +136,16 @@ class QuadTreeLoDCore  {
     child2.side = side
     child3.side = side
     child4.side = side
-    var starting  = this.config.maxLevelSize*this.config.dimensions
-    var scaling   = w / starting
-    var halfScale = scaling/2
+    child1.idx = idx
+    child2.idx = idx
+    child3.idx = idx
+    child4.idx = idx
+
+    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
+    var starting   = this.config.maxLevelSize*dimensions
+    var scaling    = w / starting
+    var halfScale  = scaling/2
+    console.log(starting,scaling,halfScale)
 
     var cnt = this.config.cnt.clone()
     child1.plane.worldToLocal(cnt)
@@ -153,7 +162,6 @@ class QuadTreeLoDCore  {
     child2.plane.material.colorNode = currentColor
     child2.plane.material.positionNode = newP
     this.setCenter(child2,cnt,quad)
-
     //---
     var cnt = this.config.cnt.clone()
     child3.plane.worldToLocal(cnt)
@@ -183,8 +191,10 @@ class QuadTreeLoDCore  {
 
   back(w,h,rw,rh,quad){
     var side  = quad.side
+    var idx   = quad.idx
     var cnt   = this.config.cnt
-    var textures    = this.config.dataTransfer[side].textuers
+    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
+
     var shardedGeometry = this.config.arrybuffers[w] 
     var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
     var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
@@ -198,9 +208,16 @@ class QuadTreeLoDCore  {
     child2.side = side
     child3.side = side
     child4.side = side
-    var starting  = this.config.maxLevelSize*this.config.dimensions
-    var scaling   = w / starting
-    var halfScale = scaling/2
+    child1.idx = idx
+    child2.idx = idx
+    child3.idx = idx
+    child4.idx = idx
+
+    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
+    var starting   = this.config.maxLevelSize*dimensions
+    var scaling    = w / starting
+    var halfScale  = scaling/2
+    console.log(starting,scaling,halfScale)
 
     var cnt = this.config.cnt.clone()
     child1.plane.worldToLocal(cnt)
@@ -246,8 +263,10 @@ class QuadTreeLoDCore  {
 
   right(w,h,rw,rh,quad){
     var side  = quad.side
+    var idx   = quad.idx
     var cnt   = this.config.cnt
-    var textures    = this.config.dataTransfer[side].textuers
+    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
+
     var shardedGeometry = this.config.arrybuffers[w] 
     var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
     var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
@@ -261,9 +280,16 @@ class QuadTreeLoDCore  {
     child2.side = side
     child3.side = side
     child4.side = side
-    var starting  = this.config.maxLevelSize*this.config.dimensions
-    var scaling   = w / starting
-    var halfScale = scaling/2
+    child1.idx = idx
+    child2.idx = idx
+    child3.idx = idx
+    child4.idx = idx
+
+    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
+    console.log(side,idx,dimensions)
+    var starting   = this.config.maxLevelSize*dimensions
+    var scaling    = w / starting
+    var halfScale  = scaling/2
 
     var cnt = this.config.cnt.clone()
     child1.plane.worldToLocal(cnt)
@@ -309,8 +335,10 @@ class QuadTreeLoDCore  {
 
   left(w,h,rw,rh,quad){
     var side  = quad.side
+    var idx   = quad.idx
     var cnt   = this.config.cnt
-    var textures    = this.config.dataTransfer[side].textuers
+    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
+
     var shardedGeometry = this.config.arrybuffers[w] 
     var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
     var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
@@ -324,9 +352,17 @@ class QuadTreeLoDCore  {
     child2.side = side
     child3.side = side
     child4.side = side
-    var starting  = this.config.maxLevelSize*this.config.dimensions
-    var scaling   = w / starting
-    var halfScale = scaling/2
+    child1.idx = idx
+    child2.idx = idx
+    child3.idx = idx
+    child4.idx = idx
+
+    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
+    console.log(side,idx,dimensions)
+    var starting   = this.config.maxLevelSize*dimensions
+    var scaling    = w / starting
+    var halfScale  = scaling/2
+
     var cnt = this.config.cnt.clone()
     child1.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
@@ -372,8 +408,10 @@ class QuadTreeLoDCore  {
   
   top(w,h,rw,rh,quad){
     var side  = quad.side
+    var idx   = quad.idx
     var cnt   = this.config.cnt
-    var textures    = this.config.dataTransfer[side].textuers
+    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
+
     var shardedGeometry = this.config.arrybuffers[w] 
     var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
     var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
@@ -387,9 +425,17 @@ class QuadTreeLoDCore  {
     child2.side = side
     child3.side = side
     child4.side = side
-    var starting  = this.config.maxLevelSize*this.config.dimensions
-    var scaling   = w / starting
-    var halfScale = scaling/2
+    child1.idx = idx
+    child2.idx = idx
+    child3.idx = idx
+    child4.idx = idx
+
+    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
+    console.log(side,idx,dimensions)
+    var starting   = this.config.maxLevelSize*dimensions
+    var scaling    = w / starting
+    var halfScale  = scaling/2
+
     var cnt = this.config.cnt.clone()
     child1.plane.worldToLocal(cnt)
     var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
@@ -433,8 +479,10 @@ class QuadTreeLoDCore  {
 
   bottom(w,h,rw,rh,quad){
     var side  = quad.side
+    var idx   = quad.idx
     var cnt   = this.config.cnt
-    var textures    = this.config.dataTransfer[side].textuers
+    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
+
     var shardedGeometry = this.config.arrybuffers[w] 
     var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
     var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
@@ -448,9 +496,16 @@ class QuadTreeLoDCore  {
     child2.side = side
     child3.side = side
     child4.side = side
-    var starting  = this.config.maxLevelSize*this.config.dimensions
-    var scaling   = w / starting
-    var halfScale = scaling/2
+    child1.idx = idx
+    child2.idx = idx
+    child3.idx = idx
+    child4.idx = idx
+
+    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
+    console.log(side,idx,dimensions)
+    var starting   = this.config.maxLevelSize*dimensions
+    var scaling    = w / starting
+    var halfScale  = scaling/2
 
     var cnt = this.config.cnt.clone()
     child1.plane.worldToLocal(cnt)

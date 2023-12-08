@@ -69,11 +69,7 @@ class QuadTreeLoDCore  {
       delete QuadTreeLoDCore.shardedData[shardedDataKeys[i]];
     }
   }
-
 }
-
-
-
 
 
  class QuadTreeLoD extends QuadTreeLoDCore {
@@ -116,467 +112,121 @@ class QuadTreeLoDCore  {
       }
     }
 
-  front(w,h,rw,rh,quad){
-    console.log(rw,rh)
-    var side  = quad.side
-    var idx   = quad.idx
-    var cnt   = this.config.cnt
-    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
-
-    var shardedGeometry = this.config.arrybuffers[w] 
-    var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
-    var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
-    var child3  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SE')
-    var child4  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SW')
-    quad.add(child1);
-    quad.add(child2);
-    quad.add(child3);
-    quad.add(child4);
-    child1.side = side
-    child2.side = side
-    child3.side = side
-    child4.side = side
-    child1.idx = idx
-    child2.idx = idx
-    child3.idx = idx
-    child4.idx = idx
-
-    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
-    var starting   = this.config.maxLevelSize*dimensions
-    var scaling    = w / starting
-    var halfScale  = scaling/2
-    console.log(starting,scaling,halfScale)
-
-    var cnt = this.config.cnt.clone()
-    child1.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
-    child1.plane.material.colorNode = currentColor
-    child1.plane.material.positionNode = newP
-    this.setCenter(child1,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child2.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
-    child2.plane.material.colorNode = currentColor
-    child2.plane.material.positionNode = newP
-    this.setCenter(child2,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child3.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
-    child3.plane.material.colorNode = currentColor
-    child3.plane.material.positionNode = newP
-    this.setCenter(child3,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child4.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
-    child4.plane.material.colorNode = currentColor
-    child4.plane.material.positionNode = newP
-    this.setCenter(child4,cnt,quad)
-    //---
-    for (var i = 0; i < textures.length; i++) {
-      frontsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      frontsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      frontsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      frontsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-    }
-
-    return [child1,child2,child3,child4]
-  }
-
-  back(w,h,rw,rh,quad){
-    var side  = quad.side
-    var idx   = quad.idx
-    var cnt   = this.config.cnt
-    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
-
-    var shardedGeometry = this.config.arrybuffers[w] 
-    var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
-    var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
-    var child3  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SE')
-    var child4  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SW')
-    quad.add(child1);
-    quad.add(child2);
-    quad.add(child3);
-    quad.add(child4);
-    child1.side = side
-    child2.side = side
-    child3.side = side
-    child4.side = side
-    child1.idx = idx
-    child2.idx = idx
-    child3.idx = idx
-    child4.idx = idx
-
-    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
-    var starting   = this.config.maxLevelSize*dimensions
-    var scaling    = w / starting
-    var halfScale  = scaling/2
-    console.log(starting,scaling,halfScale)
-
-    var cnt = this.config.cnt.clone()
-    child1.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
-    child1.plane.material.colorNode = currentColor
-    child1.plane.material.positionNode = newP
-    this.setCenter(child1,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child2.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
-    child2.plane.material.colorNode = currentColor
-    child2.plane.material.positionNode = newP
-    this.setCenter(child2,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child3.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
-    child3.plane.material.colorNode = currentColor
-    child3.plane.material.positionNode = newP
-    this.setCenter(child3,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child4.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
-    child4.plane.material.colorNode = currentColor
-    child4.plane.material.positionNode = newP
-    this.setCenter(child4,cnt,quad)
-    //---
-    for (var i = 0; i < textures.length; i++) {
-      backsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      backsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      backsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      backsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-    }
-
-    return [child1,child2,child3,child4]
-  }
-
-  right(w,h,rw,rh,quad){
-    var side  = quad.side
-    var idx   = quad.idx
-    var cnt   = this.config.cnt
-    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
-
-    var shardedGeometry = this.config.arrybuffers[w] 
-    var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
-    var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
-    var child3  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SE')
-    var child4  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SW')
-    quad.add(child1);
-    quad.add(child2);
-    quad.add(child3);
-    quad.add(child4);
-    child1.side = side
-    child2.side = side
-    child3.side = side
-    child4.side = side
-    child1.idx = idx
-    child2.idx = idx
-    child3.idx = idx
-    child4.idx = idx
-
-    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
-    console.log(side,idx,dimensions)
-    var starting   = this.config.maxLevelSize*dimensions
-    var scaling    = w / starting
-    var halfScale  = scaling/2
-
-    var cnt = this.config.cnt.clone()
-    child1.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
-    child1.plane.material.colorNode = currentColor
-    child1.plane.material.positionNode = newP
-    this.setCenter(child1,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child2.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
-    child2.plane.material.colorNode = currentColor
-    child2.plane.material.positionNode = newP
-    this.setCenter(child2,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child3.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
-    child3.plane.material.colorNode = currentColor
-    child3.plane.material.positionNode = newP
-    this.setCenter(child3,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child4.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
-    child4.plane.material.colorNode = currentColor
-    child4.plane.material.positionNode = newP
-    this.setCenter(child4,cnt,quad)
-    //---
-    for (var i = 0; i < textures.length; i++) {
-      rightsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      rightsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      rightsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      rightsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-    }
-
-    return [child1,child2,child3,child4]
-  }
-
-  left(w,h,rw,rh,quad){
-    var side  = quad.side
-    var idx   = quad.idx
-    var cnt   = this.config.cnt
-    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
-
-    var shardedGeometry = this.config.arrybuffers[w] 
-    var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
-    var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
-    var child3  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SE')
-    var child4  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SW')
-    quad.add(child1);
-    quad.add(child2);
-    quad.add(child3);
-    quad.add(child4);
-    child1.side = side
-    child2.side = side
-    child3.side = side
-    child4.side = side
-    child1.idx = idx
-    child2.idx = idx
-    child3.idx = idx
-    child4.idx = idx
-
-    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
-    console.log(side,idx,dimensions)
-    var starting   = this.config.maxLevelSize*dimensions
-    var scaling    = w / starting
-    var halfScale  = scaling/2
-
-    var cnt = this.config.cnt.clone()
-    child1.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
-    child1.plane.material.colorNode = currentColor
-    child1.plane.material.positionNode = newP
-    this.setCenter(child1,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child2.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
-    child2.plane.material.colorNode = currentColor
-    child2.plane.material.positionNode = newP
-    this.setCenter(child2,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child3.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
-    child3.plane.material.colorNode = currentColor
-    child3.plane.material.positionNode = newP
-    this.setCenter(child3,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child4.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
-    child4.plane.material.colorNode = currentColor
-    child4.plane.material.positionNode = newP
-    this.setCenter(child4,cnt,quad)
-    //---
-
-    for (var i = 0; i < textures.length; i++) {
-      leftsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      leftsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      leftsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      leftsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-    }
-
-    return [child1,child2,child3,child4]
-  }
-  
-  top(w,h,rw,rh,quad){
-    var side  = quad.side
-    var idx   = quad.idx
-    var cnt   = this.config.cnt
-    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
-
-    var shardedGeometry = this.config.arrybuffers[w] 
-    var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
-    var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
-    var child3  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SE')
-    var child4  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SW')
-    quad.add(child1);
-    quad.add(child2);
-    quad.add(child3);
-    quad.add(child4);
-    child1.side = side
-    child2.side = side
-    child3.side = side
-    child4.side = side
-    child1.idx = idx
-    child2.idx = idx
-    child3.idx = idx
-    child4.idx = idx
-
-    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
-    console.log(side,idx,dimensions)
-    var starting   = this.config.maxLevelSize*dimensions
-    var scaling    = w / starting
-    var halfScale  = scaling/2
-
-    var cnt = this.config.cnt.clone()
-    child1.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
-    child1.plane.material.colorNode = currentColor
-    child1.plane.material.positionNode = newP
-    this.setCenter(child1,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child2.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
-    child2.plane.material.colorNode = currentColor
-    child2.plane.material.positionNode = newP
-    this.setCenter(child2,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child3.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
-    child3.plane.material.colorNode = currentColor
-    child3.plane.material.positionNode = newP
-    this.setCenter(child3,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child4.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
-    child4.plane.material.colorNode = currentColor
-    child4.plane.material.positionNode = newP
-    this.setCenter(child4,cnt,quad)
-    //---
-    for (var i = 0; i < textures.length; i++) {
-      topsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      topsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      topsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      topsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-    }
-    return [child1,child2,child3,child4]
-  }
-
-  bottom(w,h,rw,rh,quad){
-    var side  = quad.side
-    var idx   = quad.idx
-    var cnt   = this.config.cnt
-    var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
-
-    var shardedGeometry = this.config.arrybuffers[w] 
-    var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
-    var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
-    var child3  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SE')
-    var child4  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SW')
-    quad.add(child1);
-    quad.add(child2);
-    quad.add(child3);
-    quad.add(child4);
-    child1.side = side
-    child2.side = side
-    child3.side = side
-    child4.side = side
-    child1.idx = idx
-    child2.idx = idx
-    child3.idx = idx
-    child4.idx = idx
-
-    let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
-    console.log(side,idx,dimensions)
-    var starting   = this.config.maxLevelSize*dimensions
-    var scaling    = w / starting
-    var halfScale  = scaling/2
-
-    var cnt = this.config.cnt.clone()
-    child1.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
-    child1.plane.material.colorNode = currentColor
-    child1.plane.material.positionNode = newP
-    this.setCenter(child1,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child2.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
-    child2.plane.material.colorNode = currentColor
-    child2.plane.material.positionNode = newP
-    this.setCenter(child2,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child3.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
-    child3.plane.material.colorNode = currentColor
-    child3.plane.material.positionNode = newP
-    this.setCenter(child3,cnt,quad)
-    //---
-    var cnt = this.config.cnt.clone()
-    child4.plane.worldToLocal(cnt)
-    var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
-    var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
-    child4.plane.material.colorNode = currentColor
-    child4.plane.material.positionNode = newP
-    this.setCenter(child4,cnt,quad)
-    //---
-    for (var i = 0; i < textures.length; i++) {
-      bottomsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      bottomsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      bottomsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-      bottomsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
-    }
-    return [child1,child2,child3,child4]
-  }
-
   createChildren(w,h,rw,rh,quad){
     if (quad.children.length == 4){
       quad.active(false)
       return quad.children
     }else{
+      console.log(rw,rh)
+      var side  = quad.side
+      var idx   = quad.idx
+      var cnt   = this.config.cnt
+      var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
+      var shardedGeometry = this.config.arrybuffers[w]
+      //--- 
+      var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
+      var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
+      var child3  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SE')
+      var child4  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SW')
+      //---    
+      quad.add(child1);
+      quad.add(child2);
+      quad.add(child3);
+      quad.add(child4);
+      //---
+      child1.side = side
+      child2.side = side
+      child3.side = side
+      child4.side = side
+      //---
+      child1.idx = idx
+      child2.idx = idx
+      child3.idx = idx
+      child4.idx = idx
+      //---
+      let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
+      var starting   = this.config.maxLevelSize*dimensions
+      var scaling    = w / starting
+      var halfScale  = scaling/2
+      //---
+      var cnt = this.config.cnt.clone()
+      child1.plane.worldToLocal(cnt)
+      var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+      var currentColor = child1.plane.material.colorNode == null ? (child1.plane.material.colorNode = color(this.config.color))  : (child1.plane.material.colorNode.add(child1.plane.material.colorNode)) 
+      child1.plane.material.colorNode = currentColor
+      child1.plane.material.positionNode = newP
+      this.setCenter(child1,cnt,quad)
+      //---
+      var cnt = this.config.cnt.clone()
+      child2.plane.worldToLocal(cnt)
+      var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+      var currentColor = child2.plane.material.colorNode == null ? (child2.plane.material.colorNode = color(this.config.color))  : (child2.plane.material.colorNode.add(child2.plane.material.colorNode))
+      child2.plane.material.colorNode = currentColor
+      child2.plane.material.positionNode = newP
+      this.setCenter(child2,cnt,quad)
+      //---
+      var cnt = this.config.cnt.clone()
+      child3.plane.worldToLocal(cnt)
+      var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+      var currentColor = child3.plane.material.colorNode == null ? (child3.plane.material.colorNode = color(this.config.color))  : (child3.plane.material.colorNode.add(child3.plane.material.colorNode))
+      child3.plane.material.colorNode = currentColor
+      child3.plane.material.positionNode = newP
+      this.setCenter(child3,cnt,quad)
+      //---
+      var cnt = this.config.cnt.clone()
+      child4.plane.worldToLocal(cnt)
+      var newP = NODE.float(this.config.radius).mul((NODE.positionLocal.sub(cnt).normalize())).add(cnt)
+      var currentColor = child4.plane.material.colorNode == null ? (child4.plane.material.colorNode = color(this.config.color))  : (child4.plane.material.colorNode.add(child4.plane.material.colorNode))
+      child4.plane.material.colorNode = currentColor
+      child4.plane.material.positionNode = newP
+      this.setCenter(child4,cnt,quad)
+      //---
       if (quad.side == 'front'){
-        return this.front(w,h,rw,rh,quad)
+        for (var i = 0; i < textures.length; i++) {
+          frontsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          frontsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          frontsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          frontsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+        }
       }else if  (quad.side == 'back'){
-        return this.back(w,h,rw,rh,quad)
+        for (var i = 0; i < textures.length; i++) {
+          backsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          backsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          backsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          backsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+        }
       }else if  (quad.side == 'right'){
-        return this.right(w,h,rw,rh,quad)
+        for (var i = 0; i < textures.length; i++) {
+          rightsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          rightsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          rightsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          rightsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+        }
       }else if  (quad.side == 'left'){
-        return this.left(w,h,rw,rh,quad)
+        for (var i = 0; i < textures.length; i++) {
+          leftsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          leftsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          leftsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          leftsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+        }
       }else if  (quad.side == 'top'){
-        return this.top(w,h,rw,rh,quad)
+        for (var i = 0; i < textures.length; i++) {
+          topsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          topsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          topsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          topsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+        }
       }else if  (quad.side == 'bottom'){
-        return this.bottom(w,h,rw,rh,quad)
+        for (var i = 0; i < textures.length; i++) {
+          bottomsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          bottomsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          bottomsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+          bottomsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],cnt:this.config.cnt.clone(),config:this.config})
+        }
       }
     }
+    return [child1,child2,child3,child4]
   }
-
 }
-
-
-
-
-
-
-
-
 
 export const QuadTrees = {QuadTreeLoD,QuadTreeLoDCore}

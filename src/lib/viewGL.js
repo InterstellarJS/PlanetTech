@@ -9,7 +9,6 @@ import {SMAAEffect} from "postprocessing";
 import Quad from './PlanetTech/engine/quad';
 import { Moon } from './PlanetTech/celestialBodies/moon';
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
-import { Clouds } from './WorldSpace/Shaders/clouds';
 
 import { tileMap,tileMapFront,tileTextuerTop, tileTextuerWorld,tileTextuerFront, tileMapCubeMapFront,tileTextuerLoad} from './examples/tileMap';
 import {cubeMap, cubeMapTop,cubeMapFront } from './examples/cubeMap';
@@ -32,7 +31,7 @@ class ViewGL {
     this.rend.camera();
     this.rend.updateCamera(0,0,110001*3)
     this.rend.orbitControls()
-    this.rend.renderer.setClearColor('grey');
+    this.rend.renderer.setClearColor('white');
     this.space = new Space()
   }
   
@@ -108,80 +107,9 @@ class ViewGL {
   async start() {
     this.render(this.canvasViewPort);
 
-    this.cloud =   new Clouds({
-      size:            10000,
-      polyCount:          10,
-      quadTreeDimensions:  4,
-      radius:          80000,
-      material: new NODE.MeshBasicNodeMaterial(),
-      color: () => NODE.vec3(...hexToRgbA(getRandomColor()))
-    })
+    this.celestialBodie = await tileTextureManagerExample(this.rend.renderer)
 
-
-    let sdSphere = NODE.glslFn(`
-    float sdSphere(vec3 p, float radius) {
-      return length(p) - radius;
-  }
-  `)
-
-  let scene = NODE.glslFn(`
-  float scene(vec3 p,float radius) {
-    float distance = sdSphere(p, radius);
-    return -distance;
-  }
-`,[sdSphere])
-
-
-
-let rayMarch = NODE.glslFn(`
-vec4 raymarch(vec3 rayOrigin, vec3 rayDirection,float radius) {
-  float MARCH_SIZE = 0.08;
-  int  MAX_STEPS = 100;
-
-  float depth = 0.0;
-  vec3 p = rayOrigin + depth * rayDirection;
-  
-  vec4 res = vec4(0.0);
-
-  for (int i = 0; i < MAX_STEPS; i++) {
-    float density = scene(p,radius);
-
-    // We only draw the density if it's greater than 0
-    if (density > 0.0) {
-      vec4 color = vec4(mix(vec3(1.0,1.0,1.0), vec3(0.0, 0.0, 0.0), density), density );
-      color.rgb *= color.a;
-      res += color*(1.0-res.a);
-    }
-
-    depth += MARCH_SIZE;
-    p = rayOrigin + depth * rayDirection;
-  }
-
-  return res;
-}`,[scene])
-
-let main = NODE.glslFn(`
-vec4 _main(vec2 uv, float radius) {
-  uv -= 0.5;
-
-  vec3 ro = vec3(0.0, 0.0, 107.5);
-  vec3 rd = normalize(vec3(uv, -1.0));
-  
-  vec3 color = vec3(0.0);
-  vec4 res = raymarch(ro, rd,  radius);
-  color = res.rgb;
-
-  return vec4(color, 1.0);
-}`,[rayMarch])
-
-
-    this.cloud.getAllInstance().forEach((e=>{
-      e.plane.material.colorNode = main({uv:NODE.uv(),p:NODE.positionLocal,radius:100})
-      e.plane.material.transparent = true
-
-    }))
-
-    this.rend.scene_.add(this.cloud.sphere)
+    this.rend.scene_.add(this.celestialBodie.sphere)
   }
   
 
@@ -193,9 +121,9 @@ vec4 _main(vec2 uv, float radius) {
     requestAnimationFrame(this.update.bind(this));
     this.rend.stats_.begin();
     this.controls.update(this.clock.getDelta())
-   // if(this.celestialBodie){
-      //this.celestialBodie.update(this.player)
-   // }
+    if(this.celestialBodie){
+      this.celestialBodie.update(this.player)
+    }
     this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
     this.rend.stats_.end();
     nodeFrame.update();

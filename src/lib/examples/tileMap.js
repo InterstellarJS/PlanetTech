@@ -320,20 +320,16 @@ export function tileMapCubeMapFront    (renderer_){
         terbulance_:    false,
         ridge_:         false,
     })
-    cubeMap.toNormal({
-        scale:    3.5,  
-        epsilon: 0.0015,  
-        strength:   1.,    
-    })
-    cubeMap.snapShotBack(cubeMapDownload)
-
+    cubeMap.toDisplace()
+    cubeMap.snapShotRight(cubeMapDownload)
     cubeMap.dispose()
+
     let cN = cubeMap.textuerArray.map((canvas)=>{return new THREE.CanvasTexture(canvas)})
     
-    let tileMapN = new TileMap(2,4,true)
-    tileMapN.build(1024,cubeMap.rtt.renderer_)
-    tileMapN.addTexture(5,cN[0]) 
-    tileMapN.snapShotBack(tileMapFull,tileMapTiles)
+    let tileMapN = new TileMap(2,4,false)
+    tileMapN.build(1024*2,cubeMap.rtt.renderer_)
+    tileMapN.addTexture(0,cN[0]) 
+    tileMapN.snapShotRight(tileMapFull,tileMapTiles)
 }
 
 export function tileMapCubeMapBack     (renderer_){

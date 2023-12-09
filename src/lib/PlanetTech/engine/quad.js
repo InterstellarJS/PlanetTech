@@ -52,7 +52,7 @@ function checkDivisible(w, h, ws, hs) {
         for (var i = 0; i < this.instances.length; i++) {
           var q   = this.instances[i]
           this.quadTreeconfig.config.dataTransfer[this.side][i] = {
-            textuers:[[texture_[0][i],texture_[0][i]]],
+            textuers:[[texture_[0][i],texture_[1][i]]],
             position:q.plane.position.clone(),
             rotation:new THREE.Euler().setFromQuaternion(q.plane.getWorldQuaternion(new THREE.Quaternion()))
           }
@@ -61,7 +61,7 @@ function checkDivisible(w, h, ws, hs) {
           var cnt = this.quadTreeconfig.config.cnt.clone()
           p.worldToLocal(cnt)
           var textureNodeN = NODE.texture(texture_[0][i],NODE.uv()).mul(2).sub(1)
-          var textureNodeD = NODE.texture(texture_[0][i],NODE.uv()).r
+          var textureNodeD = NODE.texture(texture_[1][i],NODE.uv()).r
           p.material.colorNode = textureNodeN
           const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
           p.material.positionNode =  p.material.positionNode.add( displace );

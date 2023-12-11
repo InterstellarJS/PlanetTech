@@ -16,6 +16,9 @@ import { DynamicTextures, DynamicTileTextureManager} from './cubeMap/tileTexture
 import { tileTextureManagerExample } from './examples/dynamicTileTextureManager';
 import { addTextureTiles } from './examples/basic';
 
+let gg = new THREE.SphereGeometry
+let ff = new THREE.Frustum()
+console.log(gg)
 class ViewGL {
   constructor() {
   }
@@ -31,7 +34,7 @@ class ViewGL {
     this.rend.camera();
     this.rend.updateCamera(0,0,110001*3)
     this.rend.orbitControls()
-    this.rend.renderer.setClearColor('white');
+    this.rend.renderer.setClearColor('black');
     this.space = new Space()
   }
   
@@ -108,8 +111,13 @@ class ViewGL {
     this.render(this.canvasViewPort);
 
     this.celestialBodie = await tileTextureManagerExample(this.rend.renderer)
-
+    this.celestialBodie.getAllInstance().forEach((e)=>{
+      this.rend.scene_.add(e.plane.bh)
+    })
     this.rend.scene_.add(this.celestialBodie.sphere)
+
+
+
   }
   
 
@@ -118,12 +126,36 @@ class ViewGL {
   }
 
   update(t) {
+    let frustum = ff.setFromProjectionMatrix( new THREE.Matrix4().multiplyMatrices(  this.rend.camera_.projectionMatrix,  this.rend.camera_.matrixWorldInverse ) );
+
     requestAnimationFrame(this.update.bind(this));
     this.rend.stats_.begin();
     this.controls.update(this.clock.getDelta())
-    if(this.celestialBodie){
-      this.celestialBodie.update(this.player)
-    }
+    //if(this.celestialBodie){
+      //this.celestialBodie.update(this.player)
+    //}
+
+
+    this.rend.scene_.traverse( node => {
+      if(( node.isMesh)){
+        //visibleObjects.push( node )
+        //geometry.type == "SphereGeometry"
+        if(node.geometry.type == "SphereGeometry"){
+          if(( frustum.intersectsBox ( node.bb ) )){
+            //node.bb = node.bb.copy( node.geometry.boundingBox ).applyMatrix4( node.matrixWorld );
+
+            //visibleObjects.push( node )
+            //geometry.type == "SphereGeometry"
+            node.parent.material.visible = true
+            console.log(node.idx)
+          }else{
+            node.parent.material.visible = false
+
+          }
+        }
+      }
+    } )
+    
     this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
     this.rend.stats_.end();
     nodeFrame.update();

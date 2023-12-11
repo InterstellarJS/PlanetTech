@@ -103,7 +103,7 @@ export default class Sphere{
       ...this.bottom.instances,
       ]
 
-    this.sphereInstance.map((e)=>{
+    this.sphereInstance.map((e,i)=>{
       var cnt_ = cnt.clone()      
       e.plane.worldToLocal(cnt_)
       var ps = THREEWG.float(radius).mul((THREEWG.positionLocal.sub(cnt_).normalize())).add(cnt_) 
@@ -114,13 +114,35 @@ export default class Sphere{
       project(wp,radius,cnt_.clone())
       e.center = wp
       e.isRoot = true
-      /*
-      const g = new THREE.SphereGeometry( 105, 5, 5 ); 
-      var ma = new THREE.MeshBasicMaterial({color:'blue'});
+      
+      const g = new THREE.SphereGeometry( 102, 5, 5 ); 
+      var ma = new THREE.MeshBasicMaterial({color:'blue',wireframe:true});
       let m  = new THREE.Mesh( g, ma );
+      m.idx = `${e.side}_${e.idx}`
+      m.geometry.computeBoundingSphere()
+
       e.plane.add(m)
       m.position.copy( wp.clone())
-      */
+
+      const box = new THREE.Box3().setFromObject( m ).expandByScalar(30000);
+      box.max.z -= 15000
+
+      if( `${e.side}_${e.idx}`==`front_1`){
+        box.max.y -= 5000
+        box.max.y += 5000
+
+        box.max.x += 3000
+
+      }
+
+      box.min.z += 18000
+
+      m.bb = box
+      const boxh = new THREE.Box3Helper( box, 'red' );
+      
+      e.plane.bh = boxh
+
+      
     })
     
 

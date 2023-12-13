@@ -13,12 +13,9 @@ import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 import { tileMap,tileMapFront,tileTextuerTop, tileTextuerWorld,tileTextuerFront, tileMapCubeMapFront,tileTextuerLoad} from './examples/tileMap';
 import {cubeMap, cubeMapTop,cubeMapFront } from './examples/cubeMap';
 import { DynamicTextures, DynamicTileTextureManager} from './cubeMap/tileTextureManager';
-import { tileTextureManagerExample } from './examples/dynamicTileTextureManager';
+import { tileTextureExample,fullTextureExample } from './examples/dynamicTileTextureManager';
 import { addTextureTiles } from './examples/basic';
 
-let gg = new THREE.SphereGeometry
-let ff = new THREE.Frustum()
-console.log(gg)
 class ViewGL {
   constructor() {
   }
@@ -26,7 +23,7 @@ class ViewGL {
   render(canvasViewPort) {
     this.rend = renderer;
     this.rend.WebGLRenderer(canvasViewPort);
-    this.rend.antialias = true
+    this.rend.antialias = false
     this.rend.stencil   = false
     this.rend.depth     = false
     this.rend.scene();
@@ -110,14 +107,37 @@ class ViewGL {
   async start() {
     this.render(this.canvasViewPort);
 
-    this.celestialBodie = await tileTextureManagerExample(this.rend.renderer)
-    this.celestialBodie.getAllInstance().forEach((e)=>{
-      this.rend.scene_.add(e.plane.bh)
+    this.celestialBodie = await tileTextureExample(this.rend.renderer)
+
+
+    //this.celestialBodie = await fullTextureExample(this.rend.renderer)
+
+    this.space.initComposer()
+    this.space.addPlanets(this.celestialBodie,{
+      PLANET_CENTER:      this.celestialBodie.metaData().cnt.clone(),
+      PLANET_RADIUS:      this.celestialBodie.metaData().radius,
+      ATMOSPHERE_RADIUS:  50000*2.0,
+      lightDir:           new THREE.Vector3(0,0,1),
+      ulight_intensity:   new THREE.Vector3(5.0,5.0,5.0),
+      uray_light_color:   new THREE.Vector3(5,5,5),
+      umie_light_color:   new THREE.Vector3(5,5,5),
+      RAY_BETA:           new THREE.Vector3(5.5e-6, 13.0e-6, 22.4e-6),
+      MIE_BETA:           new THREE.Vector3(21e-6, 21e-6, 21e-6),
+      AMBIENT_BETA:       new THREE.Vector3(0.0),
+      ABSORPTION_BETA:    new THREE.Vector3(2.04e-5, 4.97e-5, 1.95e-6),
+      HEIGHT_RAY:        .5e3,
+      HEIGHT_MIE:       .25e3,
+      HEIGHT_ABSORPTION: 30e3,
+      ABSORPTION_FALLOFF: 4e3,
+      PRIMARY_STEPS:        8,
+      LIGHT_STEPS:          4,
+      G:                  0.7,
     })
+    this.space.setAtmosphere()
+    this.space.addEffects([new SMAAEffect()])
+
+
     this.rend.scene_.add(this.celestialBodie.sphere)
-
-
-
   }
   
 
@@ -126,37 +146,14 @@ class ViewGL {
   }
 
   update(t) {
-    let frustum = ff.setFromProjectionMatrix( new THREE.Matrix4().multiplyMatrices(  this.rend.camera_.projectionMatrix,  this.rend.camera_.matrixWorldInverse ) );
-
     requestAnimationFrame(this.update.bind(this));
     this.rend.stats_.begin();
     this.controls.update(this.clock.getDelta())
-    //if(this.celestialBodie){
+    if(this.celestialBodie){
       //this.celestialBodie.update(this.player)
-    //}
-
-
-    this.rend.scene_.traverse( node => {
-      if(( node.isMesh)){
-        //visibleObjects.push( node )
-        //geometry.type == "SphereGeometry"
-        if(node.geometry.type == "SphereGeometry"){
-          if(( frustum.intersectsBox ( node.bb ) )){
-            //node.bb = node.bb.copy( node.geometry.boundingBox ).applyMatrix4( node.matrixWorld );
-
-            //visibleObjects.push( node )
-            //geometry.type == "SphereGeometry"
-            node.parent.material.visible = true
-            console.log(node.idx)
-          }else{
-            node.parent.material.visible = false
-
-          }
-        }
-      }
-    } )
-    
-    this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
+      this.space.update(this.player)
+    }
+    //this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
     this.rend.stats_.end();
     nodeFrame.update();
   }

@@ -15,34 +15,43 @@ export default class Sphere{
     this.ws = ws
     this.hs = hs
     this.d  = d
-    this.sphere = new THREE.Group();
-    this.bbox   = new THREE.Box3();
-    this. quadTreeconfig = QuadTrees.QuadTreeLoDCore
+    this.sphere = new THREE.Group()
+    this.bbox   = new THREE.Box3()
+    this.quadTreeconfig = new QuadTrees.QuadTreeLoDCore()
     }
 
   build(
     lvl,
     radius, 
-    displacmentScale  = this.quadTreeconfig.shardedData.displacmentScale, 
-    lodDistanceOffset = this.quadTreeconfig.shardedData.lodDistanceOffset, 
-    material          = this.quadTreeconfig.shardedData.material, 
-    color             = this.quadTreeconfig.shardedData.color
+    displacmentScale  = this.quadTreeconfig.config.displacmentScale, 
+    lodDistanceOffset = this.quadTreeconfig.config.lodDistanceOffset, 
+    material          = this.quadTreeconfig.config.material, 
+    color             = this.quadTreeconfig.config.color
     ){
     
-    this.quadTreeconfig.shardedData.radius   = radius 
-    this.quadTreeconfig.shardedData.color    = color
-    this.quadTreeconfig.shardedData.material = material
-    this.quadTreeconfig.shardedData.displacmentScale  = displacmentScale
-    this.quadTreeconfig.shardedData.lodDistanceOffset = lodDistanceOffset
+    this.quadTreeconfig.config.radius   = radius 
+    this.quadTreeconfig.config.color    = color
+    this.quadTreeconfig.config.material = material
+    this.quadTreeconfig.config.displacmentScale  = displacmentScale
+    this.quadTreeconfig.config.lodDistanceOffset = lodDistanceOffset
+
+    Object.assign(this.quadTreeconfig.config,{
+      maxLevelSize:  this.w,
+      minLevelSize:  Math.floor(this.w/Math.pow(2,lvl-1)), // this create a vizual bug when not divisible pay 2 
+      minPolyCount:  this.ws,
+      dimensions:    this.d,
+      }
+    )
+    this.quadTreeconfig.levels(lvl)
+    this.quadTreeconfig.createArrayBuffers()
+
     
     this.front = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    this.front.createQuadTree(lvl)
     this.front.createDimensions('front')
     var front = new THREE.Group();
     front.add( ...this.front.instances.map(x=>x.plane) );
 
     this.back = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    this.back.createQuadTree(lvl)
     this.back.createDimensions('back')
     var back = new THREE.Group();
     back.add( ...this.back.instances.map(x=>x.plane) );
@@ -50,7 +59,6 @@ export default class Sphere{
     back.rotation.y =  Math.PI;
 
     this.right = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    this.right.createQuadTree(lvl)
     this.right.createDimensions('right')
     var right = new THREE.Group();
     right.add( ...this.right.instances.map(x=>x.plane) );
@@ -59,7 +67,6 @@ export default class Sphere{
     right.rotation.y =  Math.PI/2;
 
     this.left = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    this.left.createQuadTree(lvl)
     this.left.createDimensions('left')
     var left = new THREE.Group();
     left.add( ...this.left.instances.map(x=>x.plane) );
@@ -68,7 +75,6 @@ export default class Sphere{
     left.rotation.y =  -Math.PI/2;
 
     this.top = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    this.top.createQuadTree(lvl)
     this.top.createDimensions('top')
     var top = new THREE.Group();
     top.add( ...this.top.instances.map(x=>x.plane) );
@@ -77,7 +83,6 @@ export default class Sphere{
     top.rotation.x = -Math.PI/2;
 
     this.bottom = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    this.bottom.createQuadTree(lvl)
     this.bottom.createDimensions('bottom')
     var bottom = new THREE.Group();
     bottom.add( ...this.bottom.instances.map(x=>x.plane) );
@@ -103,7 +108,7 @@ export default class Sphere{
       ...this.bottom.instances,
       ]
 
-    this.sphereInstance.map((e,i)=>{
+    this.sphereInstance.map((e)=>{
       var cnt_ = cnt.clone()      
       e.plane.worldToLocal(cnt_)
       var ps = THREEWG.float(radius).mul((THREEWG.positionLocal.sub(cnt_).normalize())).add(cnt_) 
@@ -114,35 +119,13 @@ export default class Sphere{
       project(wp,radius,cnt_.clone())
       e.center = wp
       e.isRoot = true
-      
-      const g = new THREE.SphereGeometry( 102, 5, 5 ); 
-      var ma = new THREE.MeshBasicMaterial({color:'blue',wireframe:true});
+      /*
+      const g = new THREE.SphereGeometry( 105, 5, 5 ); 
+      var ma = new THREE.MeshBasicMaterial({color:'blue'});
       let m  = new THREE.Mesh( g, ma );
-      m.idx = `${e.side}_${e.idx}`
-      m.geometry.computeBoundingSphere()
-
       e.plane.add(m)
       m.position.copy( wp.clone())
-
-      const box = new THREE.Box3().setFromObject( m ).expandByScalar(30000);
-      box.max.z -= 15000
-
-      if( `${e.side}_${e.idx}`==`front_1`){
-        box.max.y -= 5000
-        box.max.y += 5000
-
-        box.max.x += 3000
-
-      }
-
-      box.min.z += 18000
-
-      m.bb = box
-      const boxh = new THREE.Box3Helper( box, 'red' );
-      
-      e.plane.bh = boxh
-
-      
+      */
     })
     
 
@@ -155,7 +138,7 @@ export default class Sphere{
     }
 
     metaData(){
-      return this.quadTreeconfig.shardedData
+      return this.quadTreeconfig.config
     }
 
     getAllInstance(){
@@ -170,14 +153,14 @@ export default class Sphere{
     }
 
     position(x,y,z){
-      this.quadTreeconfig.shardedData.position = {x,y,z}
+      this.quadTreeconfig.config.position = {x,y,z}
       this.sphere.position.set(x,y,z)
       var bbox   = new THREE.Box3();
       bbox.expandByObject(this.sphere);
       var center = new THREE.Vector3();
       bbox.getCenter(center);
       var cnt = center
-      let radius = this.quadTreeconfig.shardedData.radius
+      let radius = this.quadTreeconfig.config.radius
       this.getAllInstance().forEach((e)=>{
         var cnt_ = cnt.clone()      
         e.plane.worldToLocal(cnt_)
@@ -195,14 +178,14 @@ export default class Sphere{
     }
 
     scale(s){
-      this.quadTreeconfig.shardedData.scale = s
+      this.quadTreeconfig.config.scale = s
       this. sphere.scale.set(s,s,s)
       var bbox   = new THREE.Box3();
       bbox.expandByObject(this.sphere);
       var center = new THREE.Vector3();
       bbox.getCenter(center);
       var cnt = center
-      let radius = this.quadTreeconfig.shardedData.radius
+      let radius = this.quadTreeconfig.config.radius
       this.getAllInstance().forEach((e)=>{
         var cnt_ = cnt.clone()      
         e.plane.worldToLocal(cnt_)

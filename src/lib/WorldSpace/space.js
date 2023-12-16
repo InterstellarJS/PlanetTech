@@ -2,7 +2,7 @@ import { Atmosphere } from "./Shaders/atmosphereScattering";
 import {EffectComposer, RenderPass, EffectPass} from "postprocessing";
 import {HalfFloatType} from "three";
 import renderer from "../render"; 
-
+import Clouds from "./Shaders/clouds";
 
 export class Space{
     constructor(){
@@ -34,6 +34,13 @@ export class Space{
         this.atmosphere.createcomposer(this.planets.map((e)=>{return e.atmosphere})) 
         this.addEffects([this.atmosphere.depthPass])
         this.isAtmosphere = true
+    }
+
+    setClouds(){
+        this.clouds = new Clouds()
+        this.clouds.createcomposer() 
+        this.addEffects([this.clouds.depthPass])
+        this.isclouds = true
     }
 
     update(player){

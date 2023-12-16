@@ -298,7 +298,6 @@ export class Atmosphere{
               attributes: EffectAttribute.DEPTH,
               extensions: new Set([WebGLExtension.DERIVATIVES]),
             });
-            this.camera = camera
           }
         }
         this.depthPass = new CustomEffect(renderer.camera_);

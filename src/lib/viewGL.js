@@ -107,10 +107,10 @@ class ViewGL {
   async start() {
     this.render(this.canvasViewPort);
 
-    this.celestialBodie = await tileTextureExample(this.rend.renderer)
+    //this.celestialBodie = await tileTextureExample(this.rend.renderer)
 
 
-    //this.celestialBodie = await fullTextureExample(this.rend.renderer)
+    this.celestialBodie = await fullTextureExample(this.rend.renderer)
 
     this.space.initComposer()
     this.space.addPlanets(this.celestialBodie,{

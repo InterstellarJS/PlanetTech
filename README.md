@@ -1,7 +1,7 @@
 ⚠️ **Disclaimer:** PlanetTechJS is currently in its alpha version and is being developed by a single developer. Consequently, it's important to keep in mind that there may be bugs, spelling errors, lack of tests, and occasional inconsistencies in the library. While every effort is being made to provide a stable and enjoyable experience, please approach the library with the understanding that it's a work in progress. Your feedback, bug reports, and contributions are highly appreciated as they play a crucial role in improving the library and ensuring its quality.
 
 
-# PlanetTechJS (ALPHA V0.1) 
+# PlanetTechJS (ALPHA V0.5) 
 <p align="center">
   <img src="./public/readmeImg/logoPT.png" />
 </p>

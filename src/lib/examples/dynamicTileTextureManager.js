@@ -70,14 +70,14 @@ export async function fullTextureExample(renderer){
     size:            10000,
     polyCount:          50,
     quadTreeDimensions:  1,
-    levels:              4,
-    radius:          80000,
+    levels:              1,
+    radius:          6371e3,
     displacmentScale:  60.5,
     lodDistanceOffset: 12.4,
     material: new NODE.MeshBasicNodeMaterial()
   })
   moon.textuers(N,D)
-  moon.light(NODE.vec3(0.0,-1.5,1.5))
+  moon.light(NODE.vec3(0.0,-1.3,1.3))
   return moon
 }
 

@@ -102,10 +102,13 @@ function update(space,player) {
 init()
 update()
 ```
-
-
 <p align="center">
   <img src="./public/readmeImg/p25.png" />
+</p>
+
+
+## Gallery
+<p align="center">
   <img src="./public/readmeImg/planet1.png" />
   <img src="./public/readmeImg/planet2.png" />
   <img src="./public/readmeImg/planet4.png" />

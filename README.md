@@ -107,7 +107,6 @@ update()
   <img src="./public/readmeImg/p25.png" />
 </p>
 
-
 ## Gallery
 <p align="center">
   <img src="./public/readmeImg/planet1.png" />

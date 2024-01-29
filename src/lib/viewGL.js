@@ -29,7 +29,7 @@ class ViewGL {
     this.rend.scene();
     this.rend.stats();
     this.rend.camera();
-    this.rend.updateCamera(0,0,6371e3*3)
+    this.rend.updateCamera(0,0,110000*4)
     this.rend.orbitControls()
     this.rend.renderer.setClearColor('black');
     this.space = new Space()
@@ -116,22 +116,22 @@ class ViewGL {
     this.space.addPlanets(this.celestialBodie,{
       PLANET_CENTER:      this.celestialBodie.metaData().cnt.clone(),
       PLANET_RADIUS:      this.celestialBodie.metaData().radius,
-      ATMOSPHERE_RADIUS:  6471e3,
-      lightDir:           new THREE.Vector3(0,1,1),
-      ulight_intensity:   new THREE.Vector3(10.0,10.0,10.0),
+      ATMOSPHERE_RADIUS:  81000,
+      lightDir:           new THREE.Vector3(0,0,1),
+      ulight_intensity:   new THREE.Vector3(9.0,9.0,9.0),
       uray_light_color:   new THREE.Vector3(1.0,1.0,1.0),
       umie_light_color:   new THREE.Vector3(1.0,1.0,1.0),
-      RAY_BETA:           new THREE.Vector3(5.5e-6, 13.0e-6, 22.4e-6),
-      MIE_BETA:           new THREE.Vector3(21e-6, 21e-6, 21e-6),
+      RAY_BETA:           new THREE.Vector3(5.5e-6, 13.0e-6, 22.4e-6).multiplyScalar(34.5),
+      MIE_BETA:           new THREE.Vector3(21e-6, 21e-6, 21e-6).multiplyScalar(34.5),
       AMBIENT_BETA:       new THREE.Vector3(0.0),
-      ABSORPTION_BETA:    new THREE.Vector3(2.04e-5, 4.97e-5, 1.95e-6),
-      HEIGHT_RAY:        8e3,
-      HEIGHT_MIE:        1.2e3,
-      HEIGHT_ABSORPTION: 30e3,
-      ABSORPTION_FALLOFF: 4e3,
+      ABSORPTION_BETA:    new THREE.Vector3(2.04e-5, 4.97e-5, 1.95e-6).multiplyScalar(79.5),
+      HEIGHT_RAY:        8e3/85.5,
+      HEIGHT_MIE:        1.2e3/85.5,
+      HEIGHT_ABSORPTION: 30e3/79.5,
+      ABSORPTION_FALLOFF: 4e3/79.5,
       PRIMARY_STEPS:       12,
       LIGHT_STEPS:          4,
-      G:                  0.7,
+      G:                  0.00007,
     })
     this.space.setAtmosphere()
     this.space.addEffects([new SMAAEffect()])
@@ -144,16 +144,13 @@ class ViewGL {
 
 
   let light = new THREE.DirectionalLight(0xffffff,1.5);
-  light.position.set(0, 1, 1);
+  light.position.set(0, 0, 1);
   this.rend.scene_.add(light);
 
   const alight = new THREE.AmbientLight( 0x404040 ); // soft white light
  this.rend.scene_.add( alight );
- //this.rend.scene_.add( this.celestialBodie.sphere );
-
-
-
-  this.rend.scene_.add(sphere)
+ this.rend.scene_.add( this.celestialBodie.sphere );
+//this.rend.scene_.add(sphere)
   }
   
 

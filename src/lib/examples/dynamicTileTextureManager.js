@@ -68,16 +68,16 @@ export async function fullTextureExample(renderer){
   ])
   let moon = new Moon({
     size:            10000,
-    polyCount:          50,
+    polyCount:          450,
     quadTreeDimensions:  1,
     levels:              1,
-    radius:          6371e3,
-    displacmentScale:  60.5,
+    radius:          80000,
+    displacmentScale:  65.5,
     lodDistanceOffset: 12.4,
     material: new NODE.MeshBasicNodeMaterial()
   })
   moon.textuers(N,D)
-  moon.light(NODE.vec3(0.0,-1.3,1.3))
+  moon.light(NODE.vec3(1.4,-1.4,1.3))
   return moon
 }
 

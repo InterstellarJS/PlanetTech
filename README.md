@@ -24,6 +24,7 @@ import renderer from './render';
 import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
 import { Moon } from './PlanetTech/celestialBodies/moon';
 import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
+import { Space } from './WorldSpace/space';
 
 let moon 
 let player = /*object that can move, camera or object3D.*/
@@ -32,7 +33,7 @@ rend.WebGLRenderer(canvasViewPort);
 rend.scene();
 rend.stats();
 rend.camera();
-rend.updateCamera(0,0,110005)
+rend.updateCamera(0,0,110005*3)
 rend.orbitControls()
 
 async function init(){
@@ -54,7 +55,7 @@ let N = await Promise.all([
     new THREE.TextureLoader().loadAsync('./planet/normal/back_normal_image.png'),
   ])
 
-moon = new Moon({
+let moon = new Moon({
   size:            10000,
   polyCount:          50,
   quadTreeDimensions:  4,
@@ -66,8 +67,33 @@ moon = new Moon({
 })
 
 moon.textuers(N,D)
-moon.light(NODE.vec3(0.0,-6.5,6.5))
+moon.light(NODE.vec3(1.4,-1.4,1.4))
+let space = new Space()
+
+space.initComposer()
+space.addPlanets(     moon,
+{PLANET_CENTER:       moon().cnt.clone(),
+  PLANET_RADIUS:      moon.metaData().radius,
+  ATMOSPHERE_RADIUS:  81000,
+  lightDir:           new THREE.Vector3(0,0,1),
+  ulight_intensity:   new THREE.Vector3(9.0,9.0,9.0),
+  uray_light_color:   new THREE.Vector3(1.0,1.0,1.0),
+  umie_light_color:   new THREE.Vector3(1.0,1.0,1.0),
+  RAY_BETA:           new THREE.Vector3(5.5e-6, 13.0e-6, 22.4e-6).multiplyScalar(34.5),
+  MIE_BETA:           new THREE.Vector3(21e-6, 21e-6, 21e-6).multiplyScalar(34.5),
+  AMBIENT_BETA:       new THREE.Vector3(0.0),
+  ABSORPTION_BETA:    new THREE.Vector3(2.04e-5, 4.97e-5, 1.95e-6).multiplyScalar(79.5),
+  HEIGHT_RAY:         8e3/85.5,
+  HEIGHT_MIE:         1.2e3/85.5,
+  HEIGHT_ABSORPTION:  30e3/79.5,
+  ABSORPTION_FALLOFF: 4e3/79.5,
+  PRIMARY_STEPS:      12,
+  LIGHT_STEPS:         4,
+  G:                  0.00007})
+space.setAtmosphere()
+space.addEffects([new SMAAEffect()])
 rend.scene_.add(moon.sphere)
+
 }
 
 function update(t) {
@@ -86,5 +112,10 @@ update()
   <img src="./public/readmeImg/planet2.png" />
   <img src="./public/readmeImg/planet4.png" />
   <img src="./public/readmeImg/planet5.png" />
-  <img src="./public/readmeImg/planet3.png" />
+  <img src="./public/readmeImg/p20.png" />
+  <img src="./public/readmeImg/p21.png" />
+  <img src="./public/readmeImg/p22.png" />
+  <img src="./public/readmeImg/p23.png" />
+  <img src="./public/readmeImg/p24.png" />
+
 </p>

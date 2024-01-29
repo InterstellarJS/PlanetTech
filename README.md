@@ -69,10 +69,9 @@ let moon = new Moon({
 moon.textuers(N,D)
 moon.light(NODE.vec3(1.4,-1.4,1.4))
 let space = new Space()
-
 space.initComposer()
 space.addPlanets(     moon,
-{PLANET_CENTER:       moon().cnt.clone(),
+{ PLANET_CENTER:      moon().cnt.clone(),
   PLANET_RADIUS:      moon.metaData().radius,
   ATMOSPHERE_RADIUS:  81000,
   lightDir:           new THREE.Vector3(0,0,1),
@@ -93,13 +92,11 @@ space.addPlanets(     moon,
 space.setAtmosphere()
 space.addEffects([new SMAAEffect()])
 rend.scene_.add(moon.sphere)
-
 }
 
-function update(t) {
-  moon.update(player)
+function update(space,player) {
+  space.update(player)
   nodeFrame.update()
-  rend.renderer.render(rend.scene_, rend.camera_)
 }
 
 init()

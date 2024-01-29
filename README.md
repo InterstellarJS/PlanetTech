@@ -13,7 +13,7 @@ PlanetTechJS is an open-source JavaScript library built using vanilla THREE.js, 
 What sets this library apart is its utilization of the GPU for all tasks. This includes generating textures for each facet, performing displacement, and shaping PlaneGeometries into spherical forms; the entire process occurs on the GPU. Consequently, there is no need for WebWorkers at this stage.
 
 This video served as the motivation for the project. I would like to design a system/toolkit that gets as close as possible to what is demoed.
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ksMQ4hYhfSA?si=E7sT1xVCo5o0sDbH" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/ksMQ4hYhfSA/0.jpg)](https://www.youtube.com/watch?v=ksMQ4hYhfSA)
 
 ## Doc
 Read the [Doc](./DOC.md) for a low level understanding of how things work.

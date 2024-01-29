@@ -26,7 +26,8 @@ import { Moon } from './PlanetTech/celestialBodies/moon';
 import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
 import { Space } from './WorldSpace/space';
 
-let moon 
+let moon
+let space 
 let player = /*object that can move, camera or object3D.*/
 let rend = renderer;
 rend.WebGLRenderer(canvasViewPort);

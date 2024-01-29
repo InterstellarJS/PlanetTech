@@ -71,7 +71,7 @@ moon.light(NODE.vec3(1.4,-1.4,1.4))
 let space = new Space()
 space.initComposer()
 space.addPlanets(     moon,
-{ PLANET_CENTER:      moon().cnt.clone(),
+{ PLANET_CENTER:      moon.metaData().cnt.clone(),
   PLANET_RADIUS:      moon.metaData().radius,
   ATMOSPHERE_RADIUS:  81000,
   lightDir:           new THREE.Vector3(0,0,1),

@@ -50,34 +50,35 @@ export async function tileTextureExample(renderer){
 
 
 export async function fullTextureExample(renderer){
-  let N = await Promise.all([
-    new THREE.TextureLoader().loadAsync('./planet/normal/right_normal_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/normal/left_normal_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/normal/top_normal_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/normal/bottom_normal_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/normal/front_normal_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/normal/back_normal_image.png'),
-  ])
   let D = await Promise.all([
-    new THREE.TextureLoader().loadAsync('./planet/displacement/right_displacement_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/displacement/left_displacement_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/displacement/top_displacement_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/displacement/bottom_displacement_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/displacement/front_displacement_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/displacement/back_displacement_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/color/d/right_displacement_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/color/d/left_displacement_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/color/d/top_displacement_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/color/d/bottom_displacement_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/color/d/front_displacement_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/color/d/back_displacement_image.png'),
+  ])
+
+let N = await Promise.all([
+    new THREE.TextureLoader().loadAsync('./planet/color/c/right_color_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/color/c/left_color_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/color/c/top_color_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/color/c/bottom_color_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/color/c/front_color_image.png'),
+    new THREE.TextureLoader().loadAsync('./planet/color/c/back_color_image.png'),
   ])
   let moon = new Moon({
     size:            10000,
-    polyCount:          450,
+    polyCount:          100,
     quadTreeDimensions:  1,
-    levels:              1,
+    levels:              4,
     radius:          80000,
-    displacmentScale:  65.5,
+    displacmentScale:  80.5,
     lodDistanceOffset: 12.4,
     material: new NODE.MeshBasicNodeMaterial()
   })
   moon.textuers(N,D)
-  moon.light(NODE.vec3(1.4,-1.4,1.3))
+  //moon.light(NODE.vec3(1.4,-1.4,1.3))
   return moon
 }
 

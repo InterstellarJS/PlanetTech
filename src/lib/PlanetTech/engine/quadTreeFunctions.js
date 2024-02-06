@@ -24,7 +24,7 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt.clone()
@@ -32,7 +32,7 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   }  
 
 
@@ -47,7 +47,7 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt
@@ -55,7 +55,7 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   }
   
   
@@ -71,7 +71,7 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt
@@ -79,7 +79,7 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   } 
   
   
@@ -95,7 +95,7 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt
@@ -103,7 +103,7 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+   // p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   } 
   
   
@@ -119,7 +119,7 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt
@@ -127,7 +127,7 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   } 
   
   export function  bottomsetData(obj){
@@ -142,7 +142,7 @@ export function frontsetData(obj){
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
     var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV).mul(2).sub(1)
+    var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
     var cnt = obj.cnt
@@ -150,6 +150,6 @@ export function frontsetData(obj){
     const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
     p.material.positionNode = p.material.positionNode.add( displace );
     p.material.colorNode = textureNodeN.xyz
-    p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   }
 

@@ -82,7 +82,7 @@ function checkDivisible(w, h, ws, hs) {
             var newUV   = NODE.uv().mul(testscaling).add(offSets)
             var cnt = this.quadTreeconfig.config.cnt.clone()
             p.worldToLocal(cnt)
-            var textureNodeN = NODE.texture(texture_[0],newUV).mul(2).sub(1)
+            var textureNodeN = NODE.texture(texture_[0],newUV)
             var textureNodeD = NODE.texture(texture_[1],newUV).r
             p.material.colorNode = textureNodeN
             const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())

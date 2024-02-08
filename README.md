@@ -111,6 +111,8 @@ update()
 <p align="center">
   <img src="./public/readmeImg/output.png" />
   <img src="./public/readmeImg/output1.png" />
+  <img src="./public/readmeImg/p26.png" />
+  <img src="./public/readmeImg/p27.png" />
 </p>
 
 ## Gallery

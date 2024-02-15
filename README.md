@@ -108,15 +108,14 @@ function update(space,player) {
 init()
 update()
 ```
+https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/f4621d3a-85ff-4224-be1f-8ae059b7efcc
+
+## Gallery
 <p align="center">
   <img src="./public/readmeImg/output.png" />
   <img src="./public/readmeImg/output1.png" />
   <img src="./public/readmeImg/p26.png" />
   <img src="./public/readmeImg/p27.png" />
-</p>
-
-## Gallery
-<p align="center">
   <img src="./public/readmeImg/p25.png" />
   <img src="./public/readmeImg/planet1.png" />
   <img src="./public/readmeImg/planet2.png" />

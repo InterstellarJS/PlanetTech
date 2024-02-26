@@ -69,11 +69,11 @@ let N = await Promise.all([
   ])
   let moon = new Moon({
     size:            10000,
-    polyCount:          50,
+    polyCount:          200,
     quadTreeDimensions:  1,
     levels:              4,
     radius:          80000,
-    displacmentScale:  65.5,
+    displacmentScale:  75.5,
     lodDistanceOffset: 12.4,
     material: new NODE.MeshBasicNodeMaterial()
   })

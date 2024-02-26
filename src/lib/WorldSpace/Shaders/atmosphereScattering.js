@@ -25,6 +25,8 @@ struct Atmospheres {
   float HEIGHT_MIE;
   float HEIGHT_ABSORPTION;
   float ABSORPTION_FALLOFF;
+  float textureIntensity;
+  float AmbientLightIntensity;
 };
 `
 const uniformBlock = `
@@ -289,7 +291,7 @@ vec3 skylight(vec3 sample_pos, vec3 surface_normal, vec3 light_dir, vec3 backgro
 
 
 
-  vec4 render_scene(vec3 pos, vec3 dir, vec3 light_dir, vec3 addColor, vec3 PLANET_POS, float PLANET_RADIUS) {
+  vec4 render_scene(vec3 pos, vec3 dir, vec3 light_dir, vec3 addColor, vec3 PLANET_POS, float PLANET_RADIUS, float AmbientLightIntensity) {
     
     // the color to use, w is the scene depth
     vec4 color = vec4(addColor, 1e25);
@@ -302,7 +304,7 @@ vec3 skylight(vec3 sample_pos, vec3 surface_normal, vec3 light_dir, vec3 backgro
     
     // if the ray hit the planet, set the max distance to that ray
     if (0.0 < planet_intersect.y) {
-    	color.w = max(planet_intersect.x, 0.0);
+    	//color.w = max(planet_intersect.x, 0.0);
         
         // sample position, where the pixel is
         vec3 sample_pos = pos + (dir * planet_intersect.x) - PLANET_POS;
@@ -322,7 +324,7 @@ vec3 skylight(vec3 sample_pos, vec3 surface_normal, vec3 light_dir, vec3 backgro
         float shadow = dotNL / (dotNL + dotNV);
         
         // apply the shadow
-        color.xyz *= shadow + .025;
+        color.xyz *= shadow + AmbientLightIntensity;
         
         // apply skylight
         //color.xyz += clamp(skylight(sample_pos, surface_normal, light_dir, vec3(0.0)) * addColor, 0.0, 1.0);
@@ -343,8 +345,19 @@ vec3 skylight(vec3 sample_pos, vec3 surface_normal, vec3 light_dir, vec3 backgro
     vec3 col          = vec3(0.0);
 
     Atmospheres currentAtmospheres = atmospheres[0];
-    vec3 lightDirection = normalize(currentAtmospheres.lightDir);;
-    addColor = render_scene(rayOrigin, rayDirection, lightDirection,addColor,currentAtmospheres.PLANET_CENTER,currentAtmospheres.PLANET_RADIUS).rgb;
+    vec3 lightDirection = normalize(currentAtmospheres.lightDir);
+
+    addColor *= currentAtmospheres.textureIntensity;
+
+    addColor = render_scene(
+      rayOrigin, 
+      rayDirection, 
+      lightDirection,
+      addColor,
+      currentAtmospheres.PLANET_CENTER,
+      currentAtmospheres.PLANET_RADIUS,
+      currentAtmospheres.AmbientLightIntensity
+      ).rgb;
 
     col += calculate_scattering(
       rayOrigin,
@@ -373,7 +386,7 @@ vec3 skylight(vec3 sample_pos, vec3 surface_normal, vec3 light_dir, vec3 backgro
 
     col = 1.0 - exp(-col);
 
-    outputColor = vec4(col*1.5, 1.0);
+    outputColor = vec4(col, 1.0);
   }
 `;
 

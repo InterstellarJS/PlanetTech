@@ -47,6 +47,7 @@ function checkDivisible(w, h, ws, hs) {
     }
 
     addTexture(texture_, displacementScale, tiles){
+      texture_[0].colorSpace = THREE.SRGBColorSpace
       this.quadTreeconfig.config.isTiles = tiles
       if(tiles){
         for (var i = 0; i < this.instances.length; i++) {

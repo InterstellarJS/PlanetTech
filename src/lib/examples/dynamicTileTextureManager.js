@@ -69,7 +69,7 @@ let N = await Promise.all([
   ])
   let moon = new Moon({
     size:            10000,
-    polyCount:          200,
+    polyCount:          100,
     quadTreeDimensions:  1,
     levels:              4,
     radius:          80000,

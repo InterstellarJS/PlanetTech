@@ -15,6 +15,7 @@ import {cubeMap, cubeMapTop,cubeMapFront } from './examples/cubeMap';
 import { DynamicTextures, DynamicTileTextureManager} from './cubeMap/tileTextureManager';
 import { tileTextureExample,fullTextureExample } from './examples/dynamicTileTextureManager';
 import { addTextureTiles } from './examples/basic';
+import { PromiseWorker } from './PlanetTech/engine/utils';
 
 class ViewGL {
   constructor() {
@@ -29,7 +30,7 @@ class ViewGL {
     this.rend.scene();
     this.rend.stats();
     this.rend.camera();
-    this.rend.updateCamera(0,0,110155)
+    this.rend.updateCamera(0,0,110155-300)
     this.rend.orbitControls()
     this.rend.renderer.setClearColor('black');
     //this.space = new Space()
@@ -97,7 +98,7 @@ class ViewGL {
     var boxGeometry        = new THREE.BoxGeometry( 10.01, 10.01, 10.01, 1 )
     var boxMaterial        = new THREE.MeshBasicMaterial({color:'red'});
     this.player            = new THREE.Mesh( boxGeometry, boxMaterial );
-    this.player.position.z = 110000
+    this.player.position.z = 110000-300
     this.controls               = new FirstPersonControls( this.player, document.body );
     this.controls.movementSpeed = 500
     this.controls.lookSpeed     = 0
@@ -183,92 +184,94 @@ class ViewGL {
   async  webWorker(){
     this.render(this.canvasViewPort);
     this.celestialBodie = await fullTextureExample(this.rend.renderer)
-      let w = new Worker("threejsWork.js",{ type: "module" });
-      let w1 = new Worker("threejsWork.js",{ type: "module" });
-      let w2 = new Worker("threejsWork.js",{ type: "module" });
-      let w3 = new Worker("threejsWork.js",{ type: "module" });
-      let w4 = new Worker("threejsWork.js",{ type: "module" });
 
 
+      let gemo = this.celestialBodie.metaData().arrybuffers['1250'] 
 
-      const buffMemLength = new window.SharedArrayBuffer(7689603*12); //byte length   
+      const buffMemLength = new window.SharedArrayBuffer(gemo.attributes.position.array.byteLength); //byte length   
       let typedArr1 = new Float32Array(buffMemLength);
-      typedArr1.set(this.celestialBodie.metaData().arrybuffers['1250'].attributes.position.array)
-
-      const buffMemLength2 = new window.SharedArrayBuffer(7689603*12); //byte length   
+   
+      const buffMemLength2 = new window.SharedArrayBuffer(gemo.attributes.position.array.byteLength); //byte length   
       let typedArr2 = new Float32Array(buffMemLength2);
-      typedArr2.set(this.celestialBodie.metaData().arrybuffers['1250'].attributes.position.array)
+     
 
-      const buffMemLength3 = new window.SharedArrayBuffer(7689603*12); //byte length   
+      const buffMemLength3 = new window.SharedArrayBuffer(gemo.attributes.position.array.byteLength); //byte length   
       let typedArr3 = new Float32Array(buffMemLength3);
-      typedArr3.set(this.celestialBodie.metaData().arrybuffers['1250'].attributes.position.array)
+      
 
-      const buffMemLength4 = new window.SharedArrayBuffer(7689603*12); //byte length   
+      const buffMemLength4 = new window.SharedArrayBuffer(gemo.attributes.position.array.byteLength); //byte length   
       let typedArr4 = new Float32Array(buffMemLength4);
-      typedArr4.set(this.celestialBodie.metaData().arrybuffers['1250'].attributes.position.array)
 
-      const buffMemLength5 = new window.SharedArrayBuffer(7689603*12); //byte length   
-      let typedArr5 = new Float32Array(buffMemLength5);
-      typedArr5.set(this.celestialBodie.metaData().arrybuffers['1250'].attributes.position.array)
+      let stra = gemo.attributes.position.array.toString()
 
-      console.log(this.celestialBodie.metaData().arrybuffers)
+      let w =  new PromiseWorker("threejsWork.js",typedArr1);
+      let w1 = new PromiseWorker("threejsWork.js",typedArr2);
+      let w2 = new PromiseWorker("threejsWork.js",typedArr3);
+      let w3 = new PromiseWorker("threejsWork.js",typedArr4)
+
+      let pw1 = w.oche({buffMemLength:buffMemLength,stra}); 
+      let pw2 = w1.oche({buffMemLength:buffMemLength2,stra}); 
+      let pw3 = w2.oche({buffMemLength:buffMemLength3,stra}); 
+      let pw4 = w3.oche({buffMemLength:buffMemLength4,stra}); 
 
 
-
-      //typedArr1.set(this.celestialBodie.metaData().arrybuffers['1250'].attributes.position.array)
-      w.postMessage(buffMemLength); 
-      w1.postMessage(buffMemLength2); 
-      w2.postMessage(buffMemLength3); 
-      w3.postMessage(buffMemLength4); 
-      w4.postMessage(buffMemLength5); 
-
-      //const geometry = new THREE.PlaneGeometry( 1250, 1250,1500,1500 );
-
+      let geometry = this.celestialBodie.metaData().arrybuffers['1250']
+      let idx = Array.from(geometry.index.array)
       let that = this
       let pz = 300
+      console.log('d')
       function f(typedArr1){
-        /*const color = THREE.MathUtils.randInt(0, 0xffffff)
-        let geometry = that.celestialBodie.metaData().arrybuffers['1250']
-        geometry.attributes.position.array = typedArr1*/
- 
-        let geometry = that.celestialBodie.metaData().arrybuffers['1250']
-        geometry.attributes.position.array = typedArr1
-
+        let geoCore = new THREE.BufferGeometry()
+        geoCore.setIndex( idx  );
+        geoCore.setAttribute( 'position', new THREE.Float32BufferAttribute( typedArr1, 3 ) );
+      // geoCore.setAttribute( 'normal', new THREE.Float32BufferAttribute(  geometry.attributes.normal.array, 3 ) );
+      // geoCore.setAttribute( 'uv', new THREE.Float32BufferAttribute(  geometry.attributes.uv.array, 2 ) );
         const color = THREE.MathUtils.randInt(0, 0xffffff)
-
-        const material = new THREE.MeshBasicMaterial( {wireframe:false,color: color, side: THREE.DoubleSide} );
-        const plane = new THREE.Mesh( geometry, material );
+        console.log(color)
+        const material = new THREE.MeshBasicMaterial( {wireframe:false,color: color} );
+        const plane = new THREE.Mesh( geoCore, material );
         that.rend.scene_.add( plane );
         plane.position.x -= pz
         pz -= 600
+        const box = new THREE.BoxHelper( plane, 0xffff00 );
+        that.rend.scene_.add( box );
       }
 
 
-      w.onmessage = (e) => {
-        //console.log(typedArr1)
-          f(typedArr1)
-      }
+     pw1 .then(
+        (res) => {
+          f(res)
+          //console.log(res)
+        }
+      ).catch(
+        (err) => console.log('Got error: ' + err)
+      )
+      pw2 .then(
+        (res) => {
+          f(res)
+         // console.log(res)
+        }
+      ).catch(
+        (err) => console.log('Got error: ' + err)
+      )
+      pw3 .then(
+        (res) => {
+          f(res)
+        //  console.log(res)
+        }
+      ).catch(
+        (err) => console.log('Got error: ' + err)
+      )
 
+      pw4 .then(
+        (res) => {
+          f(res)
+        //  console.log(res)
+        }
+      ).catch(
+        (err) => console.log('Got error: ' + err)
+      )
 
-      w1.onmessage = (e) => {
-        //console.log(typedArr1)
-          f(typedArr2)
-      }
-
-
-      w2.onmessage = (e) => {
-        //console.log(typedArr1)
-          f(typedArr3)
-      }
-
-      w3.onmessage = (e) => {
-        //console.log(typedArr1)
-          f(typedArr4)
-      }
-      w4.onmessage = (e) => {
-        //console.log(typedArr1)
-          f(typedArr5)
-      }
 
   }
 

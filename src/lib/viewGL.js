@@ -16,6 +16,7 @@ import { DynamicTextures, DynamicTileTextureManager} from './cubeMap/tileTexture
 import { tileTextureExample,fullTextureExample } from './examples/dynamicTileTextureManager';
 import { addTextureTiles } from './examples/basic';
 import { PromiseWorker } from './PlanetTech/engine/utils';
+import Sphere from './PlanetTech/sphere/sphere';
 
 class ViewGL {
   constructor() {
@@ -30,14 +31,16 @@ class ViewGL {
     this.rend.scene();
     this.rend.stats();
     this.rend.camera();
-    this.rend.updateCamera(0,0,110155-300)
+    this.rend.updateCamera(0,0,110000*8)
     this.rend.orbitControls()
-    this.rend.renderer.setClearColor('black');
+    this.rend.renderer.setClearColor('white');
     //this.space = new Space()
   }
   
   initViewPort(canvasViewPort) {
   this.canvasViewPort = canvasViewPort;
+  this.render(this.canvasViewPort);
+
   }
 
  
@@ -95,12 +98,13 @@ class ViewGL {
 
   initPlayer(){
     //75020.19999997318
-    var boxGeometry        = new THREE.BoxGeometry( 10.01, 10.01, 10.01, 1 )
-    var boxMaterial        = new THREE.MeshBasicMaterial({color:'red'});
+    var boxGeometry        = new THREE.BoxGeometry( 1000.01, 1000.01, 1000.01, 1 )
+    var boxMaterial        = new THREE.MeshBasicMaterial({color:'yellow'});
     this.player            = new THREE.Mesh( boxGeometry, boxMaterial );
-    this.player.position.z = 110000-300
+    this.player.position.z = 200000
+
     this.controls               = new FirstPersonControls( this.player, document.body );
-    this.controls.movementSpeed = 500
+    this.controls.movementSpeed = 5500
     this.controls.lookSpeed     = 0
     this.clock = new THREE.Clock();
     this.rend.scene_.add(this.player)
@@ -131,42 +135,8 @@ class ViewGL {
   }
   
   async start() {
-    this.render(this.canvasViewPort);
-
-    //this.celestialBodie = await tileTextureExample(this.rend.renderer)
 
 
-    this.celestialBodie = await fullTextureExample(this.rend.renderer)
-
-    this.space.initComposer()
-    this.space.addPlanets(this.celestialBodie,{
-      PLANET_CENTER:      this.celestialBodie.metaData().cnt.clone(),
-      PLANET_RADIUS:      this.celestialBodie.metaData().radius,
-      ATMOSPHERE_RADIUS:  81000,
-      lightDir:           new THREE.Vector3(0,0,1),
-      ulight_intensity:   new THREE.Vector3(8.0,8.0,8.0),
-      uray_light_color:   new THREE.Vector3(2.0,2.0,2.0),
-      umie_light_color:   new THREE.Vector3(5.0,5.0,5.0),
-      RAY_BETA:           new THREE.Vector3(5.5e-6, 13.0e-6, 22.4e-6).multiplyScalar(34.5),
-      MIE_BETA:           new THREE.Vector3(21e-6, 21e-6, 21e-6).multiplyScalar(34.5),
-      AMBIENT_BETA:       new THREE.Vector3(0.0),
-      ABSORPTION_BETA:    new THREE.Vector3(2.04e-5, 4.97e-5, 1.95e-6).multiplyScalar(79.5),
-      HEIGHT_RAY:         8e3/81.5,
-      HEIGHT_MIE:       1.2e3/81.5,
-      HEIGHT_ABSORPTION: 30e3/79.5,
-      ABSORPTION_FALLOFF: 4e3/79.5,
-      PRIMARY_STEPS:            12,
-      LIGHT_STEPS:               4,
-      G:                 0.0000007,
-      textureIntensity:         3.5,
-      AmbientLightIntensity:  .007,
-    })
-    this.space.setAtmosphere()
-    this.space.addEffects([new SMAAEffect()])
-
- 
-
- this.rend.scene_.add( this.celestialBodie.sphere );
   }
   
 
@@ -182,96 +152,61 @@ class ViewGL {
 
 
   async  webWorker(){
-    this.render(this.canvasViewPort);
-    this.celestialBodie = await fullTextureExample(this.rend.renderer)
+
+    const params = {
+      width:          10000,
+      height:         10000,
+      widthSegment:      50,
+      heightSegment:     50,
+      quadTreeDimensions: 2,
+      levels:             5,
+      radius:         80000,
+      displacmentScale:   1,
+      lodDistanceOffset:3.4,
+      material: new NODE.MeshBasicNodeMaterial(),
+      color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
+    }
+    
+    let s = new Sphere(
+      params.width,
+      params.height,
+      params.widthSegment,
+      params.heightSegment,
+      params.quadTreeDimensions
+    )
+    
+  s.build(
+      params.levels,
+      params.radius,
+      params.displacmentScale,
+      params.lodDistanceOffset,
+      params.material,
+      params.color,
+    )
+
+console.log(s.sphere)
+this.rend.scene_.add(s.sphere)
+this.s = s
 
 
-      let gemo = this.celestialBodie.metaData().arrybuffers['1250'] 
+/*
+setTimeout(()=>{
+  this.rend.scene_.traverse( node => {
+    if(( node.isMesh)){
 
-      const buffMemLength = new window.SharedArrayBuffer(gemo.attributes.position.array.byteLength); //byte length   
-      let typedArr1 = new Float32Array(buffMemLength);
-   
-      const buffMemLength2 = new window.SharedArrayBuffer(gemo.attributes.position.array.byteLength); //byte length   
-      let typedArr2 = new Float32Array(buffMemLength2);
-     
+        if(node.geometry.type == "webWorkerGeometry"){
+          //console.log(node)
+         const color = THREE.MathUtils.randInt(0, 0xffffff)
 
-      const buffMemLength3 = new window.SharedArrayBuffer(gemo.attributes.position.array.byteLength); //byte length   
-      let typedArr3 = new Float32Array(buffMemLength3);
-      
+          const box = new THREE.Box3Helper( node.geometry.boundingBox, color );
+          //console.log(box)
+          this.rend.scene_.add( box );
 
-      const buffMemLength4 = new window.SharedArrayBuffer(gemo.attributes.position.array.byteLength); //byte length   
-      let typedArr4 = new Float32Array(buffMemLength4);
-
-      let stra = gemo.attributes.position.array.toString()
-
-      let w =  new PromiseWorker("threejsWork.js",typedArr1);
-      let w1 = new PromiseWorker("threejsWork.js",typedArr2);
-      let w2 = new PromiseWorker("threejsWork.js",typedArr3);
-      let w3 = new PromiseWorker("threejsWork.js",typedArr4)
-
-      let pw1 = w.oche({buffMemLength:buffMemLength,stra}); 
-      let pw2 = w1.oche({buffMemLength:buffMemLength2,stra}); 
-      let pw3 = w2.oche({buffMemLength:buffMemLength3,stra}); 
-      let pw4 = w3.oche({buffMemLength:buffMemLength4,stra}); 
-
-
-      let geometry = this.celestialBodie.metaData().arrybuffers['1250']
-      let idx = Array.from(geometry.index.array)
-      let that = this
-      let pz = 300
-      console.log('d')
-      function f(typedArr1){
-        let geoCore = new THREE.BufferGeometry()
-        geoCore.setIndex( idx  );
-        geoCore.setAttribute( 'position', new THREE.Float32BufferAttribute( typedArr1, 3 ) );
-      // geoCore.setAttribute( 'normal', new THREE.Float32BufferAttribute(  geometry.attributes.normal.array, 3 ) );
-      // geoCore.setAttribute( 'uv', new THREE.Float32BufferAttribute(  geometry.attributes.uv.array, 2 ) );
-        const color = THREE.MathUtils.randInt(0, 0xffffff)
-        console.log(color)
-        const material = new THREE.MeshBasicMaterial( {wireframe:false,color: color} );
-        const plane = new THREE.Mesh( geoCore, material );
-        that.rend.scene_.add( plane );
-        plane.position.x -= pz
-        pz -= 600
-        const box = new THREE.BoxHelper( plane, 0xffff00 );
-        that.rend.scene_.add( box );
-      }
-
-
-     pw1 .then(
-        (res) => {
-          f(res)
-          //console.log(res)
         }
-      ).catch(
-        (err) => console.log('Got error: ' + err)
-      )
-      pw2 .then(
-        (res) => {
-          f(res)
-         // console.log(res)
-        }
-      ).catch(
-        (err) => console.log('Got error: ' + err)
-      )
-      pw3 .then(
-        (res) => {
-          f(res)
-        //  console.log(res)
-        }
-      ).catch(
-        (err) => console.log('Got error: ' + err)
-      )
-
-      pw4 .then(
-        (res) => {
-          f(res)
-        //  console.log(res)
-        }
-      ).catch(
-        (err) => console.log('Got error: ' + err)
-      )
-
+    }
+})
+}, 20000)*/
+ 
 
   }
 
@@ -279,10 +214,10 @@ class ViewGL {
     requestAnimationFrame(this.update.bind(this));
     this.rend.stats_.begin();
     this.controls.update(this.clock.getDelta())
-    //if(this.celestialBodie){
-      //this.celestialBodie.update(this.player)
-      //this.space.update(this.player)
-    //}
+
+   for (var i = 0; i < this.s.sphereInstance.length; i++) {
+    this.s.sphereInstance[i].update(this.player)
+    } 
     this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
     this.rend.stats_.end();
     nodeFrame.update();

@@ -11,8 +11,8 @@ const ViewPort = () => {
   useEffect(() => {
     let ccr = canvasContainerRef.current
     viewGL.initViewPort(canvasRef.current)
-    viewGL.webWorker()
     viewGL.initPlayer()
+    viewGL.webWorker()
     viewGL.update()
 
 

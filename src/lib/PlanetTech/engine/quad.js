@@ -3,12 +3,8 @@ import * as THREE   from 'three';
 import {QuadTrees}  from './quadtree'
 import {norm}       from './utils'
 import * as Shaders from '../shaders/index.js';
+import { QuadWorker } from './utils';
 
-function checkDivisible(w, h, ws, hs) {
-  if (w % 2 !== 0 || h % 2 !== 0 || ws % 2 !== 0 || hs % 2 !== 0) {
-      throw new Error('One or more values are not divisible by two.');
-  }
-}
 
   export default class Quad{
     constructor(w,h,ws,hs,d){
@@ -32,6 +28,9 @@ function checkDivisible(w, h, ws, hs) {
     add( q ){
         this.children.push( q )
         this.plane.add(q.plane)
+        let parentPositionVector = [...this.plane.localToWorld(new THREE.Vector3()).toArray(),this.quadData.width]
+        q.initGeometry({positionVector:q.plane.position.toArray(),parentPositionVector:parentPositionVector,side:this.side})        
+
     }
 
     lighting(ld){
@@ -97,12 +96,13 @@ function checkDivisible(w, h, ws, hs) {
       const height = shardedGeometry.parameters.height
       const heightSegments = shardedGeometry.parameters.heightSegments
       const widthSegments  = shardedGeometry.parameters.widthSegments
-      const material = this.quadTreeconfig.config.material.clone();
       const quad     = new Quad(width,height,widthSegments,heightSegments)
-      quad.plane     = new THREE.Mesh( shardedGeometry, material );
+      quad.plane     = new THREE.Mesh();
+      quad.plane.material = this.quadTreeconfig.config.material.clone();
       quad.plane.frustumCulled = false
       return quad
       }
+
 
     createQuadTree(lvl){
       Object.assign(this.quadTreeconfig.config,{
@@ -117,16 +117,47 @@ function checkDivisible(w, h, ws, hs) {
       this.quadTree = new QuadTrees.QuadTreeLoD()
     }  
 
+
+      initGeometry(params){
+        const w = this.quadData.width
+        const arrybuffers = this.quadTreeconfig.config.arrybuffers[w]
+      
+        const stringPosition       = arrybuffers.geometry.stringPosition
+        const byteLengthPosition   = arrybuffers.geometry.byteLengthPosition
+        const position             = params.positionVector
+        const bufferPositionF      = new window.SharedArrayBuffer(byteLengthPosition); //byte length   
+        const typedArrPF           = new Float32Array(bufferPositionF);
+        const center               = this.quadTreeconfig.config.center
+        const radius               = this.quadTreeconfig.config.radius
+        const parentPositionVector = params.parentPositionVector
+        const bufferIdx            = arrybuffers.idx
+      
+       let promiseWorker =  new QuadWorker("bw.js");
+      promiseWorker.sendWork({
+        positionBuffer: bufferPositionF,
+        positionVector: position,
+        parentPositionVector: parentPositionVector,
+        positionStr:    stringPosition,
+        center:         center,
+        radius:         radius,
+        side:           params.side
+      });
+      
+      promiseWorker.getWork(this.plane,typedArrPF,bufferIdx)
+      }
+
     createDimensions(sideName){
       this.side = sideName
       const w = this.quadData.width
       const d = this.quadData.dimensions
-      const shardedGeometry = this.quadTreeconfig.config.arrybuffers[w]
+      const arrybuffers = this.quadTreeconfig.config.arrybuffers[w]
+      const shardedGeometry = arrybuffers.geometry
       for (var i = 0; i < d; i++) {
         var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
         for (var j = 0; j < d; j++) {
           var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
           var q = this.createNewMesh(shardedGeometry).setPosition( [i_,-j_,0], 'dimensions')
+          q.initGeometry({positionVector:q.plane.position.toArray(),parentPositionVector:[0,0,0,w],side:'front'})        
           q.quadTree = new QuadTrees.QuadTreeLoD()
           q.side = sideName
           q.idx = i * d + j;
@@ -152,7 +183,7 @@ function checkDivisible(w, h, ws, hs) {
     }
   
     setPosition( params, quadrent){
-      this.plane.updateMatrixWorld(true)
+     //this.plane.updateWorldMatrix(true)
       if       (quadrent=='NW')  {
         this.plane.position.set(-params[0]/2,  params[1]/2, 0)
       }else if (quadrent=='NE') {

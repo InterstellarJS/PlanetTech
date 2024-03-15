@@ -1,8 +1,8 @@
-import * as THREEWG from 'three/nodes';
+import * as NODE from 'three/nodes';
 import * as THREE   from 'three';
 import Quad         from '../engine/quad'
 import {QuadTrees}  from '../engine/quadtree'
-
+import { hexToRgbA,getRandomColor } from '../engine/utils';
 
 
 function project( v, r, center ){
@@ -16,7 +16,6 @@ export default class Sphere{
     this.ws = ws
     this.hs = hs
     this.d  = d
-    this.sphere = new THREE.Group()
     this.bbox   = new THREE.Box3()
     this.quadTreeconfig = new QuadTrees.QuadTreeLoDCore()
     }
@@ -45,9 +44,101 @@ export default class Sphere{
     )
     this.quadTreeconfig.levels(lvl)
     this.quadTreeconfig.createArrayBuffers()
+    this.quadTreeconfig.getCenter()
 
+    this. sphere = new THREE.Group()
+
+    let right = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    right.createDimensions('right')
+    var rightGroup = new THREE.Group()
+    rightGroup.position.z = -(this.w*this.d)/2;
+    rightGroup.position.x =  (this.w*this.d)/2;
+    rightGroup.rotation.y =  Math.PI/2;
+    rightGroup.add( ...right.instances.map(x=>x.plane) );
+    this.sphere.add(rightGroup)
+
+    let left = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    left.createDimensions('left')
+    var leftGroup = new THREE.Group();
+    leftGroup.add( ...left.instances.map(x=>x.plane) );
+    leftGroup.position.z =  -(this.w*this.d)/2;
+    leftGroup.position.x =  -(this.w*this.d)/2;
+    leftGroup.rotation.y =  -Math.PI/2;
+    this.sphere.add(leftGroup)
+
+
+    let top = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    top.createDimensions('top')
+    var topGroup = new THREE.Group();
+    topGroup.add( ...top.instances.map(x=>x.plane) );
+    topGroup.position.z = -(this.w*this.d)/2;
+    topGroup.position.y =  (this.w*this.d)/2;
+    topGroup.rotation.x = -Math.PI/2;
+    this.sphere.add(topGroup)
+
+    let bottom = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    bottom.createDimensions('bottom')
+    var bottomGroup = new THREE.Group();
+    bottomGroup.add( ...bottom.instances.map(x=>x.plane) );
+    bottomGroup.position.z = -(this.w*this.d)/2;
+    bottomGroup.position.y = -(this.w*this.d)/2;
+    bottomGroup.rotation.x =  Math.PI/2;
+    this.sphere.add(bottomGroup)
+
+
+    let front  = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    front.createDimensions('front')
+    let frontGroup = new THREE.Group()
+    frontGroup.add(...front.instances.map(x=>x.plane))
+    this.sphere.add(frontGroup)
     
-    this.front = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+
+    let back = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    back.createDimensions('back')
+    var backGroup = new THREE.Group();
+    backGroup.add( ...back.instances.map(x=>x.plane) );
+    backGroup.position.z = -this.w*this.d;
+    backGroup.rotation.y =  Math.PI;
+    this.sphere.add(backGroup)
+
+
+    this.sphereInstance = [
+      ...right.instances,
+      ...left.instances,
+      ...top.instances,
+      ...bottom.instances,
+      ...front.instances,
+      ...back.instances,
+    ]
+  
+
+    this.sphereInstance.forEach((e)=>{
+      e.plane.updateWorldMatrix( true, false );
+
+      e.plane.material = this.quadTreeconfig.config.material.clone();
+      e.plane.material.colorNode = NODE.vec3(...hexToRgbA(getRandomColor()))
+  
+      var cnt_ = new THREE.Vector3(...this.quadTreeconfig.config.center)      
+      e.plane.worldToLocal(cnt_)
+      //----
+      let radius = this.quadTreeconfig.config.radius
+      let wp = new THREE.Vector3()
+      project(wp,radius,cnt_)
+      e.center = wp
+      e.isRoot = true
+      
+      const g = new THREE.SphereGeometry( 1005, 5, 5 ); 
+      var ma = new THREE.MeshBasicMaterial({color:'red'});
+      let m  = new THREE.Mesh( g, ma );
+      e.plane.add(m)
+      m.position.copy( wp)
+    })
+
+
+
+
+ 
+   /* this.front = new Quad(this.w,this.h,this.ws,this.hs,this.d)
     this.front.createDimensions('front')
     var front = new THREE.Group();
     front.add( ...this.front.instances.map(x=>x.plane) );
@@ -120,13 +211,13 @@ export default class Sphere{
       project(wp,radius,cnt_.clone())
       e.center = wp
       e.isRoot = true
-      /*
+      
       const g = new THREE.SphereGeometry( 105, 5, 5 ); 
       var ma = new THREE.MeshBasicMaterial({color:'blue'});
       let m  = new THREE.Mesh( g, ma );
       e.plane.add(m)
       m.position.copy( wp.clone())
-      */
+      
     })
     
 
@@ -135,7 +226,8 @@ export default class Sphere{
       this.right. quadTreeconfig.config['cnt'] = cnt.clone()
       this.left.  quadTreeconfig.config['cnt'] = cnt.clone()
       this.top.   quadTreeconfig.config['cnt'] = cnt.clone()
-      this.bottom.quadTreeconfig.config['cnt'] = cnt.clone()
+      this.bottom.quadTreeconfig.config['cnt'] = cnt.clone()*/
+
     }
 
     metaData(){

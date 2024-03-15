@@ -46,10 +46,19 @@ const geometry = new THREE.PlaneGeometry( wh, wh );
 const material = new THREE.MeshBasicMaterial( );
 const parent = new THREE.Mesh( geometry, material );
 parent.position.set(...data.parentPositionVector)
+
 if (data.side=='right'){
-
-
-  parent.rotation.y =  Math.PI/2;
+    parent.rotation.y =  Math.PI/2;
+}else if(data.side=='left'){
+    parent.rotation.y =  -Math.PI/2;
+}else if(data.side=='top'){
+    parent.rotation.x = -Math.PI/2;
+}else if(data.side=='bottom'){
+    parent.rotation.x =  Math.PI/2;
+}else if(data.side=='front'){
+    //pass
+}else if(data.side=='back'){
+    parent.rotation.y =  Math.PI;
 }
     
     var arrp = new Float32Array(data.positionBuffer);
@@ -79,10 +88,10 @@ if (data.side=='right'){
   }
 
   self.onmessage = function(msg) {
-    const {id, payload} = msg.data
+    const payload = msg.data
+    //console.log(payload)
     doCalculation(payload, function(err, result) {
       const msg = {
-        id,
         err,
         payload: result
       }

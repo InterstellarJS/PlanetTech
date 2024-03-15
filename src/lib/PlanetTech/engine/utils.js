@@ -1,3 +1,6 @@
+import * as NODE    from 'three/nodes';
+import * as THREE   from 'three';
+
 export function getRandomColor() {
   /*
   this function is use to create a random color for better visualization
@@ -55,60 +58,27 @@ export function project( v, r, center )
 }
 
 
-//https://codeburst.io/promises-for-the-web-worker-9311b7831733
-const resolves = {}
-const rejects = {}
-let globalMsgId = 0
-// Activate calculation in the worker, returning a promise
-function sendMsg(payload, worker){
-  const msgId = globalMsgId++
-  const msg = {
-    id: msgId,
-    payload
-  }
-  return new Promise(function (resolve, reject) {
-    // save callbacks for later
-    resolves[msgId] = resolve
-    rejects[msgId] = reject
-    worker.postMessage(msg)
-  }) 
-}
-
-function handleMsg(data) { //hijack the payload
-  // Handle incoming calculation result
-  function _handleMsg(msg) {
-    //console.log(data)
-    const {id, err, payload} = msg.data
-    if (payload) {
-      const resolve = resolves[id]
-      if (resolve) {
-        resolve(data)
-      }
-    } else {
-      // error condition
-      const reject = rejects[id]
-      if (reject) {
-          if (err) {
-            reject(err)
-          } else {
-            reject('Got nothing')
-          }
-      }
-    }
-    // purge used callbacks
-    delete resolves[id]
-    delete rejects[id]
-  }
-  return _handleMsg
-} 
-// Wrapper class
-export class PromiseWorker {
+export class QuadWorker {
   constructor(path,data) {
     this.worker = new Worker(path,{ type: "module" })
-    this.worker.onmessage = handleMsg(data)
   }
   
-  oche(str) {
-    return sendMsg(str, this.worker)
+  sendWork(payload) {
+    this.worker.postMessage(payload)
+  }
+
+  getWork(plane,buffer,idx){
+    this.worker.onmessage = (res)=>{
+      let webWorkerGeometry = new THREE.BufferGeometry()
+      webWorkerGeometry.type = 'webWorkerGeometry';
+      webWorkerGeometry.setIndex( idx  );
+      webWorkerGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( buffer, 3 ) );
+      plane.geometry = webWorkerGeometry
+
+      const box3 = new THREE.Box3();
+      box3.setFromObject(plane,true)
+      plane.geometry.boundingBox=box3
+    }
+
   }
 }

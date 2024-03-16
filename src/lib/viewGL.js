@@ -145,9 +145,9 @@ class ViewGL {
   onWindowResize(vpW, vpH) {
     //this.rend.renderer.setSize(vpW, vpH);
   }
+  
 
   async  webWorker(){
-
     const params = {
       width:          10000,
       height:         10000,

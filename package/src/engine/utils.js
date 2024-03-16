@@ -1,0 +1,114 @@
+export function getRandomColor() {
+  /*
+  this function is use to create a random color for better visualization
+  */
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+  color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+  }
+
+export function hexToRgbA(hex){
+    var c;
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+        c= hex.substring(1).split('');
+        if(c.length== 3){
+            c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c= '0x'+c.join('');
+        return [((c>>16)&255)/256, ((c>>8)&255)/256, (c&255)/256].map(x=> x.toFixed(5))
+    }
+    throw new Error('Bad Hex');
+}
+
+export function norm(val, max, min) { return (val - min) / (max - min); }
+
+export function levelColor(levels){
+  var colorArray = []
+  for (var i = 0; i < levels; i++) {
+    colorArray.push(hexToRgbA(getRandomColor()))
+  }
+  return colorArray
+}
+
+
+export function getRandomRGBColor() {
+  var r, g, b;
+  
+  do {
+    r = Math.floor(Math.random() / 256); // Random value for red (0-255)
+    g = Math.floor(Math.random() / 256); // Random value for green (0-255)
+    b = Math.floor(Math.random() / 256); // Random value for blue (0-255)
+  } while (r === 255 && g === 255 && b === 255); // Repeat if the color is white
+  
+  return [r,g,b];
+}
+
+//https://discourse.threejs.org/t/vertex-shader-sphere-projection-and-cpu-distance-calculation/56270/17
+export function project( v, r, center )
+{
+	v.sub( center )
+	.setLength( r )
+	.add( center );
+}
+
+
+//https://codeburst.io/promises-for-the-web-worker-9311b7831733
+const resolves = {}
+const rejects = {}
+let globalMsgId = 0
+// Activate calculation in the worker, returning a promise
+function sendMsg(payload, worker){
+  const msgId = globalMsgId++
+  const msg = {
+    id: msgId,
+    payload
+  }
+  return new Promise(function (resolve, reject) {
+    // save callbacks for later
+    resolves[msgId] = resolve
+    rejects[msgId] = reject
+    worker.postMessage(msg)
+  }) 
+}
+
+function handleMsg(data) { //hijack the payload
+  // Handle incoming calculation result
+  function _handleMsg(msg) {
+    //console.log(data)
+    const {id, err, payload} = msg.data
+    if (payload) {
+      const resolve = resolves[id]
+      if (resolve) {
+        resolve(data)
+      }
+    } else {
+      // error condition
+      const reject = rejects[id]
+      if (reject) {
+          if (err) {
+            reject(err)
+          } else {
+            reject('Got nothing')
+          }
+      }
+    }
+    // purge used callbacks
+    delete resolves[id]
+    delete rejects[id]
+  }
+  return _handleMsg
+} 
+// Wrapper class
+export class PromiseWorker {
+  constructor(path,data) {
+    this.worker = new Worker(path,{ type: "module" })
+    this.worker.onmessage = handleMsg(data)
+  }
+  
+  oche(str) {
+    return sendMsg(str, this.worker)
+  }
+}

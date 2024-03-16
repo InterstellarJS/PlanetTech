@@ -98,10 +98,10 @@ class ViewGL {
 
   initPlayer(){
     //75020.19999997318
-    var boxGeometry        = new THREE.BoxGeometry( 1000.01, 1000.01, 1000.01, 1 )
-    var boxMaterial        = new THREE.MeshBasicMaterial({color:'yellow'});
+    var boxGeometry        = new THREE.BoxGeometry( 10.01, 10.01, 10.01, 1 )
+    var boxMaterial        = new THREE.MeshBasicMaterial({color:'red'});
     this.player            = new THREE.Mesh( boxGeometry, boxMaterial );
-    this.player.position.z = 200000
+    this.player.position.z = 110000
 
     this.controls               = new FirstPersonControls( this.player, document.body );
     this.controls.movementSpeed = 5500
@@ -145,7 +145,7 @@ class ViewGL {
   onWindowResize(vpW, vpH) {
     //this.rend.renderer.setSize(vpW, vpH);
   }
-  
+
 
   async  webWorker(){
     const params = {
@@ -153,11 +153,11 @@ class ViewGL {
       height:         10000,
       widthSegment:      50,
       heightSegment:     50,
-      quadTreeDimensions: 2,
+      quadTreeDimensions: 3,
       levels:             5,
       radius:         80000,
       displacmentScale:   1,
-      lodDistanceOffset:5.0,
+      lodDistanceOffset:3.5,
       material: new NODE.MeshBasicNodeMaterial(),
       color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
     }

@@ -122,6 +122,7 @@ import { QuadWorker } from './utils';
         const w = this.quadData.width
         const arrybuffers = this.quadTreeconfig.config.arrybuffers[w]
       
+        const uvBuffer             = arrybuffers.geometry.uv
         const stringPosition       = arrybuffers.geometry.stringPosition
         const byteLengthPosition   = arrybuffers.geometry.byteLengthPosition
         const position             = params.positionVector
@@ -143,7 +144,7 @@ import { QuadWorker } from './utils';
         side:           params.side
       });
       
-      promiseWorker.getWork(this.plane,typedArrPF,bufferIdx)
+      promiseWorker.getWork(this.plane,typedArrPF,bufferIdx,uvBuffer)
       }
 
     createDimensions(sideName){

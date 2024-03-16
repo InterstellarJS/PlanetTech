@@ -48,67 +48,67 @@ export default class Sphere{
 
     this. sphere = new THREE.Group()
 
-    let right = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    right.createDimensions('right')
+    this.right = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    this.right.createDimensions('right')
     var rightGroup = new THREE.Group()
     rightGroup.position.z = -(this.w*this.d)/2;
     rightGroup.position.x =  (this.w*this.d)/2;
     rightGroup.rotation.y =  Math.PI/2;
-    rightGroup.add( ...right.instances.map(x=>x.plane) );
+    rightGroup.add( ...this.right.instances.map(x=>x.plane) );
     this.sphere.add(rightGroup)
 
-    let left = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    left.createDimensions('left')
+    this. left = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    this.left.createDimensions('left')
     var leftGroup = new THREE.Group();
-    leftGroup.add( ...left.instances.map(x=>x.plane) );
+    leftGroup.add( ...this.left.instances.map(x=>x.plane) );
     leftGroup.position.z =  -(this.w*this.d)/2;
     leftGroup.position.x =  -(this.w*this.d)/2;
     leftGroup.rotation.y =  -Math.PI/2;
     this.sphere.add(leftGroup)
 
 
-    let top = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    top.createDimensions('top')
+    this. top = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    this.top.createDimensions('top')
     var topGroup = new THREE.Group();
-    topGroup.add( ...top.instances.map(x=>x.plane) );
+    topGroup.add( ...this.top.instances.map(x=>x.plane) );
     topGroup.position.z = -(this.w*this.d)/2;
     topGroup.position.y =  (this.w*this.d)/2;
     topGroup.rotation.x = -Math.PI/2;
     this.sphere.add(topGroup)
 
-    let bottom = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    bottom.createDimensions('bottom')
+    this. bottom = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    this.bottom.createDimensions('bottom')
     var bottomGroup = new THREE.Group();
-    bottomGroup.add( ...bottom.instances.map(x=>x.plane) );
+    bottomGroup.add( ...this.bottom.instances.map(x=>x.plane) );
     bottomGroup.position.z = -(this.w*this.d)/2;
     bottomGroup.position.y = -(this.w*this.d)/2;
     bottomGroup.rotation.x =  Math.PI/2;
     this.sphere.add(bottomGroup)
 
 
-    let front  = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    front.createDimensions('front')
+    this. front  = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    this.front.createDimensions('front')
     let frontGroup = new THREE.Group()
-    frontGroup.add(...front.instances.map(x=>x.plane))
+    frontGroup.add(...this.front.instances.map(x=>x.plane))
     this.sphere.add(frontGroup)
     
 
-    let back = new Quad(this.w,this.h,this.ws,this.hs,this.d)
-    back.createDimensions('back')
+    this. back = new Quad(this.w,this.h,this.ws,this.hs,this.d)
+    this.back.createDimensions('back')
     var backGroup = new THREE.Group();
-    backGroup.add( ...back.instances.map(x=>x.plane) );
+    backGroup.add( ...this.back.instances.map(x=>x.plane) );
     backGroup.position.z = -this.w*this.d;
     backGroup.rotation.y =  Math.PI;
     this.sphere.add(backGroup)
 
 
     this.sphereInstance = [
-      ...right.instances,
-      ...left.instances,
-      ...top.instances,
-      ...bottom.instances,
-      ...front.instances,
-      ...back.instances,
+      ...this.right.instances,
+      ...this.left.instances,
+      ...this.top.instances,
+      ...this.bottom.instances,
+      ...this.front.instances,
+      ...this.back.instances,
     ]
   
 
@@ -127,11 +127,11 @@ export default class Sphere{
       e.center = wp
       e.isRoot = true
       
-      const g = new THREE.SphereGeometry( 1005, 5, 5 ); 
-      var ma = new THREE.MeshBasicMaterial({color:'red'});
+      /*const g = new THREE.SphereGeometry( 105, 5, 5 ); 
+      var ma = new THREE.MeshBasicMaterial({color:'black'});
       let m  = new THREE.Mesh( g, ma );
       e.plane.add(m)
-      m.position.copy( wp)
+      m.position.copy( wp)*/
     })
 
 

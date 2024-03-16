@@ -62,6 +62,7 @@ class QuadTreeLoDCore  {
       this.config.arrybuffers[size] = {
         geometry:{
           parameters:         geometry.parameters,
+          uv:                 geometry.attributes.uv.array,
           stringPosition:     geometry.attributes.position.array.toString(),
           stringNormal:       geometry.attributes.normal  .array.toString(),
           byteLengthNormal:   geometry.attributes.position.array.byteLength,

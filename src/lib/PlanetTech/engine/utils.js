@@ -67,12 +67,14 @@ export class QuadWorker {
     this.worker.postMessage(payload)
   }
 
-  getWork(plane,buffer,idx){
+  getWork(plane,buffer,idx,uvBuffer){
     this.worker.onmessage = (res)=>{
       let webWorkerGeometry = new THREE.BufferGeometry()
       webWorkerGeometry.type = 'webWorkerGeometry';
       webWorkerGeometry.setIndex( idx  );
       webWorkerGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( buffer, 3 ) );
+      webWorkerGeometry.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvBuffer, 2 ) );
+
       plane.geometry = webWorkerGeometry
 
       const box3 = new THREE.Box3();

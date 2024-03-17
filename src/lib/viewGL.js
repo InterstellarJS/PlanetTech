@@ -17,6 +17,33 @@ import { tileTextureExample,fullTextureExample } from './examples/dynamicTileTex
 import { addTextureTiles } from './examples/basic';
 import { PromiseWorker } from './PlanetTech/engine/utils';
 import Sphere from './PlanetTech/sphere/sphere';
+console.log(NODE)
+
+
+
+
+
+
+
+let frustumObj = new THREE.Frustum()
+
+
+function ff(camera_,scene_){
+  let frustum = frustumObj.setFromProjectionMatrix( new THREE.Matrix4().multiplyMatrices(  camera_.projectionMatrix,  camera_.matrixWorldInverse ) );
+  scene_.traverse( node => {
+      if(( node.isMesh)){
+          if(node.geometry.type == "webWorkerGeometry"){
+          if(( frustum.intersectsBox ( node.geometry.boundingBox ) )){
+            //node.material.visible = true
+          }else{
+            //console.log(node.side,node.w,node.idx)
+            // node.material.visible = false
+          }
+        }
+      }
+  })
+}
+
 
 class ViewGL {
   constructor() {
@@ -104,7 +131,7 @@ class ViewGL {
     this.player.position.z = 110000
 
     this.controls               = new FirstPersonControls( this.player, document.body );
-    this.controls.movementSpeed = 5500
+    this.controls.movementSpeed = 500
     this.controls.lookSpeed     = 0
     this.clock = new THREE.Clock();
     this.rend.scene_.add(this.player)
@@ -126,7 +153,7 @@ class ViewGL {
 
 
     const directionalLight = new THREE.DirectionalLight( 0xffffff, 5.5 );
-    directionalLight.position.set(-.0,.05,.05)
+    directionalLight.position.set(0.0,0.0,1.0)
     this.rend.scene_.add(directionalLight)
 
     const light = new THREE.AmbientLight( 0x404040, 5 ); // soft white light
@@ -147,7 +174,7 @@ class ViewGL {
   }
 
 
-  async  webWorker(){
+    webWorker(){
     const params = {
       width:          10000,
       height:         10000,
@@ -156,10 +183,10 @@ class ViewGL {
       quadTreeDimensions: 3,
       levels:             5,
       radius:         80000,
-      displacmentScale:   1,
+      displacmentScale: 75.,
       lodDistanceOffset:3.5,
-      material: new NODE.MeshBasicNodeMaterial(),
-      color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
+      material: new NODE.MeshStandardNodeMaterial({}),
+     // color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
     }
     
     let s = new Sphere(
@@ -179,27 +206,46 @@ class ViewGL {
       params.color,
     )
 
-console.log(s.sphere)
-this.rend.scene_.add(s.sphere)
-this.s = s
+    this.s = s
+
+
+    let r = new THREE.TextureLoader().load('./planet/color/c/right_color_image.png')
+    let l = new THREE.TextureLoader().load('./planet/color/c/left_color_image.png')
+    let t = new THREE.TextureLoader().load('./planet/color/c/top_color_image.png')
+    let b = new THREE.TextureLoader().load('./planet/color/c/bottom_color_image.png')
+    let f = new THREE.TextureLoader().load('./planet/color/c/front_color_image.png')
+    let ba = new THREE.TextureLoader().load('./planet/color/c/back_color_image.png')
+    
+    let rd = new THREE.TextureLoader().load('./planet/color/d/right_displacement_image.png')
+    let ld = new THREE.TextureLoader().load('./planet/color/d/left_displacement_image.png')
+    let td = new THREE.TextureLoader().load('./planet/color/d/top_displacement_image.png')
+    let bd = new THREE.TextureLoader().load('./planet/color/d/bottom_displacement_image.png')
+    let fd = new THREE.TextureLoader().load('./planet/color/d/front_displacement_image.png')
+    let bad = new THREE.TextureLoader().load('./planet/color/d/back_displacement_image.png')
+    
+    this.s.right.addTexture([r,rd],params.displacmentScale,false)
+    this.s.left.addTexture([l,ld],params.displacmentScale,false)
+    this.s.top.addTexture([t,td],params.displacmentScale,false)
+    this.s.bottom.addTexture([b,bd],params.displacmentScale,false)
+    this.s.front.addTexture([f,fd],params.displacmentScale,false)
+    this.s.back.addTexture([ba,bad],params.displacmentScale,false)
+
+this.rend.scene_.add(this.s.sphere)
+
+
+
+
 
 
 /*
 setTimeout(()=>{
-  this.rend.scene_.traverse( node => {
-    if(( node.isMesh)){
-
-        if(node.geometry.type == "webWorkerGeometry"){
-          //console.log(node)
-         const color = THREE.MathUtils.randInt(0, 0xffffff)
-
-          const box = new THREE.Box3Helper( node.geometry.boundingBox, color );
-          //console.log(box)
-          this.rend.scene_.add( box );
-
-        }
-    }
-})
+  console.log('rrrrrrrr')
+  this.s.right.addTexture([r,r],params.displacmentScale,false)
+  this.s.left.addTexture([l,l],params.displacmentScale,false)
+  this.s.top.addTexture([t,t],params.displacmentScale,false)
+  this.s.bottom.addTexture([b,b],params.displacmentScale,false)
+  this.s.front.addTexture([f,f],params.displacmentScale,false)
+  this.s.back.addTexture([ba,ba],params.displacmentScale,false)
 }, 20000)*/
 
   }
@@ -210,8 +256,9 @@ setTimeout(()=>{
     this.controls.update(this.clock.getDelta())
 
    for (var i = 0; i < this.s.sphereInstance.length; i++) {
-    this.s.sphereInstance[i].update(this.player)
+     this.s.sphereInstance[i].update(this.player)
     } 
+    ff(this.rend.camera_,this.rend.scene_)
     this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
     this.rend.stats_.end();
     nodeFrame.update();

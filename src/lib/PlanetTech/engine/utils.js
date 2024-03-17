@@ -67,19 +67,32 @@ export class QuadWorker {
     this.worker.postMessage(payload)
   }
 
-  getWork(plane,buffer,idx,uvBuffer){
-    this.worker.onmessage = (res)=>{
-      let webWorkerGeometry = new THREE.BufferGeometry()
+  getWork(quad,positionBuffer,normalBuffer,idx,stringUv){
+    
+    this.worker.onmessage =(_)=>{
+      console.log(quad.plane.material.wireframe)
+      let webWorkerGeometry  = new THREE.BufferGeometry()
       webWorkerGeometry.type = 'webWorkerGeometry';
-      webWorkerGeometry.setIndex( idx  );
-      webWorkerGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( buffer, 3 ) );
-      webWorkerGeometry.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvBuffer, 2 ) );
+      quad.plane.geometry    =  webWorkerGeometry
 
-      plane.geometry = webWorkerGeometry
+  
+      webWorkerGeometry.setIndex(idx);
+      webWorkerGeometry.setAttribute('position', new THREE.Float32BufferAttribute( positionBuffer, 3 ));
+      webWorkerGeometry.setAttribute('normal', new THREE.Float32BufferAttribute( normalBuffer, 3 ));
+      webWorkerGeometry.setAttribute('uv', new THREE.Float32BufferAttribute( JSON.parse("[" + stringUv + "]"), 2 ));
 
       const box3 = new THREE.Box3();
-      box3.setFromObject(plane,true)
-      plane.geometry.boundingBox=box3
+      box3.setFromObject(quad.plane,true)
+      quad.plane.geometry.boundingBox=box3
+
+
+      quad.plane.material = (quad.plane.material.clone())//new NODE[quad.plane.material.constructor.name]().copy(quad.plane.material)
+     // quad.plane.material.positionNode =pn//NODE.positionLocal.add(NODE.sin( NODE.positionLocal).mul(200))
+    //  quad.plane.material.colorNode =cn
+   //   quad.plane.material.needsupdate =true
+    //  quad.plane.geometry.needsupdate =true
+
+
     }
 
   }

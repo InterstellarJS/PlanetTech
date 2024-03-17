@@ -35,6 +35,7 @@ export default class Sphere{
     this.quadTreeconfig.config.displacmentScale  = displacmentScale
     this.quadTreeconfig.config.lodDistanceOffset = lodDistanceOffset
 
+
     Object.assign(this.quadTreeconfig.config,{
       maxLevelSize:  this.w,
       minLevelSize:  Math.floor(this.w/Math.pow(2,lvl-1)), // this create a vizual bug when not divisible pay 2 
@@ -116,7 +117,7 @@ export default class Sphere{
       e.plane.updateWorldMatrix( true, false );
 
       e.plane.material = this.quadTreeconfig.config.material.clone();
-      e.plane.material.colorNode = NODE.vec3(...hexToRgbA(getRandomColor()))
+      //e.plane.material.colorNode = color instanceof Function ? color() : color
   
       var cnt_ = new THREE.Vector3(...this.quadTreeconfig.config.center)      
       e.plane.worldToLocal(cnt_)

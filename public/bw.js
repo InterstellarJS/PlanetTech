@@ -6,6 +6,7 @@ function toSphereSegement(plane,cnt,r) {
   let center = new THREE.Vector3().copy(cnt);
   let localCenter = new THREE.Vector3();
   let v3 = new THREE.Vector3();
+  let v = new THREE.Vector3();
 
 	const u = new THREE.Vector3();   // create once
 	const w = new THREE.Vector3();   // create once
@@ -15,11 +16,14 @@ function toSphereSegement(plane,cnt,r) {
     let pos = p.geometry.attributes.position;
     for(let i = 0; i < pos.count; i++){
       v3.fromBufferAttribute(pos, i);
+      p.localToWorld( v3.clone() );
+      u.copy(v3);
+      w.copy(v3);
       v3.sub(localCenter);
       v3.normalize().multiplyScalar(r).add(localCenter);
       pos.setXYZ(i, v3.x, v3.y, v3.z);
 
-      /*u.x += 0.1;
+      u.x += 0.1;
       u.sub(localCenter);
       u.normalize().multiplyScalar(r).add(localCenter);
   
@@ -28,7 +32,7 @@ function toSphereSegement(plane,cnt,r) {
       w.normalize().multiplyScalar(r).add(localCenter);
 
       u.sub(v3).cross(w.sub(v3)).normalize();      
-      p.geometry.attributes.normal.setXYZ(i,u.x,u.y,u.z)*/
+      p.geometry.attributes.normal.setXYZ(i,u.x,u.y,u.z)
 
     }
 }
@@ -62,17 +66,17 @@ if (data.side=='right'){
 }
     
     var arrp = new Float32Array(data.positionBuffer);
-    //var arrn = new Float32Array(data.normalBuffer);
+    var arrn = new Float32Array(data.normalBuffer);
 
     let f2 =  JSON.parse("[" + data.positionStr + "]")
-   // let f2n = JSON.parse("[" + data.normalStr + "]")
+    let f2n = JSON.parse("[" + data.normalStr + "]")
 
     let f3 = Float32Array.from(f2)
-   // let f3n = Float32Array.from(f2n)
+    let f3n = Float32Array.from(f2n)
 
     let geoCore = new THREE.BufferGeometry()
     geoCore.setAttribute( 'position', new THREE.Float32BufferAttribute( f3, 3 ) );
-    //geoCore.setAttribute( 'normal', new THREE.Float32BufferAttribute( f3n, 3 ) );
+    geoCore.setAttribute( 'normal', new THREE.Float32BufferAttribute( f3n, 3 ) );
    // geoCore.translate(...data.positionVector)
     
     let m = new THREE.Mesh(geoCore,new THREE.Material())
@@ -81,7 +85,7 @@ if (data.side=='right'){
 
     toSphereSegement(m,new THREE.Vector3(...data.center),data.radius)
     arrp.set(geoCore.attributes.position.array)
-    //arrn.set(geoCore.attributes.normal.array)
+    arrn.set(geoCore.attributes.normal.array)
 
     result = 'complete'
     cb(err, result)

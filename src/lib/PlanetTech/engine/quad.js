@@ -58,13 +58,13 @@ import { QuadWorker } from './utils';
           }
           var p   = q.plane
           var wp  = p.position.clone()//todo
-          var cnt = this.quadTreeconfig.config.cnt.clone()
+          var cnt = new THREE.Vector3(...this.quadTreeconfig.config.center)
           p.worldToLocal(cnt)
           var textureNodeN = NODE.texture(texture_[0][i],NODE.uv())
           var textureNodeD = NODE.texture(texture_[1][i],NODE.uv()).r
           p.material.colorNode = textureNodeN
-          const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
-          p.material.positionNode =  p.material.positionNode.add( displace );
+          //const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
+          //p.material.positionNode =  p.material.positionNode.add( displace );
           }
         }else{
           this.quadTreeconfig.config.dataTransfer[this.side] = {textuers:[texture_]}
@@ -80,13 +80,13 @@ import { QuadWorker } from './utils';
             var nyj = norm(wp.y,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
             var offSets = NODE.vec2(nxj-halfScale,nyj-halfScale)
             var newUV   = NODE.uv().mul(testscaling).add(offSets)
-            var cnt = this.quadTreeconfig.config.cnt.clone()
+            var cnt = new THREE.Vector3(...this.quadTreeconfig.config.center)
             p.worldToLocal(cnt)
             var textureNodeN = NODE.texture(texture_[0],newUV)
             var textureNodeD = NODE.texture(texture_[1],newUV).r
             p.material.colorNode = textureNodeN
-            const displace = textureNodeD.mul(displacementScale).mul(NODE.positionLocal.sub(cnt).normalize())
-            p.material.positionNode =  p.material.positionNode.add( displace );
+           const displace = textureNodeD.mul(displacementScale).mul(NODE.normalLocal).add(NODE.positionLocal)
+           p.material.positionNode = displace
             }
           }
         } 
@@ -97,9 +97,18 @@ import { QuadWorker } from './utils';
       const heightSegments = shardedGeometry.parameters.heightSegments
       const widthSegments  = shardedGeometry.parameters.widthSegments
       const quad     = new Quad(width,height,widthSegments,heightSegments)
-      quad.plane     = new THREE.Mesh();
-      quad.plane.material = this.quadTreeconfig.config.material.clone();
-      quad.plane.frustumCulled = false
+
+      let bufferGeometry  = new THREE.BufferGeometry()
+      bufferGeometry.setIndex([]);
+      bufferGeometry.setAttribute('position', new THREE.Float32BufferAttribute( [], 3 ));
+      bufferGeometry.setAttribute('normal', new THREE.Float32BufferAttribute( [], 3 ));
+      bufferGeometry.setAttribute('uv', new THREE.Float32BufferAttribute( [], 2 ));
+      let material = this.quadTreeconfig.config.material.clone();
+
+      quad.plane     = new THREE.Mesh(bufferGeometry,material);
+
+
+     // quad.plane.frustumCulled = false
       return quad
       }
 
@@ -122,12 +131,21 @@ import { QuadWorker } from './utils';
         const w = this.quadData.width
         const arrybuffers = this.quadTreeconfig.config.arrybuffers[w]
       
-        const uvBuffer             = arrybuffers.geometry.uv
+        const stringUv             = arrybuffers.geometry.stringUv
         const stringPosition       = arrybuffers.geometry.stringPosition
+        const stringNormal         = arrybuffers.geometry.stringNormal
+
         const byteLengthPosition   = arrybuffers.geometry.byteLengthPosition
+        const byteLengthNormal     = arrybuffers.geometry.byteLengthNormal
+
         const position             = params.positionVector
-        const bufferPositionF      = new window.SharedArrayBuffer(byteLengthPosition); //byte length   
+
+        const bufferPositionF      = new window.SharedArrayBuffer(byteLengthPosition); //byte length
+        const bufferNormalF        = new window.SharedArrayBuffer(byteLengthNormal); //byte length   
+   
         const typedArrPF           = new Float32Array(bufferPositionF);
+        const typedArrNF           = new Float32Array(bufferNormalF);
+
         const center               = this.quadTreeconfig.config.center
         const radius               = this.quadTreeconfig.config.radius
         const parentPositionVector = params.parentPositionVector
@@ -135,16 +153,18 @@ import { QuadWorker } from './utils';
       
        let promiseWorker =  new QuadWorker("bw.js");
       promiseWorker.sendWork({
-        positionBuffer: bufferPositionF,
-        positionVector: position,
         parentPositionVector: parentPositionVector,
+        positionBuffer: bufferPositionF,
+        normalBuffer:   bufferNormalF,
+        positionVector: position,
         positionStr:    stringPosition,
+        normalStr:      stringNormal,
         center:         center,
         radius:         radius,
         side:           params.side
       });
       
-      promiseWorker.getWork(this.plane,typedArrPF,bufferIdx,uvBuffer)
+      promiseWorker.getWork(this,typedArrPF,typedArrNF,bufferIdx,stringUv)
       }
 
     createDimensions(sideName){

@@ -30,7 +30,7 @@ import { QuadWorker } from './utils';
         this.plane.add(q.plane)
         let parentPositionVector = [...this.plane.localToWorld(new THREE.Vector3()).toArray(),this.quadData.width]
         q.initGeometry({positionVector:q.plane.position.toArray(),parentPositionVector:parentPositionVector,side:this.side})        
-
+        q.active(false)
     }
 
     lighting(ld){
@@ -222,8 +222,8 @@ import { QuadWorker } from './utils';
     active(a){
       if (a == true){
         this._active = a
-        this.plane.material.visible = a;
           if(this.children.length != 0){
+            this.plane.material.visible = a;
             this.children[0].plane.material.visible = !a
             this.children[1].plane.material.visible = !a
             this.children[2].plane.material.visible = !a
@@ -232,6 +232,12 @@ import { QuadWorker } from './utils';
         }else if (a == false) {
           this._active = a
           this.plane.material.visible = a;
+          if(this.children.length != 0){
+            this.children[0].plane.material.visible = !a
+            this.children[1].plane.material.visible = !a
+            this.children[2].plane.material.visible = !a
+            this.children[3].plane.material.visible = !a
+          }
         }
       }
   

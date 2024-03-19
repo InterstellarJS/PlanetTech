@@ -125,7 +125,7 @@ class ViewGL {
 
   initPlayer(){
     //75020.19999997318
-    var boxGeometry        = new THREE.BoxGeometry( 10.01, 10.01, 10.01, 1 )
+    var boxGeometry        = new THREE.BoxGeometry( 100.01, 100.01, 100.01, 1 )
     var boxMaterial        = new THREE.MeshBasicMaterial({color:'red'});
     this.player            = new THREE.Mesh( boxGeometry, boxMaterial );
     this.player.position.z = 110000
@@ -176,16 +176,16 @@ class ViewGL {
 
     webWorker(){
     const params = {
-      width:          10000,
-      height:         10000,
-      widthSegment:      50,
-      heightSegment:     50,
-      quadTreeDimensions: 3,
+      width:            10000,
+      height:           10000,
+      widthSegment:      25,
+      heightSegment:     25,
+      quadTreeDimensions: 2,
       levels:             5,
-      radius:         80000,
-      displacmentScale: 75.,
-      lodDistanceOffset:3.5,
-      material: new NODE.MeshStandardNodeMaterial({}),
+      radius:          80000,
+      displacmentScale:  165.,
+      lodDistanceOffset:   6,
+      material: new NODE.MeshPhysicalNodeMaterial({}),
      // color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
     }
     
@@ -229,6 +229,8 @@ class ViewGL {
     this.s.bottom.addTexture([b,bd],params.displacmentScale,false)
     this.s.front.addTexture([f,fd],params.displacmentScale,false)
     this.s.back.addTexture([ba,bad],params.displacmentScale,false)
+
+    console.log(this.s.metaData())
 
 this.rend.scene_.add(this.s.sphere)
 

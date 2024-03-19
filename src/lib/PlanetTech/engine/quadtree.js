@@ -145,16 +145,10 @@ class QuadTreeLoDCore  {
 
   createChildren(w,h,rw,rh,quad){
     if (quad.children.length == 4){
-      //console.log(quad.children[1].plane.geometry)
-      //let func = child1.initGeometry({position:quad.plane.position.toArray(),parentPositionVector:[0,0,0]})
-     quad.active(false)
+     let isWebWorkerGeometry = quad.children.every( (val, i, arr) => val.plane.geometry.type === 'webWorkerGeometry' )
+     if (isWebWorkerGeometry)
+      quad.active(false)
 
-      if(quad.plane.geometry.type==='webWorkerGeometry'){
-        //console.log('webWorkerGeometry ')
-
-      }else if(quad.plane.geometry.type==='BufferGeometry'){
-        //console.log('BufferGeometry ')
-      }
       return quad.children
     }else{
       console.log(rw,rh)
@@ -163,20 +157,22 @@ class QuadTreeLoDCore  {
       var cnt   = this.config.cnt
       var textures =  (this.config.isTiles) ? this.config.dataTransfer[side][idx].textuers : this.config.dataTransfer[side].textuers
       var shardedGeometry = this.config.arrybuffers[w].geometry
+      //---
+      let dimensions = (this.config.isTiles) ? 1 : this.config.dimensions
+      var starting   = this.config.maxLevelSize*dimensions
+      var scaling    = w / starting
+      var halfScale  = scaling/2
       //--- 
       var child1  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NW')
       var child2  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'NE')
       var child3  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SE')
       var child4  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SW')
       //---    
-
       child1.plane.material.colorNode = NODE.vec3(...hexToRgbA(getRandomColor()))
       child2.plane.material.colorNode = NODE.vec3(...hexToRgbA(getRandomColor()))
       child3.plane.material.colorNode = NODE.vec3(...hexToRgbA(getRandomColor()))
       child4.plane.material.colorNode = NODE.vec3(...hexToRgbA(getRandomColor()))
-
-
-      
+      //---
       quad.add(child1);
       quad.add(child2);
       quad.add(child3);
@@ -191,8 +187,6 @@ class QuadTreeLoDCore  {
       child2.idx = idx
       child3.idx = idx
       child4.idx = idx
-      //---
-
       //---
       var cnt = new THREE.Vector3(...this.config.center)      
       child1.plane.worldToLocal(cnt)
@@ -210,8 +204,49 @@ class QuadTreeLoDCore  {
       child4.plane.worldToLocal(cnt)
       this.setCenter(child4,cnt)
       //---
-      //console.log(child1.center,child2.center,child3.center,child4.center)
-
+      if (quad.side == 'front'){
+        for (var i = 0; i < textures.length; i++) {
+          frontsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          frontsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          frontsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          frontsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+        }
+      }else if  (quad.side == 'back'){
+        for (var i = 0; i < textures.length; i++) {
+          backsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          backsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          backsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          backsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+        }
+      }else if  (quad.side == 'right'){
+        for (var i = 0; i < textures.length; i++) {
+          rightsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          rightsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          rightsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          rightsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+        }
+      }else if  (quad.side == 'left'){
+        for (var i = 0; i < textures.length; i++) {
+          leftsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          leftsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          leftsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          leftsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+        }
+      }else if  (quad.side == 'top'){
+        for (var i = 0; i < textures.length; i++) {
+          topsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          topsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          topsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          topsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+        }
+      }else if  (quad.side == 'bottom'){
+        for (var i = 0; i < textures.length; i++) {
+          bottomsetData({child:child1,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          bottomsetData({child:child2,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          bottomsetData({child:child3,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+          bottomsetData({child:child4,starting:starting,scaling:scaling,halfScale:halfScale,texture:textures[i],config:this.config})
+        }
+      }
     }
     return [child1,child2,child3,child4]
   }

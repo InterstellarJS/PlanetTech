@@ -75,7 +75,6 @@ export class QuadWorker {
       webWorkerGeometry.type = 'webWorkerGeometry';
       quad.plane.geometry    =  webWorkerGeometry
 
-  
       webWorkerGeometry.setIndex(idx);
       webWorkerGeometry.setAttribute('position', new THREE.Float32BufferAttribute( positionBuffer, 3 ));
       webWorkerGeometry.setAttribute('normal', new THREE.Float32BufferAttribute( normalBuffer, 3 ));
@@ -84,16 +83,7 @@ export class QuadWorker {
       const box3 = new THREE.Box3();
       box3.setFromObject(quad.plane,true)
       quad.plane.geometry.boundingBox=box3
-
-
-      quad.plane.material = (quad.plane.material.clone())//new NODE[quad.plane.material.constructor.name]().copy(quad.plane.material)
-     // quad.plane.material.positionNode =pn//NODE.positionLocal.add(NODE.sin( NODE.positionLocal).mul(200))
-    //  quad.plane.material.colorNode =cn
-   //   quad.plane.material.needsupdate =true
-    //  quad.plane.geometry.needsupdate =true
-
-
+      quad.plane.material = (quad.plane.material.clone())
     }
-
   }
 }

@@ -1,8 +1,8 @@
 import * as THREE  from 'three';
-import {norm}      from './utils'
+import {norm}      from './utils.js'
 import * as NODE   from 'three/nodes';
 import * as Shaders from '../shaders/index.js';
-import { getRandomColor,hexToRgbA  } from './utils';
+import { getRandomColor,hexToRgbA  } from './utils.js';
 
 
 function tileTransformer(obj){
@@ -27,9 +27,11 @@ export function frontsetData(obj){
     var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
+    var cnt = obj.cnt.clone()
+    p.worldToLocal(cnt)
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.positionNode = p.material.positionNode.add( displace );
+    p.material.colorNode = textureNodeN.xyz
     //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   }  
 
@@ -48,9 +50,11 @@ export function frontsetData(obj){
     var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
+    var cnt = obj.cnt
+    p.worldToLocal(obj.cnt)
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.positionNode = p.material.positionNode.add( displace );
+    p.material.colorNode = textureNodeN.xyz
     //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   }
   
@@ -70,9 +74,11 @@ export function frontsetData(obj){
     var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
+    var cnt = obj.cnt
+    p.worldToLocal(obj.cnt)
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.positionNode = p.material.positionNode.add( displace );
+    p.material.colorNode = textureNodeN.xyz
     //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   } 
   
@@ -92,9 +98,11 @@ export function frontsetData(obj){
     var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
+    var cnt = obj.cnt
+    p.worldToLocal(obj.cnt)
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.positionNode = p.material.positionNode.add( displace );
+    p.material.colorNode = textureNodeN.xyz
    // p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   } 
   
@@ -114,9 +122,11 @@ export function frontsetData(obj){
     var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
+    var cnt = obj.cnt
+    p.worldToLocal(obj.cnt)
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.positionNode = p.material.positionNode.add( displace );
+    p.material.colorNode = textureNodeN.xyz
     //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   } 
   
@@ -135,9 +145,11 @@ export function frontsetData(obj){
     var textureNodeN = NODE.texture(obj.texture[0],newUV)
     var textureNodeD = NODE.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
+    var cnt = obj.cnt
+    p.worldToLocal(obj.cnt)
+    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.positionLocal.sub(cnt).normalize())
+    p.material.positionNode = p.material.positionNode.add( displace );
+    p.material.colorNode = textureNodeN.xyz
     //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
   }
 

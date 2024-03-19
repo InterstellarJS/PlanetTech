@@ -25,6 +25,8 @@ struct Atmospheres {
   float HEIGHT_MIE;
   float HEIGHT_ABSORPTION;
   float ABSORPTION_FALLOFF;
+  float textureIntensity;
+  float AmbientLightIntensity;
 };
 `
 const uniformBlock = `
@@ -236,6 +238,102 @@ const postFragmentShader =
   
   ${screenToWorldBlock}
 
+  vec2 ray_sphere_intersect(
+    vec3 start, // starting position of the ray
+    vec3 dir, // the direction of the ray
+    float radius // and the sphere radius
+) {
+    // ray-sphere intersection that assumes
+    // the sphere is centered at the origin.
+    // No intersection when result.x > result.y
+    float a = dot(dir, dir);
+    float b = 2.0 * dot(dir, start);
+    float c = dot(start, start) - (radius * radius);
+    float d = (b*b) - 4.0*a*c;
+    if (d < 0.0) return vec2(1e5,-1e5);
+    return vec2(
+        (-b - sqrt(d))/(2.0*a),
+        (-b + sqrt(d))/(2.0*a)
+    );
+}
+
+
+vec3 skylight(vec3 sample_pos, vec3 surface_normal, vec3 light_dir, vec3 background_col) {
+
+  surface_normal = normalize(mix(surface_normal, light_dir, 0.6));
+  Atmospheres currentAtmospheres = atmospheres[0];
+
+  return calculate_scattering(
+    sample_pos,						// the position of the camera
+      surface_normal, 				// the camera vector (ray direction of this pixel)
+      3.0 * currentAtmospheres.ATMOSPHERE_RADIUS, 			// max dist, since nothing will stop the ray here, just use some arbitrary value
+      background_col,					// scene color, just the background color here
+      light_dir,						// light direction
+      currentAtmospheres.ulight_intensity,						// light intensity, 40 looks nice
+      currentAtmospheres.uray_light_color,
+      currentAtmospheres.umie_light_color,
+      currentAtmospheres.PLANET_CENTER,						// position of the planet
+      currentAtmospheres.PLANET_RADIUS,                  // radius of the planet in meters
+      currentAtmospheres.ATMOSPHERE_RADIUS,                   // radius of the atmosphere in meters
+      currentAtmospheres.RAY_BETA,						// Rayleigh scattering coefficient
+      currentAtmospheres.MIE_BETA,                       // Mie scattering coefficient
+      currentAtmospheres.ABSORPTION_BETA,                // Absorbtion coefficient
+      currentAtmospheres.AMBIENT_BETA,					// ambient scattering, turned off for now. This causes the air to glow a bit when no light reaches it
+      currentAtmospheres.G,                          	
+      currentAtmospheres.HEIGHT_RAY,                     
+      currentAtmospheres.HEIGHT_MIE,                     
+      currentAtmospheres.HEIGHT_ABSORPTION,
+      currentAtmospheres.ABSORPTION_FALLOFF,				
+      currentAtmospheres.PRIMARY_STEPS, 					
+      currentAtmospheres.LIGHT_STEPS 		
+  );
+}
+
+
+
+  vec4 render_scene(vec3 pos, vec3 dir, vec3 light_dir, vec3 addColor, vec3 PLANET_POS, float PLANET_RADIUS, float AmbientLightIntensity) {
+    
+    // the color to use, w is the scene depth
+    vec4 color = vec4(addColor, 1e25);
+    
+    // add a sun, if the angle between the ray direction and the light direction is small enough, color the pixels white
+    //color.xyz = vec3(dot(dir, light_dir) > 0.9998 ? 3.0 : 0.0);
+    
+    // get where the ray intersects the planet
+    vec2 planet_intersect = ray_sphere_intersect(pos - PLANET_POS, dir, PLANET_RADIUS); 
+    
+    // if the ray hit the planet, set the max distance to that ray
+    if (0.0 < planet_intersect.y) {
+    	//color.w = max(planet_intersect.x, 0.0);
+        
+        // sample position, where the pixel is
+        vec3 sample_pos = pos + (dir * planet_intersect.x) - PLANET_POS;
+        
+        // and the surface normal
+        vec3 surface_normal = normalize(sample_pos);
+        
+        // get the color of the sphere
+        color.xyz = addColor; 
+        
+        // get wether this point is shadowed, + how much light scatters towards the camera according to the lommel-seelinger law
+        vec3 N = surface_normal;
+        vec3 V = -dir;
+        vec3 L = light_dir;
+        float dotNV = max(1e-6, dot(N, V));
+        float dotNL = max(1e-6, dot(N, L));
+        float shadow = dotNL / (dotNL + dotNV);
+        
+        // apply the shadow
+        color.xyz *= shadow + AmbientLightIntensity;
+        
+        // apply skylight
+        //color.xyz += clamp(skylight(sample_pos, surface_normal, light_dir, vec3(0.0)) * addColor, 0.0, 1.0);
+    }
+    
+	return color;
+}
+
+
   void mainImage(const in vec4 inputColor, const in vec2 uv, const in float depth, out vec4 outputColor) {
 
     float d           = texture2D(depthBuffer, uv).x;
@@ -247,7 +345,19 @@ const postFragmentShader =
     vec3 col          = vec3(0.0);
 
     Atmospheres currentAtmospheres = atmospheres[0];
-    vec3 lightDirection = normalize(currentAtmospheres.lightDir);;
+    vec3 lightDirection = normalize(currentAtmospheres.lightDir);
+
+    addColor *= currentAtmospheres.textureIntensity;
+
+    addColor = render_scene(
+      rayOrigin, 
+      rayDirection, 
+      lightDirection,
+      addColor,
+      currentAtmospheres.PLANET_CENTER,
+      currentAtmospheres.PLANET_RADIUS,
+      currentAtmospheres.AmbientLightIntensity
+      ).rgb;
 
     col += calculate_scattering(
       rayOrigin,
@@ -273,7 +383,10 @@ const postFragmentShader =
       currentAtmospheres.PRIMARY_STEPS, 					
       currentAtmospheres.LIGHT_STEPS 					
     );
-    outputColor = vec4(col*2., 1.0);
+
+    col = 1.0 - exp(-col);
+
+    outputColor = vec4(col, 1.0);
   }
 `;
 

@@ -1,4 +1,3 @@
-import renderer from "../../render";
 import * as THREE  from 'three'
 import {SMAAEffect,BlendFunction, Effect, EffectComposer, RenderPass,EffectPass,EffectAttribute, WebGLExtension} from "postprocessing";
 import { Uniform, HalfFloatType  } from "three";
@@ -396,16 +395,16 @@ export class Atmosphere{
     constructor() {
     }
   
-    createcomposer(params){
+    createcomposer(params,camera_){
          class CustomEffect extends Effect {
-          constructor(camera) {
-            renderer.camera_.getWorldDirection(cameraDir);
+          constructor() {
+            camera_.getWorldDirection(cameraDir);
             super("CustomEffect", postFragmentShader, {
               uniforms: new Map([
                 ["atmospheres",       new Uniform(params)],
-                ["uCameraPosition",   new Uniform(renderer.camera_.position)],
-                ["inverseProjection", new Uniform(renderer.camera_.projectionMatrixInverse)],
-                ["inverseView",       new Uniform(renderer.camera_.matrixWorld)],
+                ["uCameraPosition",   new Uniform(camera_.position)],
+                ["inverseProjection", new Uniform(camera_.projectionMatrixInverse)],
+                ["inverseView",       new Uniform(camera_.matrixWorld)],
                 ["uCameraDir",        new Uniform(cameraDir)],
               ]),
               attributes: EffectAttribute.DEPTH,
@@ -413,14 +412,14 @@ export class Atmosphere{
             });
           }
         }
-        this.depthPass = new CustomEffect(renderer.camera_);
+        this.depthPass = new CustomEffect();
       }
       
-      run() {
-        renderer.camera_.getWorldDirection(cameraDir);
-        this.depthPass.uniforms.get('uCameraPosition')  .value = renderer.camera_.position
-        this.depthPass.uniforms.get('inverseProjection').value = renderer.camera_.projectionMatrixInverse
-        this.depthPass.uniforms.get('inverseView')      .value = renderer.camera_.matrixWorld
+      run(camera_) {
+        camera_.getWorldDirection(cameraDir);
+        this.depthPass.uniforms.get('uCameraPosition')  .value = camera_.position
+        this.depthPass.uniforms.get('inverseProjection').value = camera_.projectionMatrixInverse
+        this.depthPass.uniforms.get('inverseView')      .value = camera_.matrixWorld
         this.depthPass.uniforms.get('uCameraDir')       .value = cameraDir
       };
 

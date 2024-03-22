@@ -92,7 +92,6 @@ if (data.side=='right'){
 
   self.onmessage = function(msg) {
     const payload = msg.data
-    console.log('webpackworker')
     doCalculation(payload, function(err, result) {
       const msg = {
         err,

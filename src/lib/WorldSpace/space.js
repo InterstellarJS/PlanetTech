@@ -1,26 +1,28 @@
-import { Atmosphere } from "./Shaders/atmosphereScattering";
+import { Atmosphere } from "./Shaders/atmosphereScattering.js";
 import {EffectComposer, RenderPass, EffectPass} from "postprocessing";
 import {HalfFloatType} from "three";
-import renderer from "../render"; 
-import Clouds from "./Shaders/clouds";
 
 export class Space{
-    constructor(){
+    constructor(render,scene_,camera_){
         this.planets = []
         this.isAtmosphere = false
+        this.render  = render
+        this.scene_  = scene_
+        this.camera_ = camera_
+
     }
 
     initComposer(){
         this.container = document.getElementById('canvasContainer');
-        this.composer  = new EffectComposer(renderer.renderer,{frameBufferType: HalfFloatType});
-        this.composer.addPass(new RenderPass(renderer.scene_, renderer.camera_));
+        this.composer  = new EffectComposer(this.render,{frameBufferType: HalfFloatType});
+        this.composer.addPass(new RenderPass(this.scene_, this.camera_));
         this.composer.setSize(this.container.clientWidth,this.container.clientHeight);
     }
 
     addEffects(effects){
         const that = this
         effects.forEach((e)=>{
-            that.composer.addPass(new EffectPass(renderer.camera_, e));
+            that.composer.addPass(new EffectPass(this.camera_, e));
         })
     }
 
@@ -31,21 +33,16 @@ export class Space{
 
     setAtmosphere(){
         this.atmosphere = new Atmosphere()
-        this.atmosphere.createcomposer(this.planets.map((e)=>{return e.atmosphere})) 
+        this.atmosphere.createcomposer(this.planets.map((e)=>{return e.atmosphere}),this.camera_) 
         this.addEffects([this.atmosphere.depthPass])
         this.isAtmosphere = true
     }
 
-    setClouds(){
-        this.clouds = new Clouds()
-        this.clouds.createcomposer() 
-        this.addEffects([this.clouds.depthPass])
-        this.isclouds = true
-    }
+
 
     update(player){
         if (this.isAtmosphere) 
-            this.atmosphere.run()
+            this.atmosphere.run(this.camera_)
         this.planets.forEach((p)=>{
             p.planet.update(player)
         })

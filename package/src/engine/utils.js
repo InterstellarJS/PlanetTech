@@ -70,7 +70,6 @@ export class QuadWorker {
   getWork(quad,positionBuffer,normalBuffer,idx,stringUv){
     
     this.worker.onmessage =(_)=>{
-      console.log(quad.plane.material.wireframe)
       let webWorkerGeometry  = new THREE.BufferGeometry()
       webWorkerGeometry.type = 'webWorkerGeometry';
       quad.plane.geometry    =  webWorkerGeometry

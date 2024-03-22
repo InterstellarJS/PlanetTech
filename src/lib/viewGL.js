@@ -16,9 +16,9 @@ import { DynamicTextures, DynamicTileTextureManager} from './cubeMap/tileTexture
 import { tileTextureExample,fullTextureExample } from './examples/dynamicTileTextureManager';
 import { addTextureTiles } from './examples/basic';
 import { PromiseWorker } from './PlanetTech/engine/utils';
-//import {Sphere} from 'planettech/src/sphere/sphere.js';
-import * as M from 'planettech';
-console.log(M)
+import Sphere from './PlanetTech/sphere/sphere';
+import * as PT from 'planettech'
+console.log(PT)
 
 
 
@@ -61,8 +61,8 @@ class ViewGL {
     this.rend.camera();
     this.rend.updateCamera(0,0,110000*8)
     this.rend.orbitControls()
-    this.rend.renderer.setClearColor('white');
-    //this.space = new Space()
+    this.rend.renderer.setClearColor('black');
+    this.space = new Space(this.rend.renderer,this.rend.scene_,this.rend.camera_)
   }
   
   initViewPort(canvasViewPort) {
@@ -153,9 +153,7 @@ class ViewGL {
     this.rend.scene_.add(pp)
 
 
-    const directionalLight = new THREE.DirectionalLight( 0xffffff, 5.5 );
-    directionalLight.position.set(0.0,0.0,1.0)
-    this.rend.scene_.add(directionalLight)
+
 
     const light = new THREE.AmbientLight( 0x404040, 5 ); // soft white light
     this.rend.scene_.add( light );
@@ -175,81 +173,43 @@ class ViewGL {
   }
 
 
-    webWorker(){
-    const params = {
-      width:            10000,
-      height:           10000,
-      widthSegment:      25,
-      heightSegment:     25,
-      quadTreeDimensions: 2,
-      levels:             5,
-      radius:          80000,
-      displacmentScale:  165.,
-      lodDistanceOffset:   6,
-      material: new NODE.MeshPhysicalNodeMaterial({}),
-     // color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
-    }
-    
-    let s = new M.Sphere(
-      params.width,
-      params.height,
-      params.widthSegment,
-      params.heightSegment,
-      params.quadTreeDimensions
-    )
-    
-  s.build(
-      params.levels,
-      params.radius,
-      params.displacmentScale,
-      params.lodDistanceOffset,
-      params.material,
-      params.color,
-    )
+    async webWorker(){
+      this.celestialBodie = await fullTextureExample(this.rend.renderer)
+      let lightVector = new THREE.Vector3(0.0,0.0,1.0)
 
-    this.s = s
+      this.space.initComposer()
+      this.space.addPlanets(this.celestialBodie,{
+        PLANET_CENTER:      new THREE.Vector3(...this.celestialBodie.metaData().center),
+        PLANET_RADIUS:      this.celestialBodie.metaData().radius,
+        ATMOSPHERE_RADIUS:  81000,
+        lightDir:           lightVector,
+        ulight_intensity:   new THREE.Vector3(20.0,20.0,20.0),
+        uray_light_color:   new THREE.Vector3(1.0,1.0,1.0),
+        umie_light_color:   new THREE.Vector3(5.0,5.0,5.0),
+        RAY_BETA:           new THREE.Vector3(5.5e-6, 13.0e-6, 22.4e-6).multiplyScalar(30.5),
+        MIE_BETA:           new THREE.Vector3(21e-6, 21e-6, 21e-6).multiplyScalar(30.5),
+        AMBIENT_BETA:       new THREE.Vector3(0.0),
+        ABSORPTION_BETA:    new THREE.Vector3(2.04e-5, 4.97e-5, 1.95e-6).multiplyScalar(79.5),
+        HEIGHT_RAY:         8e3/100.5,
+        HEIGHT_MIE:         1.2e3/100.5,
+        HEIGHT_ABSORPTION:  30e3/79.5,
+        ABSORPTION_FALLOFF: 4e3/79.5,
+        PRIMARY_STEPS:      12,
+        LIGHT_STEPS:        8,
+        G:                  0.0000007,
+        textureIntensity:   1.
+      })
+      this.space.setAtmosphere()
+      this.space.addEffects([new SMAAEffect()])
+  
+      const directionalLight = new THREE.DirectionalLight( 0xffffff, 5.5 );
+      directionalLight.position.copy(lightVector)
 
+      this.rend.scene_.add(directionalLight)
 
-    let r = new THREE.TextureLoader().load('./planet/color/c/right_color_image.png')
-    let l = new THREE.TextureLoader().load('./planet/color/c/left_color_image.png')
-    let t = new THREE.TextureLoader().load('./planet/color/c/top_color_image.png')
-    let b = new THREE.TextureLoader().load('./planet/color/c/bottom_color_image.png')
-    let f = new THREE.TextureLoader().load('./planet/color/c/front_color_image.png')
-    let ba = new THREE.TextureLoader().load('./planet/color/c/back_color_image.png')
-    
-    let rd = new THREE.TextureLoader().load('./planet/color/d/right_displacement_image.png')
-    let ld = new THREE.TextureLoader().load('./planet/color/d/left_displacement_image.png')
-    let td = new THREE.TextureLoader().load('./planet/color/d/top_displacement_image.png')
-    let bd = new THREE.TextureLoader().load('./planet/color/d/bottom_displacement_image.png')
-    let fd = new THREE.TextureLoader().load('./planet/color/d/front_displacement_image.png')
-    let bad = new THREE.TextureLoader().load('./planet/color/d/back_displacement_image.png')
-    
-    this.s.right.addTexture([r,rd],params.displacmentScale,false)
-    this.s.left.addTexture([l,ld],params.displacmentScale,false)
-    this.s.top.addTexture([t,td],params.displacmentScale,false)
-    this.s.bottom.addTexture([b,bd],params.displacmentScale,false)
-    this.s.front.addTexture([f,fd],params.displacmentScale,false)
-    this.s.back.addTexture([ba,bad],params.displacmentScale,false)
-
-    console.log(this.s.sphereInstance)
-
-this.rend.scene_.add(this.s.sphere)
+   this.rend.scene_.add( this.celestialBodie.sphere );
 
 
-
-
-
-
-/*
-setTimeout(()=>{
-  console.log('rrrrrrrr')
-  this.s.right.addTexture([r,r],params.displacmentScale,false)
-  this.s.left.addTexture([l,l],params.displacmentScale,false)
-  this.s.top.addTexture([t,t],params.displacmentScale,false)
-  this.s.bottom.addTexture([b,b],params.displacmentScale,false)
-  this.s.front.addTexture([f,f],params.displacmentScale,false)
-  this.s.back.addTexture([ba,ba],params.displacmentScale,false)
-}, 20000)*/
 
   }
 
@@ -257,12 +217,10 @@ setTimeout(()=>{
     requestAnimationFrame(this.update.bind(this));
     this.rend.stats_.begin();
     this.controls.update(this.clock.getDelta())
-
-   for (var i = 0; i < this.s.sphereInstance.length; i++) {
-    this.s.sphereInstance[i].update(this.player)
-    } 
-    ff(this.rend.camera_,this.rend.scene_)
-    this.rend.renderer.render(this.rend.scene_, this.rend.camera_);
+    if(this.celestialBodie){
+      //this.celestialBodie.update(this.player)
+      this.space.update(this.player)
+    }
     this.rend.stats_.end();
     nodeFrame.update();
   }

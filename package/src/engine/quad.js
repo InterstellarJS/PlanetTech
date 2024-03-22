@@ -150,8 +150,8 @@ import { QuadWorker } from './utils.js';
         const radius               = this.quadTreeconfig.config.radius
         const parentPositionVector = params.parentPositionVector
         const bufferIdx            = arrybuffers.idx
-      
-       let promiseWorker =  new QuadWorker(new Worker(new URL('./worker.js', import.meta.url),{ type: "module" }));
+        
+       let promiseWorker =  new QuadWorker(new Worker(new URL('./worker.js', import.meta.url).toString(),{ type: "module" }));
       promiseWorker.sendWork({
         parentPositionVector: parentPositionVector,
         positionBuffer: bufferPositionF,

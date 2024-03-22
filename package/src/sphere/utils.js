@@ -1,3 +1,5 @@
+import * as THREE   from 'three';
+
 export function meshToObj3D(group,instances){
     let g = new THREE.Group()
     let newInst = instances.map((e,i)=>{
@@ -21,3 +23,7 @@ export function meshToObj3D(group,instances){
     })
     return {g,newInst}
   }
+
+export function project( v, r, center ){
+	v.sub( center ).setLength( r ).add( center );
+}

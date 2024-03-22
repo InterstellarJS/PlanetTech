@@ -16,8 +16,9 @@ import { DynamicTextures, DynamicTileTextureManager} from './cubeMap/tileTexture
 import { tileTextureExample,fullTextureExample } from './examples/dynamicTileTextureManager';
 import { addTextureTiles } from './examples/basic';
 import { PromiseWorker } from './PlanetTech/engine/utils';
-import Sphere from './PlanetTech/sphere/sphere';
-console.log(NODE)
+//import {Sphere} from 'planettech/src/sphere/sphere.js';
+import * as M from 'planettech';
+console.log(M)
 
 
 
@@ -189,7 +190,7 @@ class ViewGL {
      // color: () => NODE.vec3(...hexToRgbA(getRandomColor())),
     }
     
-    let s = new Sphere(
+    let s = new M.Sphere(
       params.width,
       params.height,
       params.widthSegment,
@@ -230,7 +231,7 @@ class ViewGL {
     this.s.front.addTexture([f,fd],params.displacmentScale,false)
     this.s.back.addTexture([ba,bad],params.displacmentScale,false)
 
-    console.log(this.s.metaData())
+    console.log(this.s.sphereInstance)
 
 this.rend.scene_.add(this.s.sphere)
 
@@ -258,7 +259,7 @@ setTimeout(()=>{
     this.controls.update(this.clock.getDelta())
 
    for (var i = 0; i < this.s.sphereInstance.length; i++) {
-     this.s.sphereInstance[i].update(this.player)
+    this.s.sphereInstance[i].update(this.player)
     } 
     ff(this.rend.camera_,this.rend.scene_)
     this.rend.renderer.render(this.rend.scene_, this.rend.camera_);

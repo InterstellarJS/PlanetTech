@@ -12,7 +12,7 @@
 /_README.md
 # production
 /build
-
+/package/node_modules
 
 # misc
 .DS_Store

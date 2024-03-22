@@ -67,16 +67,15 @@ let N = await Promise.all([
   ])
   let moon = new Moon({
     size:            10000,
-    polyCount:          250,
-    quadTreeDimensions:  1,
-    levels:              4,
+    polyCount:          25,
+    quadTreeDimensions: 2,
+    levels:             5,
     radius:          80000,
-    displacmentScale:  75.5,
-    lodDistanceOffset: 12.4,
-    material: new NODE.MeshBasicNodeMaterial()
+    displacmentScale:  165.,
+    lodDistanceOffset:   6,
+    material: new NODE.MeshPhysicalNodeMaterial({}),
   })
   moon.textuers(N,D)
-  //moon.light(NODE.vec3(1.4,-1.4,1.3))
   return moon
 }
 

@@ -12,11 +12,10 @@ export class Space{
 
     }
 
-    initComposer(){
-        this.container = document.getElementById('canvasContainer');
+    initComposer(wdith,height){
         this.composer  = new EffectComposer(this.render,{frameBufferType: HalfFloatType});
         this.composer.addPass(new RenderPass(this.scene_, this.camera_));
-        this.composer.setSize(this.container.clientWidth,this.container.clientHeight);
+        this.composer.setSize(wdith,height);
     }
 
     addEffects(effects){

@@ -4,15 +4,20 @@
 /node_modules
 /.pnp
 .pnp.js
-/src/lib/core/textures/cubetexture.js
+
+/src
 /public/planet
-# testing
+/public
+/package/node_modules
+/test
 /testPackage
+babel.config.js
+package-lock.json
+# testing
 /coverage
 /_README.md
 # production
 /build
-/package/node_modules
 
 # misc
 .DS_Store

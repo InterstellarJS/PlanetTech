@@ -140,8 +140,12 @@ import { QuadWorker } from './utils.js';
 
         const position             = params.positionVector
 
-        const bufferPositionF      = new window.SharedArrayBuffer(byteLengthPosition); //byte length
-        const bufferNormalF        = new window.SharedArrayBuffer(byteLengthNormal); //byte length   
+        const bufferPositionF      = new SharedArrayBuffer(byteLengthPosition); //byte length
+        const bufferNormalF        = new SharedArrayBuffer(byteLengthNormal); //byte length
+
+        //DEPENDING IF ENVIERMENT IS REACT I NEED TO CALL window.SharedArrayBuffer
+        //const bufferPositionF      = new window.SharedArrayBuffer(byteLengthPosition); //byte length
+        //const bufferNormalF        = new window.SharedArrayBuffer(byteLengthNormal); //byte length   
    
         const typedArrPF           = new Float32Array(bufferPositionF);
         const typedArrNF           = new Float32Array(bufferNormalF);

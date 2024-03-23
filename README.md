@@ -3,7 +3,7 @@
 
 # PlanetTechJS (ALPHA V0.5) 
 <p align="center">
-  <img src="./public/readmeImg/logoPT.png" />
+  <img src="./assets/readmeImg/logoPT.png" />
 </p>
 
 ## Goal
@@ -112,18 +112,18 @@ https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/f4621d3a-85ff-4224-
 
 ## Gallery
 <p align="center">
-  <img src="./public/readmeImg/output.png" />
-  <img src="./public/readmeImg/output1.png" />
-  <img src="./public/readmeImg/p26.png" />
-  <img src="./public/readmeImg/p27.png" />
-  <img src="./public/readmeImg/p25.png" />
-  <img src="./public/readmeImg/planet1.png" />
-  <img src="./public/readmeImg/planet2.png" />
-  <img src="./public/readmeImg/planet4.png" />
-  <img src="./public/readmeImg/planet5.png" />
-  <img src="./public/readmeImg/p20.png" />
-  <img src="./public/readmeImg/p21.png" />
-  <img src="./public/readmeImg/p22.png" />
-  <img src="./public/readmeImg/p23.png" />
-  <img src="./public/readmeImg/p24.png" />
+  <img src="./assets/readmeImg/output.png" />
+  <img src="./assets/readmeImg/output1.png" />
+  <img src="./assets/readmeImg/p26.png" />
+  <img src="./assets/readmeImg/p27.png" />
+  <img src="./assets/readmeImg/p25.png" />
+  <img src="./assets/readmeImg/planet1.png" />
+  <img src="./assets/readmeImg/planet2.png" />
+  <img src="./assets/readmeImg/planet4.png" />
+  <img src="./assets/readmeImg/planet5.png" />
+  <img src="./assets/readmeImg/p20.png" />
+  <img src="./assets/readmeImg/p21.png" />
+  <img src="./assets/readmeImg/p22.png" />
+  <img src="./assets/readmeImg/p23.png" />
+  <img src="./assets/readmeImg/p24.png" />
 </p>

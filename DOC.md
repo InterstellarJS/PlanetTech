@@ -3,7 +3,7 @@
 
 # PlanetTechJS (ALPHA V0.1) 
 <p align="center">
-  <img src="./public/readmeImg/atmo15.png" />
+  <img src="./assets/readmeImg/atmo15.png" />
 </p>
 
 
@@ -114,7 +114,7 @@ function update(t) {
 }
 
 ```
-![quad Sphere](./public/readmeImg/img2.png)
+![quad Sphere](./assets/readmeImg/img2.png)
 
 ### Input Parameters
 
@@ -132,11 +132,11 @@ function update(t) {
 
 ### Dimensions 
 Now let's crank up the `dimensions` all the way to 10 (a reasonable number without my machine freezing up). So you'll be creating a sphere with 10x10x6 dimensions at a resolution of 50. You can play with the parameters to fit your needs; the only limitation is your machine.
-![quad Sphere](./public/readmeImg/img3.png)
+![quad Sphere](./assets/readmeImg/img3.png)
 
 ### Levels 
 To get a better understanding of the `levels` parameter, let's take a look at a single quad (single dimension). If we were to grab a quad from our sphere without the projection so its a flat plane, and adding a simple height map texture. Setting `params.levels = 6` gives a single dimension the ability to go six levels deep. As you can see each child in each level with a random color. 
-![quad Sphere](./public/readmeImg/img4.jpg)
+![quad Sphere](./assets/readmeImg/img4.jpg)
 
 
 # CubeMap
@@ -201,8 +201,8 @@ let N = normalMap.textuerArray
 
  The normal and displacement map for the front face.
 <p align="center">
-  <img src="./public/readmeImg/nss1.png" width="400" />
-  <img src="./public/readmeImg/dss1.png" width="400" />
+  <img src="./assets/readmeImg/nss1.png" width="400" />
+  <img src="./assets/readmeImg/dss1.png" width="400" />
 </p>
 
 
@@ -268,7 +268,7 @@ function update(t) {
 ```
 
 <p align="center">
-  <img src="./public/readmeImg/w.png"/>
+  <img src="./assets/readmeImg/w.png"/>
 </p>
 
 Here is a video of our planet. The 1 meter red cube is used to visualize the scale/percision of the height map.
@@ -363,10 +363,10 @@ function update(t) {
 ```
 <p align="center">
   Here is PlanetTechJS using CubeMapJS and Atmosphere.
-  <img src="./public/readmeImg/atom6.png" />
-  <img src="./public/readmeImg/atmo7.png" />
-  <img src="./public/readmeImg/atmo8.png" />
-  <img src="./public/readmeImg/atmo2.png" />
+  <img src="./assets/readmeImg/atom6.png" />
+  <img src="./assets/readmeImg/atmo7.png" />
+  <img src="./assets/readmeImg/atmo8.png" />
+  <img src="./assets/readmeImg/atmo2.png" />
 </p>
 
 
@@ -374,7 +374,7 @@ function update(t) {
 Calling `Sphere.metaData()` method returns an object that contains all the important data for the Sphere engine. This data is what's being shared to instruct the quadtree on what to do. Here, you can see the data we generated for our planet.
 
 <p align="center">
-  <img src="./public/readmeImg/log.png" />
+  <img src="./assets/readmeImg/log.png" />
 </p>
 
 - `arrayBuffers` contains all the geometry for each level, with the key being the dimensions of the mesh.

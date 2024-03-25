@@ -1,9 +1,9 @@
 ⚠️ **Disclaimer:** PlanetTechJS is currently in its alpha version and is being developed by a single developer. Consequently, it's important to keep in mind that there may be bugs, spelling errors, lack of tests, and occasional inconsistencies in the library. While every effort is being made to provide a stable and enjoyable experience, please approach the library with the understanding that it's a work in progress. Your feedback, bug reports, and contributions are highly appreciated as they play a crucial role in improving the library and ensuring its quality.
 
 
-# PlanetTechJS (ALPHA V0.5) 
+# PlanetTechJS (ALPHA V0.8) 
 <p align="center">
-  <img src="./public/readmeImg/logoPT.png" />
+  <img src="./assets/readmeImg/logoPT.png" />
 </p>
 
 ## Goal
@@ -20,8 +20,6 @@ What sets this library apart is its utilization of the GPU for all tasks. This i
 ## Doc
 Read the [Doc](./DOC.md) for a low level understanding of how things work.
 
-## Getting Started
-Download and run the project. Go to http://localhost:3001/. The file for the demo is located at src/lib/viewGL.js. If things aren't working, open an issue, and I will try to correct any problems.
 
 ## Basic Usage
 ```javascript
@@ -110,20 +108,3 @@ update()
 ```
 https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/f4621d3a-85ff-4224-be1f-8ae059b7efcc
 
-## Gallery
-<p align="center">
-  <img src="./public/readmeImg/output.png" />
-  <img src="./public/readmeImg/output1.png" />
-  <img src="./public/readmeImg/p26.png" />
-  <img src="./public/readmeImg/p27.png" />
-  <img src="./public/readmeImg/p25.png" />
-  <img src="./public/readmeImg/planet1.png" />
-  <img src="./public/readmeImg/planet2.png" />
-  <img src="./public/readmeImg/planet4.png" />
-  <img src="./public/readmeImg/planet5.png" />
-  <img src="./public/readmeImg/p20.png" />
-  <img src="./public/readmeImg/p21.png" />
-  <img src="./public/readmeImg/p22.png" />
-  <img src="./public/readmeImg/p23.png" />
-  <img src="./public/readmeImg/p24.png" />
-</p>

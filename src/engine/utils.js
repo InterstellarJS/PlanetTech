@@ -88,8 +88,6 @@ export class QuadWorker {
 }
 
 let frustumObj = new THREE.Frustum()
-
-
 export function quadTreeFrustCulling(camera_,scene_){
   let frustum = frustumObj.setFromProjectionMatrix( new THREE.Matrix4().multiplyMatrices(  camera_.projectionMatrix,  camera_.matrixWorldInverse ) );
   scene_.traverse( node => {

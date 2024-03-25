@@ -1,7 +1,7 @@
 {
   "name": "planettech",
   "version": "0.0.8-alpha.0.1.1",
-  "description": "Asset toolkit for creating real 3D planets that can be transtioned from ground to sky.",
+  "description": "Toolkit for creating real 3D planets that can be transtioned from ground to sky.",
   "main": "index.js",
   "type": "module",
   "scripts": {

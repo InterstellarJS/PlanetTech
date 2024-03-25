@@ -12,7 +12,6 @@
 /test
 /testPackage
 babel.config.js
-package-lock.json
 
 # testing
 /coverage

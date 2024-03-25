@@ -5,6 +5,7 @@ import {QuadTrees}  from '../engine/quadtree.js'
 import {project }   from './utils.js';
 import { hexToRgbA,getRandomColor } from '../engine/utils.js';
 
+
 export class Sphere{
   constructor(w,h,ws,hs,d) {
     this.w  = w

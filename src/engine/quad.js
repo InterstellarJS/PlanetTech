@@ -2,8 +2,8 @@ import * as NODE    from 'three/nodes';
 import * as THREE   from 'three';
 import {QuadTrees}  from './quadtree.js'
 import {norm}       from './utils.js'
-import { QuadWorker } from './utils.js';
-
+import {QuadWorker} from './utils.js';
+import {worker} from './worker'
 
   export class Quad{
     constructor(w,h,ws,hs,d){
@@ -121,7 +121,8 @@ import { QuadWorker } from './utils.js';
         const parentPositionVector = params.parentPositionVector
         const bufferIdx            = arrybuffers.idx
         
-       let promiseWorker =  new QuadWorker(new Worker(new URL('./worker.js', import.meta.url).toString(),{ type: "module" }));
+      let blob = new Blob([worker()], {type: 'application/javascript'}); 
+       let promiseWorker =  new QuadWorker(new Worker(URL.createObjectURL(blob),{ type: "module" }));
       promiseWorker.sendWork({
         parentPositionVector: parentPositionVector,
         positionBuffer: bufferPositionF,

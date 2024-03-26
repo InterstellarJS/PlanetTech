@@ -125,11 +125,11 @@ export class Sphere{
       e.center = wp
       e.isRoot = true
       
-      const g = new THREE.SphereGeometry( 1005, 5, 5 ); 
+      /*const g = new THREE.SphereGeometry( 1005, 5, 5 ); 
       var ma = new THREE.MeshBasicMaterial({color:'blue'});
       let m  = new THREE.Mesh( g, ma );
       e.plane.add(m)
-      m.position.copy( wp)
+      m.position.copy( wp)*/
     })
   }
 

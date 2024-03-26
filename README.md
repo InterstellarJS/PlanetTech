@@ -2,11 +2,13 @@
 
 
 # PlanetTechJS (ALPHA V0.8) 
-[OFFICIAL DEMO](https://miguelmyers8.github.io/PlanetTechJS/examples/)
-
 <p align="center">
   <img src="./assets/Astron.png" />
 </p>
+
+
+## DEMO
+[OFFICIAL DEMO](https://miguelmyers8.github.io/PlanetTechJS/examples/)
 
 ## Goal
 
@@ -29,8 +31,9 @@ $ python3 -m http.server
 Past `http://localhost:8000/` into the browser.
 
 ## Build From Source
-If would like to work on this, install it locally first thing you need to do is. Copy the coi-serviceworker.js file and paste it
-in the root of where your index.html file is located and link to it. Then run the following commands.
+If you would like to work on this, the first thing you need to do is install it locally. 
+Copy the coi-serviceworker.js file from ./examples and paste it in the root directory where your index.html file is located,
+then link to it. Afterward, run the following commands.
 ```
 $ cd ./to/your/projects/root
 $ git clone https://github.com/miguelmyers8/PlanetTechJS.git

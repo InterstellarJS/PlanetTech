@@ -3,7 +3,7 @@
 
 # PlanetTechJS (ALPHA V0.8) 
 <p align="center">
-  <img src="./assets/readmeImg/logoPT.png" />
+  <img src="./assets/Astron.png" />
 </p>
 
 ## Goal
@@ -17,94 +17,27 @@ PlanetTechJS is an open-source JavaScript library built using vanilla THREE.js, 
 
 What sets this library apart is its utilization of the GPU for all tasks. This includes generating textures for each facet, performing displacement, and shaping PlaneGeometries into spherical forms; the entire process occurs on the GPU. Consequently, there is no need for WebWorkers at this stage.
 
-## Doc
-Read the [Doc](./DOC.md) for a low level understanding of how things work.
-
-
-## Basic Usage
-```javascript
-import renderer from './render';
-import { getRandomColor,hexToRgbA } from './PlanetTech/engine/utils'
-import { Moon } from './PlanetTech/celestialBodies/moon';
-import { nodeFrame }  from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js';
-import { Space } from './WorldSpace/space';
-
-let moon
-let space 
-let player = /*object that can move, camera or object3D.*/
-let rend = renderer;
-rend.WebGLRenderer(canvasViewPort);
-rend.scene();
-rend.stats();
-rend.camera();
-rend.updateCamera(0,0,110005*3)
-rend.orbitControls()
-
-async function init(){
-  let D = await Promise.all([
-    new THREE.TextureLoader().loadAsync('./planet/color/d/right_displacement_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/color/d/left_displacement_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/color/d/top_displacement_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/color/d/bottom_displacement_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/color/d/front_displacement_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/color/d/back_displacement_image.png'),
-  ])
-
-let N = await Promise.all([
-    new THREE.TextureLoader().loadAsync('./planet/color/c/right_color_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/color/c/left_color_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/color/c/top_color_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/color/c/bottom_color_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/color/c/front_color_image.png'),
-    new THREE.TextureLoader().loadAsync('./planet/color/c/back_color_image.png'),
-  ])
-
-let moon = new Moon({
-  size:            10000,
-  polyCount:          50,
-  quadTreeDimensions:  4,
-  levels:              4,
-  radius:          80000,
-  displacmentScale: 80.5,
-  lodDistanceOffset: 7.4,
-  material: new NODE.MeshBasicNodeMaterial(),
-})
-
-moon.textuers(N,D)
-moon.light(NODE.vec3(1.4,-1.4,1.4))
-let space = new Space()
-space.initComposer()
-space.addPlanets(     moon,
-{ PLANET_CENTER:      moon.metaData().cnt.clone(),
-  PLANET_RADIUS:      moon.metaData().radius,
-  ATMOSPHERE_RADIUS:  81000,
-  lightDir:           new THREE.Vector3(0,0,1),
-  ulight_intensity:   new THREE.Vector3(9.0,9.0,9.0),
-  uray_light_color:   new THREE.Vector3(1.0,1.0,1.0),
-  umie_light_color:   new THREE.Vector3(1.0,1.0,1.0),
-  RAY_BETA:           new THREE.Vector3(5.5e-6, 13.0e-6, 22.4e-6).multiplyScalar(34.5),
-  MIE_BETA:           new THREE.Vector3(21e-6, 21e-6, 21e-6).multiplyScalar(34.5),
-  AMBIENT_BETA:       new THREE.Vector3(0.0),
-  ABSORPTION_BETA:    new THREE.Vector3(2.04e-5, 4.97e-5, 1.95e-6).multiplyScalar(79.5),
-  HEIGHT_RAY:         8e3/85.5,
-  HEIGHT_MIE:         1.2e3/85.5,
-  HEIGHT_ABSORPTION:  30e3/79.5,
-  ABSORPTION_FALLOFF: 4e3/79.5,
-  PRIMARY_STEPS:      12,
-  LIGHT_STEPS:         4,
-  G:                  0.00007})
-space.setAtmosphere()
-space.addEffects([new SMAAEffect()])
-rend.scene_.add(moon.sphere)
-}
-
-function update(space,player) {
-  space.update(player)
-  nodeFrame.update()
-}
-
-init()
-update()
+## Getting Started
+To run the basic example:
 ```
+$ git clone https://github.com/miguelmyers8/PlanetTechJS.git
+$ cd PlanetTechJS/exmaples
+$ python3 -m http.server
+```
+Past `http://localhost:8000/` into the browser.
+
+## Build From Source
+If would like to work on this, install it locally first thing you need to do is. Copy the coi-serviceworker.js file and paste it
+in the root of where your index.html file is located and link to it. Then run the following commands.
+```
+$ cd ./to/your/projects/root
+$ git clone https://github.com/miguelmyers8/PlanetTechJS.git
+$ cd PlanetTechJS
+$ npm install && npm link
+$ cd ./to/your/projects/root
+$ npm link planettech
+```
+
+
 https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/f4621d3a-85ff-4224-be1f-8ae059b7efcc
 

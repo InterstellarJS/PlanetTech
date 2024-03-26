@@ -1,7 +1,7 @@
 {
   "homepage": "https://miguelmyers8.github.io/PlanetTechJS/examples/",
   "name": "planettech",
-  "version": "0.0.8-alpha.0.1.4",
+  "version": "0.0.8-alpha.0.1.5",
   "description": "Toolkit for creating real 3D planets that can be transtioned from ground to sky.",
   "main": "index.js",
   "type": "module",

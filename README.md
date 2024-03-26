@@ -30,6 +30,9 @@ $ python3 -m http.server
 ```
 Past `http://localhost:8000/` into the browser.
 
+https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/f4621d3a-85ff-4224-be1f-8ae059b7efcc
+
+
 ## Build From Source
 If you would like to work on this, the first thing you need to do is install it locally. 
 Copy the coi-serviceworker.js file from ./examples and paste it in the root directory where your index.html file is located,
@@ -44,5 +47,4 @@ $ npm link planettech
 ```
 
 
-https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/f4621d3a-85ff-4224-be1f-8ae059b7efcc
 

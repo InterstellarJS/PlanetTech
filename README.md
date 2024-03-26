@@ -34,7 +34,7 @@ $ cd ./to/your/projects/root
 $ git clone https://github.com/miguelmyers8/PlanetTechJS.git
 $ cd PlanetTechJS
 $ npm install && npm link
-$ cd ./to/your/projects/root
+$ cd ..
 $ npm link planettech
 ```
 

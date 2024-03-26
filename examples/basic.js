@@ -1,6 +1,6 @@
-import * as NODE  from 'three/nodes';
-import * as THREE from 'three';
-import * as PlanetTech from 'planettech'
+import * as THREE from "https://esm.sh/three";
+import * as NODE from "https://esm.sh/three/nodes";
+import * as PlanetTech from "https://esm.sh/planettech";
 
 function init(){
     const params = {

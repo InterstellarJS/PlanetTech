@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
     <title>PlaneTTechJS Hello World</title>
+    <script src="./coi-serviceworker.js"></script>
     <script type="importmap">
         {
           "imports": {
@@ -19,9 +20,13 @@
 </head>
 
 <body>
-  <script>
-console.log('hello world')
-  </script>
+    <script>
+        if (crossOriginIsolated){
+          console.log(`[crossOriginIsolated]: is ${crossOriginIsolated} SharedArrayBuffer is avalable`) 
+        }else{
+          console.log(`[crossOriginIsolated]: is ${crossOriginIsolated} SharedArrayBuffer isn't avalable`) 
+        }
+      </script>
 </body>
 
 </html>

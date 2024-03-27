@@ -2,13 +2,11 @@
 
 
 # PlanetTechJS (ALPHA V0.8) 
+This is the [official demo](https://miguelmyers8.github.io/PlanetTechJS/examples/). It's under construction. Features will be added incrementally.
 <p align="center">
   <img src="./assets/Astron.png" />
 </p>
 
-
-## DEMO
-[OFFICIAL DEMO](https://miguelmyers8.github.io/PlanetTechJS/examples/)
 
 ## Goal
 

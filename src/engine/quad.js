@@ -3,7 +3,7 @@ import * as THREE   from 'three';
 import {QuadTrees}  from './quadtree.js'
 import {norm}       from './utils.js'
 import {QuadWorker} from './utils.js';
-import {worker} from './worker'
+import {worker}     from './worker.js'
 
   export class Quad{
     constructor(w,h,ws,hs,d){

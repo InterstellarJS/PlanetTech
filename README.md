@@ -25,7 +25,7 @@ What sets this library apart is its utilization of the GPU for all tasks. This i
 To run the basic example:
 ```
 $ git clone https://github.com/miguelmyers8/PlanetTechJS.git
-$ cd PlanetTechJS/exmaples
+$ cd PlanetTechJS/examples
 $ python3 -m http.server
 ```
 Past `http://localhost:8000/` into the browser.
@@ -34,7 +34,8 @@ https://github.com/miguelmyers8/PlanetTechJS/assets/18605314/f4621d3a-85ff-4224-
 
 
 ## Build From Source
-If you would like to work on this, the first thing you need to do is install it locally. 
+If you would like to work on this, here is a example of how to get it working in your react project.
+The first thing you need to do is install it locally. 
 Copy the coi-serviceworker.js file from ./examples and paste it in the root directory where your index.html file is located,
 then link to it. Afterward, run the following commands.
 ```

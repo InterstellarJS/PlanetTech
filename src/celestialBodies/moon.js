@@ -4,7 +4,6 @@ import { CelestialBodies } from './celestialbodies.js';
 
 export class Moon extends CelestialBodies {
     constructor(params,name){
-        super(params,'Moon')
-        this.name = name
+        super(params,name,'Moon')
     }
 }

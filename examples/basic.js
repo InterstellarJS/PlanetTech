@@ -1,8 +1,8 @@
 import * as THREE from "https://esm.sh/three";
-import * as NODE from "https://esm.sh/three/nodes";
-import {global}  from "https://esm.sh/three/nodes";
-import * as PlanetTech from "https://esm.sh/planettech";
-import { nodeFrame }  from "https://esm.sh/three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js";
+import * as NODE  from "https://esm.sh/three/nodes";
+import {global}   from "https://esm.sh/three/nodes";
+import * as PlanetTech from "https://esm.sh/@interstellar-js-core/planettech@0.0.8-alpha.0.1.7";
+import { nodeFrame }   from "https://esm.sh/three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js";
 import {OrbitControls} from "https://esm.sh/three/addons/controls/OrbitControls.js";
 
 global.set('TSL', NODE);

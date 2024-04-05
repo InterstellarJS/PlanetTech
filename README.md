@@ -2,7 +2,7 @@
 
 
 # PlanetTech (ALPHA V0.8) 
-This is the [official demo](https://interstellerjs.github.io/PlanetTech/examples/). It's under construction. Features will be added incrementally.
+This is the [official demo](https://interstellarjs.github.io/PlanetTech/examples/). It's under construction. Features will be added incrementally.
 <p align="center">
   <img src="./assets/logoPT.png" />
 </p>

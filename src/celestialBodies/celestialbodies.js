@@ -1,6 +1,6 @@
 import * as NODE  from 'three/nodes';
 import * as THREE from 'three';
-import {Sphere}     from '../sphere/sphere.js';
+import {Sphere}   from '../sphere/sphere.js';
 
 export class CelestialBodies extends Sphere{
     constructor(params,name,type){

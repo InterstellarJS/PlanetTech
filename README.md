@@ -22,7 +22,7 @@ What sets this library apart is its utilization of the GPU for all tasks. This i
 ## Getting Started
 To run the basic example:
 ```
-$ git clone https://github.com/InterstellarJS/SpaceTech.git
+$ git clone https://github.com/InterstellarJS/PlanetTech.git
 $ cd PlanetTech/examples
 $ python3 -m http.server
 ```
@@ -38,7 +38,7 @@ Copy the coi-serviceworker.js file from ./examples and paste it in the root dire
 then link to it. Afterward, run the following commands.
 ```
 $ cd ./to/your/projects/root
-$ git clone https://github.com/InterstellarJS/SpaceTech.git
+$ git clone https://github.com/InterstellarJS/PlanetTech.git
 $ cd PlanetTech
 $ npm install && npm link
 $ cd ..

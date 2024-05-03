@@ -6,3 +6,4 @@ export {Moon}      from './src/celestialBodies/moon.js';
 export {Space}     from './src/postProcessing/space.js';
 export {CelestialBodies} from './src/celestialBodies/celestialbodies.js';
 export {frontsetData,backsetData,rightsetData,leftsetData,topsetData,bottomsetData} from './src/engine/quadTreeFunctions.js'
+export {Atmosphere} from './src/postProcessing/Shaders/atmosphereScattering.js'

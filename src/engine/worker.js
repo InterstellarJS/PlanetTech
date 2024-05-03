@@ -1,7 +1,7 @@
 
 export function worker(){
   return `
-  import * as THREE from 'https://unpkg.com/three@0.162/build/three.module.js';
+  import * as THREE from 'https://unpkg.com/three@0.163/build/three.module.js';
 
   function toSphereSegement(plane,cnt,r) {
     let center = new THREE.Vector3().copy(cnt);

@@ -1,5 +1,5 @@
 import * as THREE from 'three/tsl'
-import { QuadTrees } from './quadtree.js'
+import { QuadTreeLoDCore } from './quadtree.js'
 import { QuadGeometry, NormalizedQuadGeometry } from './geometry.js'
 
 export class Quad extends THREE.Object3D{
@@ -14,7 +14,7 @@ export class Quad extends THREE.Object3D{
       dimension  : dimension
     }
 
-    this.quadTreeconfig = new QuadTrees.QuadTreeLoDCore()
+    this.quadTreeconfig = new QuadTreeLoDCore()
 
   }
 

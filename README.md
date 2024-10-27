@@ -34,15 +34,15 @@ https://github.com/miguelmyers8/PlanetTech/assets/18605314/f4621d3a-85ff-4224-be
 ## Build From Source
 If you would like to work on this, here is a example of how to get it working in your react project.
 The first thing you need to do is install it locally. 
-Copy the coi-serviceworker.js file from ./examples and paste it in the root directory where your index.html file is located,
+Copy the coi-serviceworker.js file from ./examples and paste it in the root directory or public folder where your index.html file is located,
 then link to it. Afterward, run the following commands.
 ```
 $ cd ./to/your/projects/root
 $ git clone https://github.com/InterstellarJS/PlanetTech.git
 $ cd PlanetTech
-$ npm install && npm link
+$ npm link
 $ cd ..
-$ npm link @interstellar-js-core/planettech
+$ npm link @interstellar-js-core/planettech && npm install
 ```
 
 

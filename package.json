@@ -5,6 +5,8 @@
   "description": "Toolkit for creating real 3D planets that can be transtioned from ground to sky.",
   "main": "index.js",
   "type": "module",
+  "sidEffects": false,
+
   "scripts": {
     "test": "vitest"
   },
@@ -21,9 +23,8 @@
   ],
   "author": "Miguel Myers",
   "license": "ISC",
-  "dependencies": {
-    "postprocessing": "^6.34.3",
-    "three": "^0.162.0"
+  "peerDependencies": {
+    "three": "^0.169.0"
   },
   "devDependencies": {
     "vitest": "^1.5.3"

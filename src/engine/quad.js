@@ -1,4 +1,4 @@
-import * as NODE    from 'three/nodes';
+import * as TSL    from 'three/tsl';
 import * as THREE   from 'three';
 import {QuadTrees}  from './quadtree.js'
 import {norm}       from './utils.js'
@@ -46,15 +46,15 @@ import {worker}     from './worker.js'
         var wp = p.position.clone()//todo
         var nxj = norm(wp.x,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
         var nyj = norm(wp.y,Math.abs(( w * d )/2),-Math.abs(( w * d )/2))
-        var offSets = NODE.vec2(nxj-halfScale,nyj-halfScale)
-        var newUV   = NODE.uv().mul(testscaling).add(offSets)
+        var offSets = TSL.vec2(nxj-halfScale,nyj-halfScale)
+        var newUV   = TSL.uv().mul(testscaling).add(offSets)
         var cnt = new THREE.Vector3(...this.quadTreeconfig.config.center)
         p.worldToLocal(cnt)
-        var textureNodeN = NODE.texture(texture_[0],newUV)
-        var textureNodeD = NODE.texture(texture_[1],newUV).r
-        p.material.colorNode = textureNodeN
-       const displace = textureNodeD.mul(displacementScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-       p.material.positionNode = displace
+        var textureTSLN = TSL.texture(texture_[0],newUV)
+        var textureTSLD = TSL.texture(texture_[1],newUV).r
+        p.material.colorTSL = textureTSLN
+       const displace = textureTSLD.mul(displacementScale).mul(TSL.normalLocal).add(TSL.positionLocal)
+       p.material.positionTSL = displace
         }
       } 
 

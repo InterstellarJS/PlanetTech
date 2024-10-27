@@ -1,6 +1,6 @@
 import * as THREE  from 'three';
 import {norm}      from './utils.js'
-import * as NODE   from 'three/nodes';
+import * as TSL   from 'three/tsl';
 import * as Shaders from '../shaders/index.js';
 import { getRandomColor,hexToRgbA  } from './utils.js';
 
@@ -22,15 +22,15 @@ export function frontsetData(obj){
     wp = wp.sub(position).divideScalar(scale)
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
-    var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
-    var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV)
-    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
+    var offSets = TSL.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
+    var newUV = TSL.uv().mul(obj.scaling).add(offSets)
+    var textureTSLN = TSL.texture(obj.texture[0],newUV)
+    var textureTSLD = TSL.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
-    //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    const displace = textureTSLD.mul(obj.config.displacmentScale).mul(TSL.normalLocal).add(TSL.positionLocal)
+    p.material.positionTSL = displace;
+    p.material.colorTSL = textureTSLN.xyz//.mul(TSL.vec3(...hexToRgbA(getRandomColor())))
+    //p.material.colorTSL = Shaders.defualtLight({normalMap:p.material.colorTSL,lightPosition:obj.config.light.ld,cP:TSL.vec3(0.,0.,0.)})
   }  
 
 
@@ -43,15 +43,15 @@ export function frontsetData(obj){
     wp.x = - wp.x
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
-    var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
-    var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV)
-    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
+    var offSets = TSL.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
+    var newUV = TSL.uv().mul(obj.scaling).add(offSets)
+    var textureTSLN = TSL.texture(obj.texture[0],newUV)
+    var textureTSLD = TSL.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
-    //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    const displace = textureTSLD.mul(obj.config.displacmentScale).mul(TSL.normalLocal).add(TSL.positionLocal)
+    p.material.positionTSL = displace;
+    p.material.colorTSL = textureTSLN.xyz//.mul(TSL.vec3(...hexToRgbA(getRandomColor())))
+    //p.material.colorTSL = Shaders.defualtLight({normalMap:p.material.colorTSL,lightPosition:obj.config.light.ld,cP:TSL.vec3(0.,0.,0.)})
   }
   
   
@@ -65,15 +65,15 @@ export function frontsetData(obj){
     wp.divideScalar(scale) 
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
-    var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
-    var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV)
-    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
+    var offSets = TSL.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
+    var newUV = TSL.uv().mul(obj.scaling).add(offSets)
+    var textureTSLN = TSL.texture(obj.texture[0],newUV)
+    var textureTSLD = TSL.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
-    //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    const displace = textureTSLD.mul(obj.config.displacmentScale).mul(TSL.normalLocal).add(TSL.positionLocal)
+    p.material.positionTSL = displace;
+    p.material.colorTSL = textureTSLN.xyz//.mul(TSL.vec3(...hexToRgbA(getRandomColor())))
+    //p.material.colorTSL = Shaders.defualtLight({normalMap:p.material.colorTSL,lightPosition:obj.config.light.ld,cP:TSL.vec3(0.,0.,0.)})
   } 
   
   
@@ -87,15 +87,15 @@ export function frontsetData(obj){
     wp.divideScalar(scale)
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
-    var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
-    var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV)
-    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
+    var offSets = TSL.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
+    var newUV = TSL.uv().mul(obj.scaling).add(offSets)
+    var textureTSLN = TSL.texture(obj.texture[0],newUV)
+    var textureTSLD = TSL.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
-   // p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    const displace = textureTSLD.mul(obj.config.displacmentScale).mul(TSL.normalLocal).add(TSL.positionLocal)
+    p.material.positionTSL = displace;
+    p.material.colorTSL = textureTSLN.xyz//.mul(TSL.vec3(...hexToRgbA(getRandomColor())))
+   // p.material.colorTSL = Shaders.defualtLight({normalMap:p.material.colorTSL,lightPosition:obj.config.light.ld,cP:TSL.vec3(0.,0.,0.)})
   } 
   
   
@@ -109,15 +109,15 @@ export function frontsetData(obj){
     wp.divideScalar(scale)
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
-    var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
-    var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV)
-    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
+    var offSets = TSL.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
+    var newUV = TSL.uv().mul(obj.scaling).add(offSets)
+    var textureTSLN = TSL.texture(obj.texture[0],newUV)
+    var textureTSLD = TSL.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
-    //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    const displace = textureTSLD.mul(obj.config.displacmentScale).mul(TSL.normalLocal).add(TSL.positionLocal)
+    p.material.positionTSL = displace;
+    p.material.colorTSL = textureTSLN.xyz//.mul(TSL.vec3(...hexToRgbA(getRandomColor())))
+    //p.material.colorTSL = Shaders.defualtLight({normalMap:p.material.colorTSL,lightPosition:obj.config.light.ld,cP:TSL.vec3(0.,0.,0.)})
   } 
   
   export function  bottomsetData(obj){
@@ -130,14 +130,14 @@ export function frontsetData(obj){
     wp.divideScalar(scale)
     var nxj = norm(wp.x,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
     var nyj = norm(wp.y,Math.abs(obj.starting/2),-Math.abs(obj.starting/2))
-    var offSets = NODE.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
-    var newUV = NODE.uv().mul(obj.scaling).add(offSets)
-    var textureNodeN = NODE.texture(obj.texture[0],newUV)
-    var textureNodeD = NODE.texture(obj.texture[1],newUV).r
+    var offSets = TSL.vec2(nxj-obj.halfScale,nyj-obj.halfScale)
+    var newUV = TSL.uv().mul(obj.scaling).add(offSets)
+    var textureTSLN = TSL.texture(obj.texture[0],newUV)
+    var textureTSLD = TSL.texture(obj.texture[1],newUV).r
     var p = obj.child.plane
-    const displace = textureNodeD.mul(obj.config.displacmentScale).mul(NODE.normalLocal).add(NODE.positionLocal)
-    p.material.positionNode = displace;
-    p.material.colorNode = textureNodeN.xyz//.mul(NODE.vec3(...hexToRgbA(getRandomColor())))
-    //p.material.colorNode = Shaders.defualtLight({normalMap:p.material.colorNode,lightPosition:obj.config.light.ld,cP:NODE.vec3(0.,0.,0.)})
+    const displace = textureTSLD.mul(obj.config.displacmentScale).mul(TSL.normalLocal).add(TSL.positionLocal)
+    p.material.positionTSL = displace;
+    p.material.colorTSL = textureTSLN.xyz//.mul(TSL.vec3(...hexToRgbA(getRandomColor())))
+    //p.material.colorTSL = Shaders.defualtLight({normalMap:p.material.colorTSL,lightPosition:obj.config.light.ld,cP:TSL.vec3(0.,0.,0.)})
   }
 

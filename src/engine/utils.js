@@ -1,4 +1,4 @@
-import * as NODE    from 'three/nodes';
+//import * as NODE    from 'three/tsl';
 import * as THREE   from 'three';
 
 export function getRandomColor() {

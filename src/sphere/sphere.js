@@ -1,4 +1,4 @@
-import * as NODE    from 'three/nodes';
+//import * as NODE    from 'three/nodes';
 import * as THREE   from 'three';
 import {Quad}       from '../engine/quad.js'
 import {QuadTrees}  from '../engine/quadtree.js'

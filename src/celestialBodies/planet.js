@@ -1,4 +1,4 @@
-import * as NODE  from 'three/nodes';
+//import * as NODE  from 'three/nodes';
 import * as THREE from 'three';
 import { CelestialBodies } from './celestialbodies.js';
 

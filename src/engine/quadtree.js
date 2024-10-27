@@ -1,5 +1,5 @@
 import * as THREE  from 'three';
-import * as NODE   from 'three/nodes';
+import * as TSL   from 'three/tsl';
 import {norm,project}      from './utils.js'
 import {frontsetData,backsetData,rightsetData,leftsetData,topsetData,bottomsetData} from  './quadTreeFunctions.js'
 import { hexToRgbA,getRandomColor } from './utils.js';
@@ -27,10 +27,10 @@ class QuadTreeLoDCore  {
       },
       position:{x:0,y:0,z:0},
       scale: 1,
-      color: NODE.vec3(0,0,0),
+      color: TSL.vec3(0,0,0),
       light:{},
       lodDistanceOffset: 1,
-      material: new NODE.MeshBasicNodeMaterial(),
+      material: new TSL.MeshBasicNodeMaterial({color:"grey"}),
       displacmentScale:1
     }
     this.config = Object.assign(shardedData, config)
@@ -167,10 +167,10 @@ class QuadTreeLoDCore  {
       var child3  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SE')
       var child4  = quad.createNewMesh(shardedGeometry).setPosition([w,h,rw,rh],'SW')
       //---    
-      child1.plane.material.colorNode = NODE.vec3(...hexToRgbA(getRandomColor()))
-      child2.plane.material.colorNode = NODE.vec3(...hexToRgbA(getRandomColor()))
-      child3.plane.material.colorNode = NODE.vec3(...hexToRgbA(getRandomColor()))
-      child4.plane.material.colorNode = NODE.vec3(...hexToRgbA(getRandomColor()))
+      child1.plane.material.colorTSL = TSL.vec3(...hexToRgbA(getRandomColor()))
+      child2.plane.material.colorTSL = TSL.vec3(...hexToRgbA(getRandomColor()))
+      child3.plane.material.colorTSL = TSL.vec3(...hexToRgbA(getRandomColor()))
+      child4.plane.material.colorTSL = TSL.vec3(...hexToRgbA(getRandomColor()))
       //---
       quad.add(child1);
       quad.add(child2);

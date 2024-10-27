@@ -1,5 +1,5 @@
-import * as NODE from 'three/nodes';
-import {glslFn} from 'three/nodes';
+import * as NODE from 'three/tsl';
+import {glslFn} from 'three/tsl';
 
 export const defualtLight = glslFn(`
   float defualtLight(vec4 normalMap, vec3 lightPosition, vec3 cP) {

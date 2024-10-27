@@ -1,5 +1,5 @@
-import * as NODE from 'three/nodes';
-import {wgslFn} from 'three/nodes';
+import * as NODE from 'three/tsl';
+import {wgslFn} from 'three/tsl';
 
 
 export const defualtLight = wgslFn( `

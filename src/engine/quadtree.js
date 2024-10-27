@@ -1,7 +1,7 @@
 import * as THREE  from 'three/tsl';
 
-export  class QuadTreeLoDCore  {
-  constructor(config={}) {
+export class QuadTreeLODCore {
+  constructor(config = {}) {
     let shardedData = {
       maxLevelSize:1,
       minLevelSize:1,
@@ -9,24 +9,12 @@ export  class QuadTreeLoDCore  {
       maxPolyCount:undefined,
       dimensions:1,
       arrybuffers:{},
-      shardedUniforms:{}, // TODO:
-      dataTransfer:{
-        front:  {textuers:[]},
-        back:   {textuers:[]},
-        right:  {textuers:[]},
-        left:   {textuers:[]},
-        top:    {textuers:[]},
-        bottom: {textuers:[]},
-      },
-      position:{x:0,y:0,z:0},
       scale: 1,
-      color: THREE.vec3(0,0,0),
-      light:{},
       lodDistanceOffset: 1,
-      material: new THREE.MeshBasicNodeMaterial({color:"grey"}),
-      displacmentScale:1
+      displacmentScale:1,
+      material: new THREE.MeshBasicNodeMaterial({ color: "grey" }),
     }
-    this.config = Object.assign(shardedData, config)
+    this.config = Object.assign( shardedData, config )
   }
 
   levels(numOflvls) {
@@ -47,32 +35,31 @@ export  class QuadTreeLoDCore  {
 
   createArrayBuffers(){
     for ( var i = 0; i < this.config.levels.numOflvls;  i++ ) {
-      const size     = this.config.levels.levelsArray [i]
-      const poly     = this.config.levels.polyPerLevel[i]
-      const geometry = new THREE.PlaneGeometry(size,size,poly,poly)
+      const size  = this.config.levels.levelsArray [i]
+      const poly  = this.config.levels.polyPerLevel[i]
       this.config.arrybuffers[size] = {
-        geometry:{
-          parameters:         geometry.parameters,
-          stringUv:           geometry.attributes.uv.array.toString(),
-          stringPosition:     geometry.attributes.position.array.toString(),
-          stringNormal:       geometry.attributes.normal  .array.toString(),
-          byteLengthNormal:   geometry.attributes.position.array.byteLength,
-          byteLengthPosition: geometry.attributes.position.array.byteLength,
-        },
-        idx:Array.from(geometry.index.array)
+        geometryData:{
+          parameters: {
+            width: size,
+            height:size,
+            widthSegments: poly,
+            heightSegments:poly
+          },
+          byteLengthUv:       poly * poly * 2,
+          byteLengthPosition: poly * poly * 3,
+          byteLengthNormal:   poly * poly * 3,
+          byteLengthIndex:    poly * poly * 6,
+        }
       }
     }
   }
 
-
-
-  static deleteShardedData() {
-    const shardedDataKeys = Object.keys(QuadTreeLoDCore.shardedData);
-    for (let i = 0; i < shardedDataKeys.length; i++) {
-      delete QuadTreeLoDCore.shardedData[shardedDataKeys[i]];
-    }
-  }
 }
 
 
 
+export  class QuadTreeLOD  {
+  constructor(){
+
+  }
+}

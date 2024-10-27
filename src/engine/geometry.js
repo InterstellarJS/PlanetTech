@@ -156,7 +156,7 @@ export class NormalizedQuadGeometry extends QuadGeometry {
         const directionVectors = [];
 
 
-        this._matrix.premultiply(new THREE.Matrix4().makeTranslation(...this.offSet));
+        this._matrix.premultiply(new THREE.Matrix4().makeTranslation(...this._offset));
 
         const _W = new THREE.Vector3();
         const _D = new THREE.Vector3();

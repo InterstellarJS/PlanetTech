@@ -7,9 +7,9 @@ export class Quad extends THREE.Object3D{
     super()
 
     this.parameters = {
-      size : size,
-      resolution : resolution,
-      dimension  : dimension
+      size: size,
+      resolution: resolution,
+      dimension:  dimension
     }
 
     this.quadTreeconfig = new QuadTreeLODCore()
@@ -18,7 +18,7 @@ export class Quad extends THREE.Object3D{
 
   createPlane({ material, size, resolution, matrix, offset }){
 
-    let geometry = new QuadGeometry( size, size, resolution, resolution)
+    let geometry = new QuadGeometry( size, size, resolution, resolution )
 
     geometry._setMatrix({ matrix })
 
@@ -29,15 +29,15 @@ export class Quad extends THREE.Object3D{
     return new THREE.Mesh(geometry, material)
   }
 
-  createQuadTree(lvl){
+  createQuadTree({ levels }){
     Object.assign(this.quadTreeconfig.config,{
       maxLevelSize:  this.parameters.size,
-      minLevelSize:  Math.floor(this.parameters.size/Math.pow(2,lvl-1)), // this create a vizual bug when not divisible by 2 
+      minLevelSize:  Math.floor(this.parameters.size/Math.pow(2,levels-1)), // this create a vizual bug when not divisible by 2 
       minPolyCount:  this.parameters.resolution,
       dimensions:    this.parameters.dimension,
       }
     )
-    this.quadTreeconfig.levels(lvl)
+    this.quadTreeconfig.levels(levels)
     this.quadTreeconfig.createArrayBuffers()
     this.quadTree = new QuadTreeLOD()
   }  
@@ -64,7 +64,7 @@ export class Quad extends THREE.Object3D{
     
   }
 
-    createDimensions(callBack=()=>{}){
+    createDimensions( callBack = ()=>{} ){
       const w = this.parameters.size
       const d = this.parameters.dimension
       const k = ((w/2)*d)
@@ -96,7 +96,6 @@ export class Quad extends THREE.Object3D{
 
 export class Cube extends Quad {
   constructor({ size, resolution, dimension}){
-
     super({ size, resolution, dimension })
     
   }

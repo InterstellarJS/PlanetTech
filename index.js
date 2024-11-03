@@ -9,5 +9,11 @@
 //export {Atmosphere} from './src/postProcessing/Shaders/atmosphereScattering.js'
 
 export * from './src/engine/primatives.js';
+
 export * from './src/shaders/tsl/functions.js'
 export * from './src/shaders/tsl/noise.js'
+export * from './src/shaders/tsl/utils.js'
+
+export * from './src/shaders/wgsl/noise.js'
+
+export * from  './src/utils/misc.js'

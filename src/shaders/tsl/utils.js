@@ -12,7 +12,7 @@ export const setStorageBufferAttribute = ({ mesh, buffers })=>{
 
 }
 
-export const getStorageBufferAttribute = ({ mesh })=>{
+export const initStorageBufferAttribute = ({ mesh })=>{
 
     let buffers = {}
 
@@ -27,7 +27,9 @@ export const getStorageBufferAttribute = ({ mesh })=>{
     return buffers
 }
 
-
+/*
+stagging the buffer attribute to be used in compute shader
+*/
 export  const sphereStagging = ({ buffers })=>{
   
     const positionBaseAttribute = buffers.positionBaseAttribute
@@ -67,6 +69,10 @@ export  const sphereStagging = ({ buffers })=>{
    return {vars,storageAttribute}
   }
   
+
+/*
+stagging the buffer attribute to be used in compute shader
+*/  
 export  const quadStagging = ({ buffers })=>{
   
     const positionBaseAttribute = buffers.positionBaseAttribute

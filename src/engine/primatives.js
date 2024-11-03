@@ -2,6 +2,12 @@ import * as THREE from 'three/tsl'
 import { QuadTreeLODCore,QuadTreeLOD } from './quadtree.js'
 import { QuadGeometry, NormalizedQuadGeometry } from './geometry.js'
 
+
+const defualtCallBack =(q,state)=>{
+  state.add(q.plane)
+  state.instances.push(q)
+}
+
 export class Quad extends THREE.Object3D{
   constructor({ size, resolution, dimension }){
     super()
@@ -11,6 +17,8 @@ export class Quad extends THREE.Object3D{
       resolution: resolution,
       dimension:  dimension
     }
+
+    this.metaData = {}
 
     this.quadTreeconfig = new QuadTreeLODCore()
     this.instances = []
@@ -64,7 +72,8 @@ export class Quad extends THREE.Object3D{
     
   }
 
-    createDimensions( callBack = ()=>{} ){
+    createDimensions( callBack = defualtCallBack ){
+
       const w = this.parameters.size
       const d = this.parameters.dimension
       const k = ((w/2)*d)
@@ -74,24 +83,23 @@ export class Quad extends THREE.Object3D{
         var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
         for (var j = 0; j < d; j++) {
           var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
+          let _index = i * d + j;
 
           const quad = this.createNewQuad({
             shardedData: shardedData,
             matrix: new THREE.Matrix4(),
             offset: [i_,-j_,k]
           })
-
-          callBack(quad)
-
-          this.instances.push(quad)
-
-          this.add(quad.plane)
-
+          quad.metaData.index = _index
+          quad.metaData.direction = '+z'
+          callBack(quad,this)
         }
       }
     }
   
 }
+
+
 
 
 export class Cube extends Quad {
@@ -100,7 +108,8 @@ export class Cube extends Quad {
     
   }
 
-  createDimensions(callBack=()=>{}){
+  createDimensions( callBack = defualtCallBack){
+    
     const w = this.parameters.size
     const d = this.parameters.dimension
     const k = ((w/2)*d)
@@ -110,42 +119,38 @@ export class Cube extends Quad {
       var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
       for (var j = 0; j < d; j++) {
         var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
+        let _index = i * d + j;
 
         const quadPZ = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4(), offset: [i_,-j_,k]})
-        callBack(quadPZ)
+        quadPZ.metaData.index = _index
+        quadPZ.metaData.direction = '+z'
+        callBack(quadPZ,this)
 
         const quadNZ = this.createNewQuad({ shardedData: shardedData,matrix: new THREE.Matrix4().makeRotationY( Math.PI ),    offset:  [i_,-j_,-k]  })
-        callBack(quadNZ)
+        quadNZ.metaData.index = _index
+        quadNZ.metaData.direction = '-z'
+        callBack(quadNZ,this)
 
         const quadPX = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationY( Math.PI / 2), offset: [k,-j_,-i_]  })
-        callBack(quadPX)
+        quadPX.metaData.index = _index
+        quadPX.metaData.direction = '+x'
+        callBack(quadPX,this)
 
         const quadNX = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationY(-Math.PI / 2), offset: [-k,-j_,-i_] })
-        callBack(quadNX)
+        quadNX.metaData.index = _index
+        quadNX.metaData.direction = '-x'
+        callBack(quadNX,this)
 
         const quadPY = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationX(-Math.PI / 2), offset: [i_,k,j_]    })
-        callBack(quadPY)
+        quadPY.metaData.index = _index
+        quadPY.metaData.direction = '+y'
+        callBack(quadPY,this)
 
         const quadNY = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationX(Math.PI / 2),  offset: [i_,-k,j_]   })
-        callBack(quadNY)
+        quadNY.metaData.index = _index
+        quadNY.metaData.direction = '-y'
+        callBack(quadNY,this)
 
-        this.instances.push(
-          quadPZ,
-          quadNZ,
-          quadPX,
-          quadNX,
-          quadPY,
-          quadNY
-        )
-
-        this.add(
-          quadPZ.plane,
-          quadNZ.plane,
-          quadPX.plane,
-          quadNX.plane,
-          quadPY.plane,
-          quadNY.plane
-        )
       }
     }
   }

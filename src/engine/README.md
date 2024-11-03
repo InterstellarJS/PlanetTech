@@ -1,6 +1,8 @@
 
 
-# PlanetTech Engine
+
 <p align="center">
-  <img src="../../assets/logoengine.png" width="512"/>
+  <h1>PlanetTech Engine</h1>
+
+  <img src="../../assets/logoengine.png" width="1024"/>
 </p>

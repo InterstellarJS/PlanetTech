@@ -24,7 +24,7 @@
   "author": "Miguel Myers",
   "license": "ISC",
   "peerDependencies": {
-    "three": "^0.169.0"
+    "three": "0.169.0"
   },
   "devDependencies": {
     "vitest": "^1.5.3"

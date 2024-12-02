@@ -5,7 +5,7 @@ import { QuadGeometry, NormalizedQuadGeometry } from './geometry.js'
 
 const defualtCallBack =(q,state)=>{
   state.add(q.plane)
-  state.instances.push(q)
+  state.addInstances(q)
 }
 
 export class Quad extends THREE.Object3D{
@@ -21,7 +21,12 @@ export class Quad extends THREE.Object3D{
     this.metaData = {}
 
     this.quadTreeconfig = new QuadTreeLODCore()
-    this.instances = []
+    this.instances = { }
+    this.neighbors = new Set()
+  }
+
+  addInstances(quad){
+    this.instances[[quad.plane.uuid]] = quad
   }
 
   createPlane({ material, size, resolution, matrix, offset }){
@@ -84,13 +89,14 @@ export class Quad extends THREE.Object3D{
         for (var j = 0; j < d; j++) {
           var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
           let _index = i * d + j;
-
+          let offset = [i_,-j_,k]
           const quad = this.createNewQuad({
             shardedData: shardedData,
             matrix: new THREE.Matrix4(),
             offset: [i_,-j_,k]
           })
-          quad.metaData.index = _index
+          quad.metaData.index  = _index
+          quad.metaData.offset = offset
           quad.metaData.direction = '+z'
           callBack(quad,this)
         }
@@ -124,31 +130,37 @@ export class Cube extends Quad {
         const quadPZ = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4(), offset: [i_,-j_,k]})
         quadPZ.metaData.index = _index
         quadPZ.metaData.direction = '+z'
+        quadPZ.metaData.offset = [i_,-j_,k]
         callBack(quadPZ,this)
 
         const quadNZ = this.createNewQuad({ shardedData: shardedData,matrix: new THREE.Matrix4().makeRotationY( Math.PI ),    offset:  [i_,-j_,-k]  })
         quadNZ.metaData.index = _index
         quadNZ.metaData.direction = '-z'
+        quadNZ.metaData.offset = [i_,-j_,-k]
         callBack(quadNZ,this)
 
         const quadPX = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationY( Math.PI / 2), offset: [k,-j_,-i_]  })
         quadPX.metaData.index = _index
         quadPX.metaData.direction = '+x'
+        quadPX.metaData.offset = [k,-j_,-i_] 
         callBack(quadPX,this)
 
         const quadNX = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationY(-Math.PI / 2), offset: [-k,-j_,-i_] })
         quadNX.metaData.index = _index
         quadNX.metaData.direction = '-x'
+        quadNX.metaData.offset = [-k,-j_,-i_] 
         callBack(quadNX,this)
 
         const quadPY = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationX(-Math.PI / 2), offset: [i_,k,j_]    })
         quadPY.metaData.index = _index
         quadPY.metaData.direction = '+y'
+        quadPY.metaData.offset = [i_,k,j_] 
         callBack(quadPY,this)
 
         const quadNY = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationX(Math.PI / 2),  offset: [i_,-k,j_]   })
         quadNY.metaData.index = _index
         quadNY.metaData.direction = '-y'
+        quadNY.metaData.offset = [i_,-k,j_]
         callBack(quadNY,this)
 
       }

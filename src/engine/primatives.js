@@ -8,6 +8,15 @@ const defualtCallBack =(q,state)=>{
   state.addInstances(q)
 }
 
+
+function shardedBuffer(quad){
+  //const bufferPositionF      = new SharedArrayBuffer(byteLengthPosition); 
+  //const bufferNormalF        = new SharedArrayBuffer(byteLengthNormal);
+
+  //const typedArrPF           = new Float32Array(bufferPositionF);
+  //const typedArrNF           = new Float32Array(bufferNormalF);
+}
+
 export class Quad extends THREE.Object3D{
   constructor({ size, resolution, dimension }){
     super()
@@ -55,9 +64,9 @@ export class Quad extends THREE.Object3D{
     this.quadTree = new QuadTreeLOD()
   }  
 
-  createNewQuad({ shardedData, matrix, offset }){
-    const width  = shardedData.parameters.width
-    const widthSegments  = shardedData.parameters.widthSegments
+  createNewQuad({ shardedData, matrixRotatioData, offset }){
+    const width  = shardedData.geometryData.parameters.width
+    const widthSegments  = shardedData.geometryData.parameters.widthSegments
 
     let material = this.quadTreeconfig.config.material
 
@@ -65,7 +74,7 @@ export class Quad extends THREE.Object3D{
       material:material,
       size:width,
       resolution:widthSegments,
-      matrix:matrix,
+      matrix: ( matrixRotatioData.propMehtod ? new THREE.Matrix4()[[matrixRotatioData.propMehtod]](matrixRotatioData.input) : new THREE.Matrix4() ),
       offset:offset
     })
 
@@ -82,7 +91,7 @@ export class Quad extends THREE.Object3D{
       const w = this.parameters.size
       const d = this.parameters.dimension
       const k = ((w/2)*d)
-      const shardedData = this.quadTreeconfig.config.arrybuffers[w].geometryData
+      const shardedData = this.quadTreeconfig.config.arrybuffers[w]
 
       for (var i = 0; i < d; i++) {
         var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
@@ -92,7 +101,7 @@ export class Quad extends THREE.Object3D{
           let offset = [i_,-j_,k]
           const quad = this.createNewQuad({
             shardedData: shardedData,
-            matrix: new THREE.Matrix4(),
+            matrixRotatioData: {propMehtod:undefined,input:undefined},
             offset: [i_,-j_,k]
           })
           quad.metaData.index  = _index
@@ -102,6 +111,9 @@ export class Quad extends THREE.Object3D{
         }
       }
     }
+
+
+    
   
 }
 
@@ -119,7 +131,7 @@ export class Cube extends Quad {
     const w = this.parameters.size
     const d = this.parameters.dimension
     const k = ((w/2)*d)
-    const shardedData = this.quadTreeconfig.config.arrybuffers[w].geometryData
+    const shardedData = this.quadTreeconfig.config.arrybuffers[w]
 
     for (var i = 0; i < d; i++) {
       var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
@@ -127,37 +139,37 @@ export class Cube extends Quad {
         var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
         let _index = i * d + j;
 
-        const quadPZ = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4(), offset: [i_,-j_,k]})
+        const quadPZ = this.createNewQuad({ shardedData: shardedData, matrixRotatioData: {propMehtod:'',input:0}, offset: [i_,-j_,k]})
         quadPZ.metaData.index = _index
         quadPZ.metaData.direction = '+z'
         quadPZ.metaData.offset = [i_,-j_,k]
         callBack(quadPZ,this)
 
-        const quadNZ = this.createNewQuad({ shardedData: shardedData,matrix: new THREE.Matrix4().makeRotationY( Math.PI ),    offset:  [i_,-j_,-k]  })
+        const quadNZ = this.createNewQuad({ shardedData: shardedData,matrixRotatioData:{propMehtod:'makeRotationY',input:Math.PI },    offset:  [i_,-j_,-k]  })
         quadNZ.metaData.index = _index
         quadNZ.metaData.direction = '-z'
         quadNZ.metaData.offset = [i_,-j_,-k]
         callBack(quadNZ,this)
 
-        const quadPX = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationY( Math.PI / 2), offset: [k,-j_,-i_]  })
+        const quadPX = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationY',input:Math.PI/2 }, offset: [k,-j_,-i_]  })
         quadPX.metaData.index = _index
         quadPX.metaData.direction = '+x'
         quadPX.metaData.offset = [k,-j_,-i_] 
         callBack(quadPX,this)
 
-        const quadNX = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationY(-Math.PI / 2), offset: [-k,-j_,-i_] })
+        const quadNX = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationY',input:-Math.PI/2 }, offset: [-k,-j_,-i_] })
         quadNX.metaData.index = _index
         quadNX.metaData.direction = '-x'
         quadNX.metaData.offset = [-k,-j_,-i_] 
         callBack(quadNX,this)
 
-        const quadPY = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationX(-Math.PI / 2), offset: [i_,k,j_]    })
+        const quadPY = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationX',input:-Math.PI/2 }, offset: [i_,k,j_]    })
         quadPY.metaData.index = _index
         quadPY.metaData.direction = '+y'
         quadPY.metaData.offset = [i_,k,j_] 
         callBack(quadPY,this)
 
-        const quadNY = this.createNewQuad({ shardedData: shardedData, matrix: new THREE.Matrix4().makeRotationX(Math.PI / 2),  offset: [i_,-k,j_]   })
+        const quadNY = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationX',input:Math.PI/2 },  offset: [i_,-k,j_]   })
         quadNY.metaData.index = _index
         quadNY.metaData.direction = '-y'
         quadNY.metaData.offset = [i_,-k,j_]

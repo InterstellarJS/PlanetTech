@@ -1,8 +1,8 @@
 import * as THREE from 'three/tsl'
 import { QuadTreeLODCore,QuadTreeLOD } from './quadtree.js'
 import { QuadGeometry, NormalizedQuadGeometry } from './geometry.js'
-
-
+import { QuadWorker } from './webWorker/threading.js'
+import { workersSRC } from './webWorker/workerThread.js'
 const defualtCallBack =(q,state)=>{
   state.add(q.plane)
   state.addInstances(q)
@@ -66,8 +66,27 @@ export class Quad extends THREE.Object3D{
 
   createNewQuad({shardedData, matrixRotatioData, offset, threading=false }){
 
-    if(threading)
+    if(threading){
       console.log('threadQuad')
+      const sharedArrayUv       = new SharedArrayBuffer(shardedData.geometryData.byteLengthUv       ); 
+      const sharedArrayIndex    = new SharedArrayBuffer(shardedData.geometryData.byteLengthIndex    );
+      const sharedArrayPosition = new SharedArrayBuffer(shardedData.geometryData.byteLengthPosition ); 
+      const sharedArrayNormal   = new SharedArrayBuffer(shardedData.geometryData.byteLengthNormal   );
+      const positionBuffer      = new Float32Array(sharedArrayPosition );
+      const normalBuffer        = new Float32Array(sharedArrayNormal   );
+      const uvBuffer            = new Float32Array(sharedArrayUv       );
+      const indexBuffer         = new Uint32Array (sharedArrayIndex    );
+
+      let blob = new Blob([workersSRC()], {type: 'application/javascript'}); 
+      let quadWorker =  new QuadWorker(new Worker(URL.createObjectURL(blob),{ type: "module" }));
+      quadWorker.setPayload({
+        sharedArrayPosition,
+        sharedArrayNormal,
+        sharedArrayIndex,
+        sharedArrayUv,
+      });
+
+    }
 
     const width  = shardedData.geometryData.parameters.width
     const widthSegments  = shardedData.geometryData.parameters.widthSegments

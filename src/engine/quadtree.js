@@ -45,10 +45,10 @@ export class QuadTreeLODCore {
             widthSegments: poly,
             heightSegments:poly
           },
-          byteLengthUv:       poly * poly * 2,
-          byteLengthPosition: poly * poly * 3,
-          byteLengthNormal:   poly * poly * 3,
-          byteLengthIndex:    poly * poly * 6,
+          byteLengthUv:       (poly+1) * (poly+1) * 2 * 4,
+          byteLengthPosition: (poly+1) * (poly+1) * 3 * 4,
+          byteLengthNormal:   (poly+1) * (poly+1) * 3 * 4,
+          byteLengthIndex:    poly * poly * 6 * 4,
         }
       }
     }

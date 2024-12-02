@@ -6,11 +6,11 @@ export class QuadWorker {
       this.worker = _worker
     }
     
-    setWork({ payload }) {
+    setPayload( payload ) {
       this.worker.postMessage(payload)
     }
   
-    getWork({ quad, buffers }){
+    getPayload({ quad, buffers }){
       this.worker.onmessage =(_)=>{
 
       }

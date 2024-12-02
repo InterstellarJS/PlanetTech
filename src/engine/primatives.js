@@ -76,8 +76,7 @@ export class Quad extends THREE.Object3D{
       const normalBuffer        = new Float32Array(sharedArrayNormal   );
       const uvBuffer            = new Float32Array(sharedArrayUv       );
       const indexBuffer         = new Uint32Array (sharedArrayIndex    );
-
-      let blob = new Blob([workersSRC()], {type: 'application/javascript'}); 
+       let blob = new Blob([workersSRC([QuadGeometry, NormalizedQuadGeometry ])], {type: 'application/javascript'}); 
       let quadWorker =  new QuadWorker(new Worker(URL.createObjectURL(blob),{ type: "module" }));
       quadWorker.setPayload({
         sharedArrayPosition,
@@ -86,6 +85,7 @@ export class Quad extends THREE.Object3D{
         sharedArrayUv,
       });
 
+      quadWorker.getPayload()
     }
 
     const width  = shardedData.geometryData.parameters.width

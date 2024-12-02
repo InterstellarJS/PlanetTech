@@ -10,10 +10,8 @@ export class QuadWorker {
       this.worker.postMessage(payload)
     }
   
-    getPayload({ quad, buffers }){
-      this.worker.onmessage =(_)=>{
-
-      }
+    getPayload( buffers ){
+      this.worker.onmessage =(payload)=>{ }
     }
   }
   

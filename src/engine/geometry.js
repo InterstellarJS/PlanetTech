@@ -31,7 +31,7 @@ export class QuadGeometry extends THREE.BufferGeometry {
         this._offset = offset
     }
 
-    _build(){
+    _build(buffers){
         const width_half = this.parameters.width / 2;
 		const height_half = this.parameters.height / 2;
 
@@ -93,10 +93,21 @@ export class QuadGeometry extends THREE.BufferGeometry {
 
 		}
 
-		this.setIndex( indices );
-		this.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-		this.setAttribute( 'normal', new THREE.Float32BufferAttribute( normals, 3 ) );
-		this.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 2 ) );
+
+		if (buffers){
+			//todo: test if .set(...) is slow because it has to copy
+			this.setIndex(  buffers.indexBuffer.set(indices) );
+			this.setAttribute( 'position', new THREE.Float32BufferAttribute( buffers.positionBuffer.set(vertices), 3 ) );
+			this.setAttribute( 'normal', new THREE.Float32BufferAttribute(  buffers.normalBuffer.set(normals), 3 ) );
+			this.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer.set(uvs), 2 ) );
+		}else{
+			this.setIndex( indices );
+			this.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+			this.setAttribute( 'normal', new THREE.Float32BufferAttribute( normals, 3 ) );
+			this.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 2 ) );
+		}
+
+
 
     }
 
@@ -136,7 +147,7 @@ export class NormalizedQuadGeometry extends QuadGeometry {
 
     }
 
-    _build(){
+    _build(buffers){
         const width_half = this.parameters.width / 2;
 		const height_half = this.parameters.height / 2;
 
@@ -210,11 +221,23 @@ export class NormalizedQuadGeometry extends QuadGeometry {
 
 		}
 
-		this.setIndex( indices );
-		this.setAttribute( 'directionVectors', new THREE.Float32BufferAttribute( directionVectors, 3 ) );
-        this.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-        this.setAttribute( 'normal', new THREE.Float32BufferAttribute( normals, 3 ) );
-		this.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 2 ) );
+		if (buffers){
+			//todo: test if .set(...) is slow because it has to copy
+			this.setIndex(  buffers.indexBuffer.set(indices) );
+			this.setAttribute( 'position', new THREE.Float32BufferAttribute( buffers.positionBuffer.set(vertices), 3 ) );
+			this.setAttribute( 'normal', new THREE.Float32BufferAttribute(  buffers.normalBuffer.set(normals), 3 ) );
+			this.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer.set(uvs), 2 ) );
+			this.setAttribute( 'directionVectors', new THREE.Float32BufferAttribute( buffers.dirVectBuffer.set(directionVectors), 3 ) );
+
+		}else{
+			this.setIndex( indices );
+			this.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+			this.setAttribute( 'normal', new THREE.Float32BufferAttribute( normals, 3 ) );
+			this.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 2 ) );
+			this.setAttribute( 'directionVectors', new THREE.Float32BufferAttribute( directionVectors, 3 ) );
+
+		}
+
 
     }
 

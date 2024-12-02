@@ -38,7 +38,46 @@ export class Quad extends THREE.Object3D{
     this.instances[[quad.plane.uuid]] = quad
   }
 
-  createPlane({ material, size, resolution, matrix, offset }){
+  thread(isThreading){
+    this.threading = isThreading
+  }
+
+  createPlane({ material, size, resolution, matrixRotatioData, offset, shardedData }){
+
+    if(this.threading){
+      console.log('threadQuad')
+      const sharedArrayUv       = new SharedArrayBuffer(shardedData.geometryData.byteLengthUv       ); 
+      const sharedArrayIndex    = new SharedArrayBuffer(shardedData.geometryData.byteLengthIndex    );
+      const sharedArrayPosition = new SharedArrayBuffer(shardedData.geometryData.byteLengthPosition ); 
+      const sharedArrayNormal   = new SharedArrayBuffer(shardedData.geometryData.byteLengthNormal   );
+ 
+      const positionBuffer      = new Float32Array(sharedArrayPosition );
+      const normalBuffer        = new Float32Array(sharedArrayNormal   );
+      const uvBuffer            = new Float32Array(sharedArrayUv       );
+      const indexBuffer         = new Uint32Array (sharedArrayIndex    );
+ 
+      let blob       = new Blob([workersSRC(QuadGeometry.name,[QuadGeometry ])], {type: 'application/javascript'}); 
+      let quadWorker = new QuadWorker(new Worker(URL.createObjectURL(blob),{ type: "module" }));
+      quadWorker.setPayload({
+        sharedArrayPosition,
+        sharedArrayNormal,
+        sharedArrayIndex,
+        sharedArrayUv,
+        matrixRotatioData,
+        offset,
+        size,
+        resolution,
+       });
+
+      quadWorker.getPayload({
+        positionBuffer,
+        normalBuffer,
+        uvBuffer,
+        indexBuffer,
+       })
+    }
+
+    let matrix  = matrixRotatioData.propMehtod ? new THREE.Matrix4()[[matrixRotatioData.propMehtod]](matrixRotatioData.input) : new THREE.Matrix4() 
 
     let geometry = new QuadGeometry( size, size, resolution, resolution )
 
@@ -64,29 +103,7 @@ export class Quad extends THREE.Object3D{
     this.quadTree = new QuadTreeLOD()
   }  
 
-  createNewQuad({shardedData, matrixRotatioData, offset, threading=false }){
-
-    if(threading){
-      console.log('threadQuad')
-      const sharedArrayUv       = new SharedArrayBuffer(shardedData.geometryData.byteLengthUv       ); 
-      const sharedArrayIndex    = new SharedArrayBuffer(shardedData.geometryData.byteLengthIndex    );
-      const sharedArrayPosition = new SharedArrayBuffer(shardedData.geometryData.byteLengthPosition ); 
-      const sharedArrayNormal   = new SharedArrayBuffer(shardedData.geometryData.byteLengthNormal   );
-      const positionBuffer      = new Float32Array(sharedArrayPosition );
-      const normalBuffer        = new Float32Array(sharedArrayNormal   );
-      const uvBuffer            = new Float32Array(sharedArrayUv       );
-      const indexBuffer         = new Uint32Array (sharedArrayIndex    );
-       let blob = new Blob([workersSRC([QuadGeometry, NormalizedQuadGeometry ])], {type: 'application/javascript'}); 
-      let quadWorker =  new QuadWorker(new Worker(URL.createObjectURL(blob),{ type: "module" }));
-      quadWorker.setPayload({
-        sharedArrayPosition,
-        sharedArrayNormal,
-        sharedArrayIndex,
-        sharedArrayUv,
-      });
-
-      quadWorker.getPayload()
-    }
+  createNewQuad({shardedData, matrixRotatioData, offset }){
 
     const width  = shardedData.geometryData.parameters.width
     const widthSegments  = shardedData.geometryData.parameters.widthSegments
@@ -97,8 +114,9 @@ export class Quad extends THREE.Object3D{
       material:material,
       size:width,
       resolution:widthSegments,
-      matrix: ( matrixRotatioData.propMehtod ? new THREE.Matrix4()[[matrixRotatioData.propMehtod]](matrixRotatioData.input) : new THREE.Matrix4() ),
-      offset:offset
+      matrixRotatioData: matrixRotatioData,
+      offset:offset,
+      shardedData,
     })
 
     const quad = new Quad( width, widthSegments )
@@ -109,36 +127,30 @@ export class Quad extends THREE.Object3D{
     
   }
 
-    createDimensions(callBack = defualtCallBack ,threading = false){
+  createDimensions(callBack = defualtCallBack ){
+    const w = this.parameters.size
+    const d = this.parameters.dimension
+    const k = ((w/2)*d)
+    const shardedData = this.quadTreeconfig.config.arrybuffers[w]
 
-      const w = this.parameters.size
-      const d = this.parameters.dimension
-      const k = ((w/2)*d)
-      const shardedData = this.quadTreeconfig.config.arrybuffers[w]
-
-      for (var i = 0; i < d; i++) {
-        var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
-        for (var j = 0; j < d; j++) {
-          var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
-          let _index = i * d + j;
-          let offset = [i_,-j_,k]
-          const quad = this.createNewQuad({
-            shardedData: shardedData,
-            matrixRotatioData: {propMehtod:'',input:undefined},
-            offset: [i_,-j_,k],
-            threading:threading,
-          })
-          quad.metaData.index  = _index
-          quad.metaData.offset = offset
-          quad.metaData.direction = '+z'
-          callBack(quad,this)
-        }
+    for (var i = 0; i < d; i++) {
+      var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
+      for (var j = 0; j < d; j++) {
+        var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
+        let _index = i * d + j;
+        let offset = [i_,-j_,k]
+        const quad = this.createNewQuad({
+          shardedData: shardedData,
+          matrixRotatioData: {propMehtod:'',input:undefined},
+          offset: [i_,-j_,k],
+        })
+        quad.metaData.index  = _index
+        quad.metaData.offset = offset
+        quad.metaData.direction = '+z'
+        callBack(quad,this)
       }
     }
-
-
-    
-  
+  }
 }
 
 
@@ -150,8 +162,8 @@ export class Cube extends Quad {
     
   }
 
-  createDimensions( callBack = defualtCallBack ,threading = false ){
-    
+  createDimensions( callBack = defualtCallBack ){
+
     const w = this.parameters.size
     const d = this.parameters.dimension
     const k = ((w/2)*d)
@@ -163,37 +175,37 @@ export class Cube extends Quad {
         var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
         let _index = i * d + j;
 
-        const quadPZ = this.createNewQuad({ shardedData: shardedData, matrixRotatioData: {propMehtod:'',input:0}, offset: [i_,-j_,k] ,threading })
+        const quadPZ = this.createNewQuad({ shardedData: shardedData, matrixRotatioData: {propMehtod:'',input:0}, offset: [i_,-j_,k] })
         quadPZ.metaData.index = _index
         quadPZ.metaData.direction = '+z'
         quadPZ.metaData.offset = [i_,-j_,k]
         callBack(quadPZ,this)
 
-        const quadNZ = this.createNewQuad({ shardedData: shardedData,matrixRotatioData:{propMehtod:'makeRotationY',input:Math.PI }, offset:  [i_,-j_,-k]  ,threading   })
+        const quadNZ = this.createNewQuad({ shardedData: shardedData,matrixRotatioData:{propMehtod:'makeRotationY',input:Math.PI }, offset:  [i_,-j_,-k]    })
         quadNZ.metaData.index = _index
         quadNZ.metaData.direction = '-z'
         quadNZ.metaData.offset = [i_,-j_,-k]
         callBack(quadNZ,this)
 
-        const quadPX = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationY',input:Math.PI/2 }, offset: [k,-j_,-i_]  ,threading  })
+        const quadPX = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationY',input:Math.PI/2 }, offset: [k,-j_,-i_]   })
         quadPX.metaData.index = _index
         quadPX.metaData.direction = '+x'
         quadPX.metaData.offset = [k,-j_,-i_] 
         callBack(quadPX,this)
 
-        const quadNX = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationY',input:-Math.PI/2 }, offset: [-k,-j_,-i_] ,threading })
+        const quadNX = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationY',input:-Math.PI/2 }, offset: [-k,-j_,-i_] })
         quadNX.metaData.index = _index
         quadNX.metaData.direction = '-x'
         quadNX.metaData.offset = [-k,-j_,-i_] 
         callBack(quadNX,this)
 
-        const quadPY = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationX',input:-Math.PI/2 }, offset: [i_,k,j_]    ,threading  })
+        const quadPY = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationX',input:-Math.PI/2 }, offset: [i_,k,j_]    })
         quadPY.metaData.index = _index
         quadPY.metaData.direction = '+y'
         quadPY.metaData.offset = [i_,k,j_] 
         callBack(quadPY,this)
 
-        const quadNY = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationX',input:Math.PI/2 },  offset: [i_,-k,j_]   ,threading  })
+        const quadNY = this.createNewQuad({ shardedData: shardedData, matrixRotatioData:{propMehtod:'makeRotationX',input:Math.PI/2 },  offset: [i_,-k,j_]   })
         quadNY.metaData.index = _index
         quadNY.metaData.direction = '-y'
         quadNY.metaData.offset = [i_,-k,j_]
@@ -216,7 +228,47 @@ export class Sphere extends Cube{
 
   }
 
-  createPlane({ material, size, resolution, matrix, offset }){
+  createPlane({ material, size, resolution, matrixRotatioData, offset, shardedData }){
+
+    if(this.threading){
+      console.log('threadQuad')
+      const sharedArrayUv       = new SharedArrayBuffer(shardedData.geometryData.byteLengthUv       ); 
+      const sharedArrayIndex    = new SharedArrayBuffer(shardedData.geometryData.byteLengthIndex    );
+      const sharedArrayPosition = new SharedArrayBuffer(shardedData.geometryData.byteLengthPosition ); 
+      const sharedArrayNormal   = new SharedArrayBuffer(shardedData.geometryData.byteLengthNormal   );
+      const sharedArrayDirVect  = new SharedArrayBuffer(shardedData.geometryData.byteLengthNormal   );
+
+      const positionBuffer      = new Float32Array(sharedArrayPosition );
+      const normalBuffer        = new Float32Array(sharedArrayNormal   );
+      const uvBuffer            = new Float32Array(sharedArrayUv       );
+      const indexBuffer         = new Uint32Array (sharedArrayIndex    );
+      const dirVectBuffer       = new Float32Array(sharedArrayDirVect  );
+
+      let blob       = new Blob([workersSRC(NormalizedQuadGeometry.name,[QuadGeometry, NormalizedQuadGeometry ])], {type: 'application/javascript'}); 
+      let quadWorker = new QuadWorker(new Worker(URL.createObjectURL(blob),{ type: "module" }));
+      quadWorker.setPayload({
+        sharedArrayPosition,
+        sharedArrayNormal,
+        sharedArrayIndex,
+        sharedArrayUv,
+        sharedArrayDirVect,
+        matrixRotatioData,
+        offset,
+        size,
+        resolution,
+        radius:this.quadTreeconfig.config.radius,
+      });
+
+      quadWorker.getPayload({
+        positionBuffer,
+        normalBuffer,
+        uvBuffer,
+        indexBuffer,
+        dirVectBuffer,
+      })
+    }
+
+    let matrix  = matrixRotatioData.propMehtod ? new THREE.Matrix4()[[matrixRotatioData.propMehtod]](matrixRotatioData.input) : new THREE.Matrix4() 
 
     let geometry = new NormalizedQuadGeometry( size, size, resolution, resolution, this.quadTreeconfig.config.radius)
 

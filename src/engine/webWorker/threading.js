@@ -11,7 +11,9 @@ export class QuadWorker {
     }
   
     getPayload( buffers ){
-      this.worker.onmessage =(payload)=>{ }
+      this.worker.onmessage =(payload)=>{
+        console.log(buffers)
+       }
     }
   }
   

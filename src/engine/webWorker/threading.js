@@ -10,9 +10,9 @@ export class QuadWorker {
       this.worker.postMessage(payload)
     }
   
-    getPayload( buffers ){
+    getPayload( callBack ){
       this.worker.onmessage =(payload)=>{
-        console.log(buffers)
+        callBack(payload)
        }
     }
   }

@@ -5,8 +5,9 @@ import { QuadWorker } from './webWorker/threading.js'
 import { workersSRC } from './webWorker/workerThread.js'
 
 
-const defualtCallBack =(q)=>{ }
 
+
+const defualtCallBack = q => {}
 
 export class Quad extends THREE.Object3D{
 
@@ -300,6 +301,7 @@ export class Sphere extends Cube{
         resolution,
         radius:this.quadTreeconfig.config.radius,
       });
+      
     let promise = new Promise((resolve)=>{
       quadWorker.getPayload(( payload )=>{
 

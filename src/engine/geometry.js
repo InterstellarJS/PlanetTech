@@ -31,7 +31,7 @@ export class QuadGeometry extends THREE.BufferGeometry {
         this._offset = offset
     }
 
-    _build(buffers){
+    _build(){
         const width_half = this.parameters.width / 2;
 		const height_half = this.parameters.height / 2;
 
@@ -90,26 +90,88 @@ export class QuadGeometry extends THREE.BufferGeometry {
 				indices.push( b, c, d );
 
 			}
-
 		}
-
-
-		if (buffers){
-			//todo: test if .set(...) is slow because it has to copy
-			this.setIndex(  buffers.indexBuffer.set(indices) );
-			this.setAttribute( 'position', new THREE.Float32BufferAttribute( buffers.positionBuffer.set(vertices), 3 ) );
-			this.setAttribute( 'normal', new THREE.Float32BufferAttribute(  buffers.normalBuffer.set(normals), 3 ) );
-			this.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer.set(uvs), 2 ) );
-		}else{
-			this.setIndex( indices );
-			this.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-			this.setAttribute( 'normal', new THREE.Float32BufferAttribute( normals, 3 ) );
-			this.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 2 ) );
-		}
-
-
-
+		this.setIndex( indices );
+		this.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+		this.setAttribute( 'normal', new THREE.Float32BufferAttribute( normals, 3 ) );
+		this.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 2 ) );
     }
+
+	_threadingBuild(buffers){
+		const width_half  = this.parameters.width / 2;
+		const height_half = this.parameters.height / 2;
+
+		const gridX = Math.floor( this.parameters.widthSegments );
+		const gridY = Math.floor( this.parameters.heightSegments );
+
+		const gridX1 = gridX + 1;
+		const gridY1 = gridY + 1;
+
+		const segment_width = this.parameters.width / gridX;
+		const segment_height = this.parameters.height / gridY;
+
+
+		this._matrix.premultiply(new THREE.Matrix4().makeTranslation(...this._offset));
+
+		const _W = new THREE.Vector3();
+		const _D = new THREE.Vector3();
+
+		let vertexIndex = 0;
+		let normalIndex = 0;
+		let uvIndex = 0;
+		let indexPointer = 0;
+
+		for (let iy = 0; iy < gridY1; iy++) {
+			const y = iy * segment_height - height_half;
+
+			for (let ix = 0; ix < gridX1; ix++) {
+				const x = ix * segment_width - width_half;
+
+				_W.set(x, -y, 0);
+				_W.applyMatrix4(this._matrix);
+
+				// Add vertex position
+				buffers.positionBuffer[vertexIndex++] = _W.x;
+				buffers.positionBuffer[vertexIndex++] = _W.y;
+				buffers.positionBuffer[vertexIndex++] = _W.z;
+
+				// Add normal (static in this case)
+				buffers.normalBuffer[normalIndex++] = 0;
+				buffers.normalBuffer[normalIndex++] = 0;
+				buffers.normalBuffer[normalIndex++] = 1;
+
+				// Add UV coordinates
+				buffers.uvBuffer[uvIndex++] = ix / gridX;
+				buffers.uvBuffer[uvIndex++] = 1 - iy / gridY;
+			}
+		}
+
+		for ( let iy = 0; iy < gridY; iy ++ ) {
+
+			for ( let ix = 0; ix < gridX; ix ++ ) {
+
+				const a = ix + gridX1 * iy;
+				const b = ix + gridX1 * ( iy + 1 );
+				const c = ( ix + 1 ) + gridX1 * ( iy + 1 );
+				const d = ( ix + 1 ) + gridX1 * iy;
+
+				buffers.indexBuffer[indexPointer++] = a;
+				buffers.indexBuffer[indexPointer++] = b;
+				buffers.indexBuffer[indexPointer++] = d;
+
+				buffers.indexBuffer[indexPointer++] = b;
+				buffers.indexBuffer[indexPointer++] = c;
+				buffers.indexBuffer[indexPointer++] = d;
+
+			}
+		}
+
+		this.setIndex(  buffers.indexBuffer  );
+		this.setAttribute( 'position', new THREE.Float32BufferAttribute( buffers.positionBuffer , 3 ) );
+		this.setAttribute( 'normal', new THREE.Float32BufferAttribute(  buffers.normalBuffer , 3 ) );
+		this.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer , 2 ) );
+
+	}
 
 	copy( source ) {
 
@@ -147,7 +209,7 @@ export class NormalizedQuadGeometry extends QuadGeometry {
 
     }
 
-    _build(buffers){
+    _build(){
         const width_half = this.parameters.width / 2;
 		const height_half = this.parameters.height / 2;
 
@@ -221,25 +283,106 @@ export class NormalizedQuadGeometry extends QuadGeometry {
 
 		}
 
-		if (buffers){
-			//todo: test if .set(...) is slow because it has to copy
-			this.setIndex(  buffers.indexBuffer.set(indices) );
-			this.setAttribute( 'position', new THREE.Float32BufferAttribute( buffers.positionBuffer.set(vertices), 3 ) );
-			this.setAttribute( 'normal', new THREE.Float32BufferAttribute(  buffers.normalBuffer.set(normals), 3 ) );
-			this.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer.set(uvs), 2 ) );
-			this.setAttribute( 'directionVectors', new THREE.Float32BufferAttribute( buffers.dirVectBuffer.set(directionVectors), 3 ) );
-
-		}else{
+ 
 			this.setIndex( indices );
 			this.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 			this.setAttribute( 'normal', new THREE.Float32BufferAttribute( normals, 3 ) );
 			this.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 2 ) );
 			this.setAttribute( 'directionVectors', new THREE.Float32BufferAttribute( directionVectors, 3 ) );
 
+    }
+
+
+	_threadingBuild(buffers){
+		const width_half  = this.parameters.width / 2;
+		const height_half = this.parameters.height / 2;
+
+		const gridX = Math.floor( this.parameters.widthSegments );
+		const gridY = Math.floor( this.parameters.heightSegments );
+
+		const gridX1 = gridX + 1;
+		const gridY1 = gridY + 1;
+
+		const segment_width = this.parameters.width / gridX;
+		const segment_height = this.parameters.height / gridY;
+
+
+		this._matrix.premultiply(new THREE.Matrix4().makeTranslation(...this._offset));
+
+		const _W = new THREE.Vector3();
+		const _D = new THREE.Vector3();
+
+		let vertexIndex = 0;
+		let normalIndex = 0;
+		let uvIndex = 0;
+		let indexPointer = 0;
+		let dirVectIndex = 0;
+
+		for (let iy = 0; iy < gridY1; iy++) {
+			const y = iy * segment_height - height_half;
+
+			for (let ix = 0; ix < gridX1; ix++) {
+				const x = ix * segment_width - width_half;
+
+				_W.set(x, - y, 0)
+
+				_W.applyMatrix4( this._matrix );
+
+                _W.normalize()
+
+                _D.copy(_W)
+
+                _W.multiplyScalar(this.parameters.radius)
+                
+                _W.add(_D)
+
+				// Add vertex position
+				buffers.positionBuffer[vertexIndex++] = _W.x;
+				buffers.positionBuffer[vertexIndex++] = _W.y;
+				buffers.positionBuffer[vertexIndex++] = _W.z;
+
+				// Add normal (static in this case)
+				buffers.normalBuffer[normalIndex++] = 0;
+				buffers.normalBuffer[normalIndex++] = 0;
+				buffers.normalBuffer[normalIndex++] = 1;
+
+				// Add UV coordinates
+				buffers.uvBuffer[uvIndex++] = ix / gridX;
+				buffers.uvBuffer[uvIndex++] = 1 - iy / gridY;
+
+				buffers.dirVectBuffer[dirVectIndex++] = _D.x;
+				buffers.dirVectBuffer[dirVectIndex++] = _D.y;
+				buffers.dirVectBuffer[dirVectIndex++] = _D.z;
+			}
+		}
+
+		for ( let iy = 0; iy < gridY; iy ++ ) {
+
+			for ( let ix = 0; ix < gridX; ix ++ ) {
+
+				const a = ix + gridX1 * iy;
+				const b = ix + gridX1 * ( iy + 1 );
+				const c = ( ix + 1 ) + gridX1 * ( iy + 1 );
+				const d = ( ix + 1 ) + gridX1 * iy;
+
+				buffers.indexBuffer[indexPointer++] = a;
+				buffers.indexBuffer[indexPointer++] = b;
+				buffers.indexBuffer[indexPointer++] = d;
+
+				buffers.indexBuffer[indexPointer++] = b;
+				buffers.indexBuffer[indexPointer++] = c;
+				buffers.indexBuffer[indexPointer++] = d;
+
+			}
 		}
 
 
-    }
+		this.setIndex(  buffers.indexBuffer  );
+		this.setAttribute( 'position', new THREE.Float32BufferAttribute( buffers.positionBuffer , 3 ) );
+		this.setAttribute( 'normal', new THREE.Float32BufferAttribute(  buffers.normalBuffer , 3 ) );
+		this.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer, 2 ) );
+		this.setAttribute( 'directionVectors', new THREE.Float32BufferAttribute( buffers.dirVectBuffer , 3 ) );
+	}
 
     static fromJSON( data ) {
 

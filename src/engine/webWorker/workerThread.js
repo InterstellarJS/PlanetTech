@@ -10,22 +10,23 @@ export function workersSRC(currentGeometry,params){
     }).join('\n')}
 
 
-    function init(payload){
-        const positionBuffer      = new Float32Array(payload.sharedArrayPosition );
-        const normalBuffer        = new Float32Array(payload.sharedArrayNormal   );
-        const uvBuffer            = new Float32Array(payload.sharedArrayUv       );
-        const indexBuffer         = new Uint32Array (payload.sharedArrayIndex    );
-        const dirVectBuffer       = new Float32Array(payload.sharedArrayDirVect  );
+    function init( payload ){
+    
+        const positionBuffer = new Float32Array(payload.sharedArrayPosition );
+        const normalBuffer   = new Float32Array(payload.sharedArrayNormal   );
+        const uvBuffer       = new Float32Array(payload.sharedArrayUv       );
+        const indexBuffer    = new Uint32Array (payload.sharedArrayIndex    );
+        const dirVectBuffer  = new Float32Array(payload.sharedArrayDirVect  );
 
         let geometry = new ${currentGeometry}( payload.size, payload.size, payload.resolution, payload.resolution, payload.radius)
 
-        let matrix  = payload.matrixRotatioData.propMehtod ? new THREE.Matrix4()[[payload.matrixRotatioData.propMehtod]](payload.matrixRotatioData.input) : new THREE.Matrix4() 
+        let matrix  = payload.matrixRotationData.propMehtod ? new THREE.Matrix4()[[payload.matrixRotationData.propMehtod]](payload.matrixRotationData.input) : new THREE.Matrix4() 
 
         geometry._setMatrix({ matrix })
 
         geometry._setOffset({ offset: payload.offset })
 
-        geometry._build({
+        geometry._threadingBuild({
         positionBuffer,
         normalBuffer,
         uvBuffer,
@@ -43,10 +44,9 @@ export function workersSRC(currentGeometry,params){
     }
         
     self.onmessage = function(msg) {
-      const payload = msg.data
-      //when work's done 
-       let outputBuffers = init(payload)
-      self.postMessage({msg:'Done',data:[1,2,3]})
+        const payload = msg.data
+        let outputBuffers = init(payload)
+        self.postMessage({msg:'Complete',data:[1,2,3]})
     }
     `
 }

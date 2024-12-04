@@ -56,10 +56,4 @@ export class QuadTreeLODCore {
 
 }
 
-
-
-export  class QuadTreeLOD  {
-  constructor(){
-
-  }
-}
+export  class QuadTreeLOD { constructor(){ } }

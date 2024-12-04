@@ -1,11 +1,11 @@
 import * as THREE from 'three/tsl'
 import { QuadTreeLODCore,QuadTreeLOD } from './quadtree.js'
 import { QuadGeometry, NormalizedQuadGeometry } from './geometry.js'
-import { QuadWorker } from './webWorker/threading.js'
+import { ThreadController } from './webWorker/threading.js'
 import { workersSRC } from './webWorker/workerThread.js'
 
 
-
+class Node extends THREE.Object3D{ constructor(params){ super(); this.params = params } }
 
 const defualtCallBack = q => {}
 
@@ -39,15 +39,15 @@ export class Quad extends THREE.Object3D{
     this.quadTree = new QuadTreeLOD()
   }  
 
-  addNode(quad){
-    this.nodes[[quad.uuid]] = quad
+  addNode(node){
+    this.nodes[[node.uuid]] = node
   }
 
   thread(){
     this.threading = true
   }
 
-  createPlane({ material, size, resolution, matrixRotationData, offset, shardedData, quad, callBack }){
+  createPlane({ material, size, resolution, matrixRotationData, offset, shardedData, node, callBack }){
 
     if(this.threading){
        
@@ -61,10 +61,10 @@ export class Quad extends THREE.Object3D{
       const uvBuffer            = new Float32Array(sharedArrayUv       );
       const indexBuffer         = new Uint32Array (sharedArrayIndex    );
  
-      let blob       = new Blob([workersSRC(QuadGeometry.name,[QuadGeometry ])], {type: 'application/javascript'}); 
-      let quadWorker = new QuadWorker(new Worker(URL.createObjectURL(blob),{ type: "module" }));
+      let blob       = new Blob([workersSRC(QuadGeometry.name,[ QuadGeometry ])], {type: 'application/javascript'}); 
+      let threadController = new ThreadController(new Worker(URL.createObjectURL(blob),{ type: "module" }));
 
-      quadWorker.setPayload({
+      threadController.setPayload({
         sharedArrayPosition,
         sharedArrayNormal,
         sharedArrayIndex,
@@ -76,7 +76,7 @@ export class Quad extends THREE.Object3D{
        });
 
       let promise = new Promise((resolve)=>{
-        quadWorker.getPayload((payload)=>{
+        threadController.getPayload((payload)=>{
 
           let buffers = {
             positionBuffer,
@@ -91,19 +91,20 @@ export class Quad extends THREE.Object3D{
           geometry.setAttribute( 'normal', new THREE.Float32BufferAttribute(  buffers.normalBuffer , 3 ) );
           geometry.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer , 2 ) );
   
-          quad.plane = new THREE.Mesh(geometry, material)
+          node.plane = new THREE.Mesh(geometry, material)
 
-          callBack(quad)
+          callBack(node)
 
-          this.add(quad.plane)
+          this.add(node.plane)
           
-          resolve(quad)
+          resolve(node)
         })
       })
 
-      promise.uuid = quad.uuid
+      promise.uuid = node.uuid
 
       return promise
+
     }else{
 
       let matrix  = matrixRotationData.propMehtod ? new THREE.Matrix4()[[matrixRotationData.propMehtod]](matrixRotationData.input) : new THREE.Matrix4() 
@@ -116,44 +117,45 @@ export class Quad extends THREE.Object3D{
 
       geometry._build()
 
-      quad.plane = new THREE.Mesh(geometry, material)
+      node.plane = new THREE.Mesh(geometry, material)
 
-      callBack(quad)
+      callBack(node)
 
       this.add(q.plane)
 
-      return quad
+      return node
     }
   }
 
-  createNewNode({shardedData, matrixRotationData, offset,index,direction,callBack }){
+  createNewNode({ shardedData, matrixRotationData, offset, index, direction, callBack }){
 
-    const width  = shardedData.geometryData.parameters.width
-    const widthSegments  = shardedData.geometryData.parameters.widthSegments
+    const size  = shardedData.geometryData.parameters.width
+    const segments  = shardedData.geometryData.parameters.widthSegments
 
     let material = this.quadTreeconfig.config.material
 
-    class Node extends Quad{ constructor(params){ super(params) } }
+    let metaData = {   
+      index,  
+      offset,  
+      direction
+    }
 
-    let quad = new Node( width, widthSegments )
-    quad.metaData.index  = index
-    quad.metaData.offset = direction
-    quad.metaData.direction = '+z'
-      
-    quad = this.createPlane({
+    let node = new Node( {size, segments, metaData} )
+
+    node = this.createPlane({
       material:material,
-      size:width,
-      resolution:widthSegments,
+      size:size,
+      resolution:segments,
       matrixRotationData: matrixRotationData,
       offset:offset,
       shardedData,
-      quad,
+      node,
       callBack,
     })
 
-    this.addNode(quad)
+    this.addNode(node)
 
-    return quad
+    return node
   }
 
   createDimensions(callBack = defualtCallBack ){
@@ -167,7 +169,7 @@ export class Quad extends THREE.Object3D{
       for (var j = 0; j < d; j++) {
         var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
         let _index = i * d + j;
-        let quad = this.createNewNode({
+        let node = this.createNewNode({
           shardedData: shardedData,
           matrixRotationData: {propMehtod:'',input:undefined},
           offset: [i_,-j_,k],
@@ -270,7 +272,7 @@ export class Sphere extends Cube{
     this.quadTreeconfig.config.radius = radius
   }
 
-  createPlane({ material, size, resolution, matrixRotationData, offset, shardedData, quad, callBack }){
+  createPlane({ material, size, resolution, matrixRotationData, offset, shardedData, node, callBack }){
 
     if(this.threading){
        
@@ -287,9 +289,9 @@ export class Sphere extends Cube{
       const dirVectBuffer       = new Float32Array(sharedArrayDirVect  );
 
       let blob       = new Blob([workersSRC(NormalizedQuadGeometry.name,[QuadGeometry, NormalizedQuadGeometry ])], {type: 'application/javascript'}); 
-      let quadWorker = new QuadWorker(new Worker(URL.createObjectURL(blob),{ type: "module" }));
+      let threadController = new ThreadController(new Worker(URL.createObjectURL(blob),{ type: "module" }));
 
-      quadWorker.setPayload({
+      threadController.setPayload({
         sharedArrayPosition,
         sharedArrayNormal,
         sharedArrayIndex,
@@ -303,7 +305,8 @@ export class Sphere extends Cube{
       });
       
     let promise = new Promise((resolve)=>{
-      quadWorker.getPayload(( payload )=>{
+
+      threadController.getPayload(( payload )=>{
 
           let buffers = {
             positionBuffer,
@@ -321,40 +324,41 @@ export class Sphere extends Cube{
           geometry.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer , 2 ) );
           geometry.setAttribute( 'directionVectors', new THREE.Float32BufferAttribute( buffers.dirVectBuffer, 3 ) );
 
-          quad.plane = new THREE.Mesh(geometry, material)
+          node.plane = new THREE.Mesh(geometry, material)
 
-          callBack(quad)
+          callBack(node)
 
-          this.add(quad.plane)
+          this.add(node.plane)
           
-          resolve(quad)
+          resolve(node)
         })
+
       })
 
-      promise.uuid = quad.uuid
+      promise.uuid = node.uuid
 
       return promise
 
     }else{
 
-    let matrix  = matrixRotationData.propMehtod ? new THREE.Matrix4()[[matrixRotationData.propMehtod]](matrixRotationData.input) : new THREE.Matrix4() 
+      let matrix  = matrixRotationData.propMehtod ? new THREE.Matrix4()[[matrixRotationData.propMehtod]](matrixRotationData.input) : new THREE.Matrix4() 
 
-    let geometry = new NormalizedQuadGeometry( size, size, resolution, resolution, this.quadTreeconfig.config.radius)
+      let geometry = new NormalizedQuadGeometry( size, size, resolution, resolution, this.quadTreeconfig.config.radius)
 
-    geometry._setMatrix({ matrix })
+      geometry._setMatrix({ matrix })
 
-    geometry._setOffset({ offset })
+      geometry._setOffset({ offset })
 
-    geometry._build()
+      geometry._build()
 
-    quad.plane = new THREE.Mesh(geometry, material)
-    
-    callBack(quad)
+      node.plane = new THREE.Mesh(geometry, material)
+      
+      callBack(node)
 
-    this.add(quad.plane)
+      this.add(node.plane)
 
-    return quad
+      return node
+
+    }
   }
-  }
-
 }

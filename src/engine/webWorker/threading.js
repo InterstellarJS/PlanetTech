@@ -1,5 +1,5 @@
 
-export class QuadWorker {
+export class ThreadController {
     constructor(_worker) {
       this.worker = _worker
     }

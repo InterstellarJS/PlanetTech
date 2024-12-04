@@ -27,19 +27,19 @@ export function workersSRC(currentGeometry,params){
         geometry._setOffset({ offset: payload.offset })
 
         geometry._threadingBuild({
-        positionBuffer,
-        normalBuffer,
-        uvBuffer,
-        indexBuffer,
-        dirVectBuffer
+            positionBuffer,
+            normalBuffer,
+            uvBuffer,
+            indexBuffer,
+            dirVectBuffer
         })
  
         return{
-        positionBuffer,
-        normalBuffer,
-        uvBuffer,
-        indexBuffer,
-        dirVectBuffer
+            positionBuffer,
+            normalBuffer,
+            uvBuffer,
+            indexBuffer,
+            dirVectBuffer
         }
     }
         

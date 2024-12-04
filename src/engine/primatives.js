@@ -1,11 +1,17 @@
 import * as THREE from 'three/tsl'
-import { QuadTreeLODCore,QuadTreeLOD } from './quadtree.js'
+import { QuadTreeController,QuadTree } from './quadtree.js'
 import { QuadGeometry, NormalizedQuadGeometry } from './geometry.js'
 import { ThreadController } from './webWorker/threading.js'
 import { workersSRC } from './webWorker/workerThread.js'
 
 
-class Node extends THREE.Object3D{ constructor(params){ super(); this.params = params } }
+class Node extends THREE.Object3D{ 
+  constructor(params){ 
+    super(); 
+    this.params = params
+    this.neighbors = new Set()
+  } 
+}
 
 const defualtCallBack = q => {}
 
@@ -20,23 +26,21 @@ export class Quad extends THREE.Object3D{
       dimension:  dimension
     }
 
-    this.metaData  = {}
     this.nodes = {}
-    this.neighbors = new Set()
-    this.quadTreeconfig = new QuadTreeLODCore()
+    this.quadTreeController = new QuadTreeController()
   }
 
   createQuadTree({ levels }){
-    Object.assign(this.quadTreeconfig.config,{
+    Object.assign(this.quadTreeController.config,{
       maxLevelSize:  this.parameters.size,
       minLevelSize:  Math.floor(this.parameters.size/Math.pow(2,levels-1)), // this create a vizual bug in the lower levels when size not a power of 2 
       minPolyCount:  this.parameters.resolution,
       dimensions:    this.parameters.dimension,
       }
     )
-    this.quadTreeconfig.levels(levels)
-    this.quadTreeconfig.createArrayBuffers()
-    this.quadTree = new QuadTreeLOD()
+    this.quadTreeController.levels(levels)
+    this.quadTreeController.createArrayBuffers()
+    this.quadTree = new QuadTree()
   }  
 
   addNode(node){
@@ -47,7 +51,7 @@ export class Quad extends THREE.Object3D{
     this.threading = true
   }
 
-  createPlane({ material, size, resolution, matrixRotationData, offset, shardedData, node, callBack }){
+  createPlane({ material, size, resolution, matrixRotationData, offset, shardedData, node, callBack, parent }){
 
     if(this.threading){
        
@@ -95,7 +99,7 @@ export class Quad extends THREE.Object3D{
 
           callBack(node)
 
-          this.add(node.plane)
+          parent.add(node.plane)
           
           resolve(node)
         })
@@ -121,18 +125,18 @@ export class Quad extends THREE.Object3D{
 
       callBack(node)
 
-      this.add(q.plane)
+      parent.add(q.plane)
 
       return node
     }
   }
 
-  createNewNode({ shardedData, matrixRotationData, offset, index, direction, callBack }){
+  createNewNode({ shardedData, matrixRotationData, offset, index, direction, callBack, parent = this }){
 
     const size  = shardedData.geometryData.parameters.width
     const segments  = shardedData.geometryData.parameters.widthSegments
 
-    let material = this.quadTreeconfig.config.material
+    let material = this.quadTreeController.config.material
 
     let metaData = {   
       index,  
@@ -151,6 +155,7 @@ export class Quad extends THREE.Object3D{
       shardedData,
       node,
       callBack,
+      parent
     })
 
     this.addNode(node)
@@ -162,7 +167,7 @@ export class Quad extends THREE.Object3D{
     const w = this.parameters.size
     const d = this.parameters.dimension
     const k = ((w/2)*d)
-    const shardedData = this.quadTreeconfig.config.arrybuffers[w]
+    const shardedData = this.quadTreeController.config.arrybuffers[w]
 
     for (var i = 0; i < d; i++) {
       var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
@@ -197,7 +202,7 @@ export class Cube extends Quad {
     const w = this.parameters.size
     const d = this.parameters.dimension
     const k = ((w/2)*d)
-    const shardedData = this.quadTreeconfig.config.arrybuffers[w]
+    const shardedData = this.quadTreeController.config.arrybuffers[w]
 
     for (var i = 0; i < d; i++) {
       var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
@@ -269,10 +274,10 @@ export class Sphere extends Cube{
 
   constructor({ size, resolution, dimension, radius }){
     super({size, resolution, dimension})
-    this.quadTreeconfig.config.radius = radius
+    this.quadTreeController.config.radius = radius
   }
 
-  createPlane({ material, size, resolution, matrixRotationData, offset, shardedData, node, callBack }){
+  createPlane({ material, size, resolution, matrixRotationData, offset, shardedData, node, callBack, parent}){
 
     if(this.threading){
        
@@ -301,7 +306,7 @@ export class Sphere extends Cube{
         offset,
         size,
         resolution,
-        radius:this.quadTreeconfig.config.radius,
+        radius:this.quadTreeController.config.radius,
       });
       
     let promise = new Promise((resolve)=>{
@@ -316,7 +321,7 @@ export class Sphere extends Cube{
             dirVectBuffer
           }
 
-          let geometry = new NormalizedQuadGeometry( size, size, resolution, resolution, this.quadTreeconfig.config.radius)
+          let geometry = new NormalizedQuadGeometry( size, size, resolution, resolution, this.quadTreeController.config.radius)
 
           geometry.setIndex(  Array.from(buffers.indexBuffer)  );
           geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( buffers.positionBuffer , 3 ) );
@@ -328,7 +333,7 @@ export class Sphere extends Cube{
 
           callBack(node)
 
-          this.add(node.plane)
+          parent.add(node.plane)
           
           resolve(node)
         })
@@ -343,7 +348,7 @@ export class Sphere extends Cube{
 
       let matrix  = matrixRotationData.propMehtod ? new THREE.Matrix4()[[matrixRotationData.propMehtod]](matrixRotationData.input) : new THREE.Matrix4() 
 
-      let geometry = new NormalizedQuadGeometry( size, size, resolution, resolution, this.quadTreeconfig.config.radius)
+      let geometry = new NormalizedQuadGeometry( size, size, resolution, resolution, this.quadTreeController.config.radius)
 
       geometry._setMatrix({ matrix })
 
@@ -355,7 +360,7 @@ export class Sphere extends Cube{
       
       callBack(node)
 
-      this.add(node.plane)
+      parent.add(node.plane)
 
       return node
 

@@ -1,6 +1,6 @@
 import * as THREE  from 'three/tsl';
 
-export class QuadTreeLODCore {
+export class QuadTreeController {
   constructor(config = {}) {
     let shardedData = {
       maxLevelSize:1,
@@ -56,4 +56,13 @@ export class QuadTreeLODCore {
 
 }
 
-export  class QuadTreeLOD { constructor(){ } }
+export  class QuadTree { 
+  constructor(){} 
+
+  split(primative){
+    let n1 = primative.createNewNode()
+    let n2 = primative.createNewNode()
+    let n3 = primative.createNewNode()
+    let n4 = primative.createNewNode()
+   }
+}

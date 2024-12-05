@@ -97,9 +97,18 @@ export class Quad extends THREE.Object3D{
   
           node.plane = new THREE.Mesh(geometry, material)
 
+          node.add(node.plane)
+
           callBack(node)
 
-          parent.add(node.plane)
+          parent.add(node)
+
+          var mesh = node.plane
+          var center = new THREE.Vector3();
+          mesh.geometry.computeBoundingBox();
+          mesh.geometry.boundingBox.getCenter(center);
+          mesh.geometry.center();
+          mesh.position.copy(center);
           
           resolve(node)
         })
@@ -123,9 +132,11 @@ export class Quad extends THREE.Object3D{
 
       node.plane = new THREE.Mesh(geometry, material)
 
+      node.add(node.plane)
+
       callBack(node)
 
-      parent.add(q.plane)
+      parent.add(node)
 
       return node
     }
@@ -141,7 +152,8 @@ export class Quad extends THREE.Object3D{
     let metaData = {   
       index,  
       offset,  
-      direction
+      direction,
+      matrixRotationData
     }
 
     let node = new Node( {size, segments, metaData} )
@@ -331,10 +343,21 @@ export class Sphere extends Cube{
 
           node.plane = new THREE.Mesh(geometry, material)
 
+          node.add(node.plane)
+
           callBack(node)
 
-          parent.add(node.plane)
+          parent.add(node)
           
+
+          var mesh = node.plane
+          var center = new THREE.Vector3();
+          mesh.geometry.computeBoundingBox();
+          mesh.geometry.boundingBox.getCenter(center);
+          mesh.geometry.center();
+          mesh.position.copy(center);
+ 
+
           resolve(node)
         })
 
@@ -357,10 +380,12 @@ export class Sphere extends Cube{
       geometry._build()
 
       node.plane = new THREE.Mesh(geometry, material)
-      
+
+      node.add(node.plane)
+
       callBack(node)
 
-      parent.add(node.plane)
+      parent.add(node)
 
       return node
 

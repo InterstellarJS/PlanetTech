@@ -1,6 +1,7 @@
 import * as THREE  from 'three/tsl';
 
 export class QuadTreeController {
+
   constructor(config = {}) {
     let shardedData = {
       maxLevelSize:1,
@@ -56,13 +57,60 @@ export class QuadTreeController {
 
 }
 
-export  class QuadTree { 
+export class QuadTree {
+
   constructor(){} 
 
-  split(primative){
-    let n1 = primative.createNewNode()
-    let n2 = primative.createNewNode()
-    let n3 = primative.createNewNode()
-    let n4 = primative.createNewNode()
-   }
-}
+  insert(primative,node){
+    this.split(primative,node)
+  }
+
+  split(primative,node){
+    if ( node.params.metaData.direction == '+z'){
+    console.log(node.params )
+    //console.log(primative,primative.quadTreeController)
+    //shardedData, matrixRotationData, offset, index, direction, callBack, parent = this
+    let parent  = node
+    //parent.material.visible = false
+
+
+    console.log(node.params.metaData.offset)
+    let size = node.params.size
+    let key  =  size/2 
+ 
+ 
+    let direction = node.params.metaData.direction
+ 
+    let matrixRotationData = node.params.metaData.matrixRotationData
+    let offset = [-25/2,25/2,25]
+    let index = 0
+    let shardedData = primative.quadTreeController.config.arrybuffers[key]
+    let callBack = (_node)=>{
+
+      _node.plane.material = new THREE.MeshBasicNodeMaterial({color:new THREE.Color(Math.random(),Math.random(),Math.random())})
+      _node.plane.occlusionTest = true;
+console.log(_node.plane.position)
+
+
+const geometry = new THREE.SphereGeometry( 2, 32, 16 ); 
+const material = new THREE.MeshBasicMaterial( { color: 'black' } ); 
+const sphere = new THREE.Mesh( geometry, material ); 
+_node.plane.add(sphere)
+    }
+ 
+    let n1 = primative.createNewNode({
+      shardedData,
+      direction,
+      matrixRotationData,
+      offset:offset,
+      index,
+      callBack,
+      parent
+    })
+    //let n2 = primative.createNewNode()
+    //let n3 = primative.createNewNode()
+    //let n4 = primative.createNewNode()
+    }
+   
+    }
+  }

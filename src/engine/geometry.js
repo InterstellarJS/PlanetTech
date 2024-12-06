@@ -173,6 +173,12 @@ export class QuadGeometry extends THREE.BufferGeometry {
 
 	}
 
+	_restGeometry(centerdPosition){
+        this.computeBoundingBox();
+        this.boundingBox.getCenter(centerdPosition);
+        this.center();
+ 	}
+
 	copy( source ) {
 
 		super.copy( source );
@@ -383,6 +389,7 @@ export class NormalizedQuadGeometry extends QuadGeometry {
 		this.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer, 2 ) );
 		this.setAttribute( 'directionVectors', new THREE.Float32BufferAttribute( buffers.dirVectBuffer , 3 ) );
 	}
+
 
     static fromJSON( data ) {
 

@@ -9,7 +9,7 @@
 //export {Atmosphere} from './src/postProcessing/Shaders/atmosphereScattering.js'
 
 export * from './src/engine/primatives.js';
-export * from './src/engine/octree.js';
+//export * from './src/engine/octree.js';
 
 export * from './src/shaders/tsl/functions.js'
 export * from './src/shaders/tsl/noise.js'

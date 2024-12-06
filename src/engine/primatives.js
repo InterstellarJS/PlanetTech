@@ -6,14 +6,21 @@ import { workersSRC } from './webWorker/workerThread.js'
 
 
 class Node extends THREE.Object3D{ 
+
   constructor(params){ 
     super(); 
     this.params = params
     this.neighbors = new Set()
-  } 
+  }
+  
+  plane(){
+    if (this.children[0] instanceof THREE.Mesh) // just to make sure
+      return this.children[0]
+  }
+  
 }
 
-const defualtCallBack = q => {}
+const defualtCallBack = node => {}
 
 export class Quad extends THREE.Object3D{
 
@@ -80,6 +87,7 @@ export class Quad extends THREE.Object3D{
        });
 
       let promise = new Promise((resolve)=>{
+
         threadController.getPayload((payload)=>{
 
           let buffers = {
@@ -95,21 +103,18 @@ export class Quad extends THREE.Object3D{
           geometry.setAttribute( 'normal', new THREE.Float32BufferAttribute(  buffers.normalBuffer , 3 ) );
           geometry.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer , 2 ) );
   
-          node.plane = new THREE.Mesh(geometry, material)
+          let plane = new THREE.Mesh(geometry, material)
 
-          node.add(node.plane)
+          plane.isPlane = true 
+
+          plane.position.set(...payload.data.centerdPosition);
+
+          node.add(plane)
 
           callBack(node)
 
           parent.add(node)
 
-          var mesh = node.plane
-          var center = new THREE.Vector3();
-          mesh.geometry.computeBoundingBox();
-          mesh.geometry.boundingBox.getCenter(center);
-          mesh.geometry.center();
-          mesh.position.copy(center);
-          
           resolve(node)
         })
       })
@@ -130,9 +135,17 @@ export class Quad extends THREE.Object3D{
 
       geometry._build()
 
-      node.plane = new THREE.Mesh(geometry, material)
+      let centerdPosition = new THREE.Vector3();
 
-      node.add(node.plane)
+      geometry._restGeometry(centerdPosition)
+
+      let plane = new THREE.Mesh(geometry, material)
+
+      plane.isPlane = true 
+
+      plane.position.set(...centerdPosition);
+
+      node.add(plane)
 
       callBack(node)
 
@@ -324,7 +337,7 @@ export class Sphere extends Cube{
     let promise = new Promise((resolve)=>{
 
       threadController.getPayload(( payload )=>{
-
+ 
           let buffers = {
             positionBuffer,
             normalBuffer,
@@ -341,22 +354,17 @@ export class Sphere extends Cube{
           geometry.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer , 2 ) );
           geometry.setAttribute( 'directionVectors', new THREE.Float32BufferAttribute( buffers.dirVectBuffer, 3 ) );
 
-          node.plane = new THREE.Mesh(geometry, material)
+          let plane = new THREE.Mesh(geometry, material)
 
-          node.add(node.plane)
+          plane.isPlane = true 
+
+          plane.position.set(...payload.data.centerdPosition);
+
+          node.add(plane)
 
           callBack(node)
 
           parent.add(node)
-          
-
-          var mesh = node.plane
-          var center = new THREE.Vector3();
-          mesh.geometry.computeBoundingBox();
-          mesh.geometry.boundingBox.getCenter(center);
-          mesh.geometry.center();
-          mesh.position.copy(center);
- 
 
           resolve(node)
         })
@@ -379,9 +387,17 @@ export class Sphere extends Cube{
 
       geometry._build()
 
-      node.plane = new THREE.Mesh(geometry, material)
+      let centerdPosition = new THREE.Vector3();
 
-      node.add(node.plane)
+      geometry._restGeometry(centerdPosition)
+
+      let plane = new THREE.Mesh(geometry, material)
+
+      plane.isPlane = true 
+
+      plane.position.set(...centerdPosition);
+
+      node.add(plane)
 
       callBack(node)
 

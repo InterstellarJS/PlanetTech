@@ -33,20 +33,27 @@ export function workersSRC(currentGeometry,params){
             indexBuffer,
             dirVectBuffer
         })
- 
+
+        let centerdPosition = new THREE.Vector3()
+        
+        geometry._restGeometry(centerdPosition)
+
+        positionBuffer.set(geometry.attributes.position.array)
+
         return{
             positionBuffer,
             normalBuffer,
             uvBuffer,
             indexBuffer,
-            dirVectBuffer
+            dirVectBuffer,
+            centerdPosition:centerdPosition.toArray()
         }
     }
         
     self.onmessage = function(msg) {
         const payload = msg.data
         let outputBuffers = init(payload)
-        self.postMessage({msg:'Complete',data:[1,2,3]})
+        self.postMessage({centerdPosition: outputBuffers.centerdPosition})
     }
     `
 }

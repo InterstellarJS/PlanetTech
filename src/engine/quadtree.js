@@ -145,3 +145,19 @@ export class QuadTree {
    
     }
   }
+
+
+  export class QuadTreeNode extends THREE.Object3D{ 
+
+    constructor(params){ 
+      super(); 
+      this.params = params
+      this.neighbors = new Set()
+    }
+    
+    plane(){
+      if (this.children[0] instanceof THREE.Mesh) // just to make sure
+        return this.children[0]
+    }
+    
+  }

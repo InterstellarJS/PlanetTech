@@ -1,24 +1,9 @@
 import * as THREE from 'three/tsl'
-import { QuadTreeController,QuadTree } from './quadtree.js'
+import { QuadTreeController,QuadTree,QuadTreeNode } from './quadtree.js'
 import { QuadGeometry, NormalizedQuadGeometry } from './geometry.js'
 import { ThreadController } from './webWorker/threading.js'
 import { workersSRC } from './webWorker/workerThread.js'
 
-
-class Node extends THREE.Object3D{ 
-
-  constructor(params){ 
-    super(); 
-    this.params = params
-    this.neighbors = new Set()
-  }
-  
-  plane(){
-    if (this.children[0] instanceof THREE.Mesh) // just to make sure
-      return this.children[0]
-  }
-  
-}
 
 const defualtCallBack = node => {}
 
@@ -169,7 +154,7 @@ export class Quad extends THREE.Object3D{
       matrixRotationData
     }
 
-    let node = new Node( {size, segments, metaData} )
+    let node = new QuadTreeNode( {size, segments, metaData} )
 
     node = this.createPlane({
       material:material,

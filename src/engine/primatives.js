@@ -111,9 +111,9 @@ export class Quad extends THREE.Object3D{
 
           node.add(plane)
 
-          callBack(node)
-
           parent.add(node)
+
+          callBack(node)
 
           resolve(node)
         })
@@ -146,10 +146,10 @@ export class Quad extends THREE.Object3D{
       plane.position.set(...centerdPosition);
 
       node.add(plane)
+      
+      parent.add(node)
 
       callBack(node)
-
-      parent.add(node)
 
       return node
     }
@@ -362,9 +362,9 @@ export class Sphere extends Cube{
 
           node.add(plane)
 
-          callBack(node)
-
           parent.add(node)
+
+          callBack(node)
 
           resolve(node)
         })
@@ -399,12 +399,48 @@ export class Sphere extends Cube{
 
       node.add(plane)
 
-      callBack(node)
-
       parent.add(node)
+
+      callBack(node)
 
       return node
 
     }
+  }
+}
+
+
+export class BatchedPrimative extends THREE.Object3D{
+
+  constructor( primative ){
+    super( )
+    this.primative   = primative
+    this.batchedMesh = new THREE.BatchedMesh( 7, 20000, 200000, new THREE.MeshStandardNodeMaterial({color:'red'}) );
+   }
+
+  createInstances( callBack = defualtCallBack  ){
+    
+    this.primative.createDimensions((node)=>{
+
+      const parent = node.parent;
+
+      parent.remove( node );
+
+      let geometry = node.plane().geometry 
+
+      const boxGeometryId = this.batchedMesh.addGeometry( geometry );
+      
+      const id = this.batchedMesh.addInstance( boxGeometryId );
+
+      callBack(node)
+
+      //node.matrixWorld.decompose( node.position, node.quaternion, node.scale );
+
+    } )
+
+    Promise.all(Object.values(this.primative.nodes)).then(v =>{
+      this.add(this.batchedMesh)
+      
+    })
   }
 }

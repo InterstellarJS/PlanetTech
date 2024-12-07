@@ -1,91 +1,78 @@
 import * as THREE  from 'three/tsl';
 
+const createLocations = ( size, offset, axis ) => {
+   const halfSize = size / 4;
+  switch (axis) {
+    case 'z':
+      return [
+        [ halfSize + offset[0],  halfSize + offset[1], offset[2]],
+        [-halfSize + offset[0],  halfSize + offset[1], offset[2]],
+        [ halfSize + offset[0], -halfSize + offset[1], offset[2]],
+        [-halfSize + offset[0], -halfSize + offset[1], offset[2]],
+      ];
+    case 'x':
+      return [
+        [offset[0],  halfSize + offset[1],  halfSize + offset[2]],
+        [offset[0],  halfSize + offset[1], -halfSize + offset[2]],
+        [offset[0], -halfSize + offset[1],  halfSize + offset[2]],
+        [offset[0], -halfSize + offset[1], -halfSize + offset[2]],
+      ];
+    case 'y':
+      return [
+        [ halfSize + offset[0], offset[1],  halfSize + offset[2]],
+        [-halfSize + offset[0], offset[1],  halfSize + offset[2]],
+        [ halfSize + offset[0], offset[1], -halfSize + offset[2]],
+        [-halfSize + offset[0], offset[1], -halfSize + offset[2]],
+      ];
+    default:
+      return [];
+  }
+};
 
-const setChildren = ( primative, node ) =>{
+const createNode = (primitive, parent, callBack, params) => {
+  const { shardedData, direction, matrixRotationData, location } = params;
 
-  let parent    = node
-  let direction = node.params.metaData.direction
-  let offset    = node.params.metaData.offset
-  let size      = node.params.size
-  let key       =  size/2
-  let shardedData = primative.quadTreeController.config.arrybuffers[key]
-  let matrixRotationData = node.params.metaData.matrixRotationData
-  
-  let callBack  = (_node)=>{
-    _node.plane().material = new THREE.MeshBasicNodeMaterial({color:new THREE.Color(Math.random(),Math.random(),Math.random())})
+  primitive.createNewNode({
+    shardedData,
+    direction,
+    matrixRotationData,
+    offset: location,
+    index: null,
+    callBack,
+    parent,
+  });
+};
+
+const handleDirection = (primitive, parent, direction, size, offset, shardedData, matrixRotationData, callBack) => {
+  const axis = direction.includes('z') ? 'z' : direction.includes('x') ? 'x' : 'y';
+  const locations = createLocations(size, offset, axis);
+
+  locations.forEach((location) => {
+    createNode(primitive, parent, callBack, { shardedData, direction, matrixRotationData, location });
+  });
+
+  parent.plane().material.visible = false;
+};
+
+const setChildren = (primitive, node) => {
+  const { metaData, size } = node.params;
+  const  offset   = metaData.offset
+  const { direction, matrixRotationData } = metaData;
+  const key = size / 2;
+  const shardedData = primitive.quadTreeController.config.arrybuffers[key];
+
+  const callBack = (_node) => {
+    _node.plane().material = new THREE.MeshStandardNodeMaterial({
+      color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+    });
     _node.plane().occlusionTest = true;
   }
-  
-  if ( direction.includes('z')){
 
-    let locations = [
-    [(size/4)+offset[0],(size/4)+offset[1],offset[2]],
-    [(-size/4)+offset[0],(size/4)+offset[1],offset[2]],
-    [(size/4)+offset[0],(-size/4)+offset[1],offset[2]],
-    [(-size/4)+offset[0],(-size/4)+offset[1],offset[2]]]
+  handleDirection(primitive, node, direction, size, offset, shardedData, matrixRotationData, callBack);
+};
 
-    locations.map( location =>{
-      primative.createNewNode({
-      shardedData,
-      direction,
-      matrixRotationData,
-      offset:location,
-      index:null,
-      callBack,
-      parent
-          }
-        )
-      })
-      parent.plane().material.visible = false
-    }
- 
-  else if (direction.includes('x')){
-   
-    let locations = [
-    [offset[0],(size/4)+offset[1],(size/4)+offset[2]],
-    [offset[0],(size/4)+offset[1],(-size/4)+offset[2]],
-    [offset[0],(-size/4)+offset[1],(size/4)+offset[2]],
-    [offset[0],(-size/4)+offset[1],(-size/4)+offset[2]]]
 
-    locations.map( location =>{
-      primative.createNewNode({
-      shardedData,
-      direction,
-      matrixRotationData,
-      offset:location,
-      index:null,
-      callBack,
-      parent
-          }
-        )
-      })
-      parent.plane().material.visible = false
-   }  
-    
-  else if (direction.includes('y')){
-    
-    let locations =  [
-    [(size/4)+offset[0],offset[1],(size/4)+offset[2]],
-    [(-size/4)+offset[0],offset[1],(size/4)+offset[2]],
-    [(size/4)+offset[0],offset[1],(-size/4)+offset[2]],
-    [(-size/4)+offset[0],offset[1],(-size/4)+offset[2]]]
 
-    locations.map( location =>{
-      primative.createNewNode({
-      shardedData,
-      direction,
-      matrixRotationData,
-      offset:location,
-      index:null,
-      callBack,
-      parent
-          }
-        )
-      })
-      parent.plane().material.visible = false
-   }
- 
-}
 
 export class QuadTreeController {
 

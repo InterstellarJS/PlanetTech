@@ -409,14 +409,13 @@ export class Sphere extends Cube{
   }
 }
 
-
-export class BatchedPrimative extends THREE.Object3D{
+/*
+export class BatchedPrimative extends THREE.BatchedMesh{
 
   constructor( primative ){
-    super( )
-    this.primative   = primative
-    this.batchedMesh = new THREE.BatchedMesh( 7, 20000, 200000, new THREE.MeshStandardNodeMaterial({color:'red'}) );
-   }
+    super( 7, 20000, 200000, new THREE.MeshStandardNodeMaterial({color:'red'})  )
+    this.primative = primative
+    }
 
   createInstances( callBack = defualtCallBack  ){
     
@@ -428,9 +427,9 @@ export class BatchedPrimative extends THREE.Object3D{
 
       let geometry = node.plane().geometry 
 
-      const boxGeometryId = this.batchedMesh.addGeometry( geometry );
+      const boxGeometryId = this.addGeometry( geometry );
       
-      const id = this.batchedMesh.addInstance( boxGeometryId );
+      const id = this.addInstance( boxGeometryId );
 
       callBack(node)
 
@@ -438,9 +437,5 @@ export class BatchedPrimative extends THREE.Object3D{
 
     } )
 
-    Promise.all(Object.values(this.primative.nodes)).then(v =>{
-      this.add(this.batchedMesh)
-      
-    })
   }
-}
+}*/

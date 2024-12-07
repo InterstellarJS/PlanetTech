@@ -40,6 +40,10 @@ export function workersSRC(currentGeometry,params){
 
         positionBuffer.set(geometry.attributes.position.array)
 
+        geometry.computeVertexNormals()
+
+        normalBuffer.set(geometry.attributes.normal.array)
+
         return{
             positionBuffer,
             normalBuffer,

@@ -383,7 +383,7 @@ export class NormalizedQuadGeometry extends QuadGeometry {
 		}
 
 
-		this.setIndex(  buffers.indexBuffer  );
+		this.setIndex(  Array.from(buffers.indexBuffer)   );
 		this.setAttribute( 'position', new THREE.Float32BufferAttribute( buffers.positionBuffer , 3 ) );
 		this.setAttribute( 'normal', new THREE.Float32BufferAttribute(  buffers.normalBuffer , 3 ) );
 		this.setAttribute( 'uv', new THREE.Float32BufferAttribute(  buffers.uvBuffer, 2 ) );

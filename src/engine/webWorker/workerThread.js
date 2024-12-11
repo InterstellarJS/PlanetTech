@@ -11,12 +11,12 @@ export function workersSRC(currentGeometry,params){
 
 
     function init( payload ){
-    
+     
         const positionBuffer = new Float32Array(payload.sharedArrayPosition );
         const normalBuffer   = new Float32Array(payload.sharedArrayNormal   );
         const uvBuffer       = new Float32Array(payload.sharedArrayUv       );
         const indexBuffer    = new Uint32Array (payload.sharedArrayIndex    );
-        const dirVectBuffer  = new Float32Array(payload.sharedArrayDirVect  );
+        const dirVectBuffer  = (payload.sharedArrayDirVect === undefined) ? undefined : new Float32Array(payload.sharedArrayDirVect  );
 
         let geometry = new ${currentGeometry}( payload.size, payload.size, payload.resolution, payload.resolution, payload.radius)
 

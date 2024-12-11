@@ -1,7 +1,8 @@
 import * as THREE  from 'three/tsl';
 
 const createLocations = ( size, offset, axis ) => {
-   const halfSize = size / 4;
+   const halfSize = Math.ceil(size/4)
+   console.log(offset)
   switch (axis) {
     case 'z':
       return [
@@ -58,7 +59,7 @@ const setChildren = (primitive, node) => {
   const { metaData, size } = node.params;
   const  offset   = metaData.offset
   const { direction, matrixRotationData } = metaData;
-  const key = size / 2;
+  const key = Math.ceil(size / 2);
   const shardedData = primitive.quadTreeController.config.arrybuffers[key];
 
   const callBack = (_node) => {
@@ -132,32 +133,121 @@ export class QuadTreeController {
 }
 
 
+
+export class QuadTreeNode extends THREE.Object3D{
+
+  constructor(params, normalize){ 
+    super(); 
+    this.params = params
+    this.neighbors = new Set()
+    this._children = []
+
+    let offset =  params.metaData.offset
+    let matrixRotationData =  params.metaData.matrixRotationData
+    let matrix  = matrixRotationData.propMehtod ? new THREE.Matrix4()[[matrixRotationData.propMehtod]](matrixRotationData.input) : new THREE.Matrix4() 
+    matrix.premultiply(new THREE.Matrix4().makeTranslation(...offset));
+     const b = new THREE.Box3(
+    new THREE.Vector3(-params.size  , -params.size  , -params.size ),
+    new THREE.Vector3(params.size  , params.size  , params.size  ));
+
+    let center = new THREE.Vector3()
+    b.getCenter(center)
+    let _n = new THREE.Vector3()
+
+    let normalizedCenter = center.clone()
+    normalizedCenter.applyMatrix4(matrix)
+
+    if(normalize){
+      normalizedCenter.normalize()
+      _n.copy(normalizedCenter)
+      normalizedCenter.multiplyScalar(params.quadTreeController.config.radius)
+      normalizedCenter.add(_n)
+  }
+
+    this.position.copy(normalizedCenter)
+  }
+
+
+  subdivide(node){
+    const { metaData, size } = node.params;
+    const  offset   = metaData.offset
+    const { direction, matrixRotationData } = metaData;
+
+    const axis = direction.includes('z') ? 'z' : direction.includes('x') ? 'x' : 'y';
+    const locations = createLocations(size, offset, axis); 
+
+
+    locations.forEach((location) => {
+       
+
+      let quadtreeNode = new QuadTreeNode( {size:Math.ceil(size/4), segments:100, metaData:{
+        index:0,  
+        offset:location,  
+        direction,
+        matrixRotationData}, quadTreeController:{config:{radius:15}}}, true)
+        node.add(quadtreeNode)
+        node._children.push(quadtreeNode)
+
+        const geometry = new THREE.SphereGeometry( 0.1, 32, 16 ); 
+        const material = new THREE.MeshStandardMaterial( { color: 'red' } ); 
+        const sphere   = new THREE.Mesh( geometry, material ); 
+        sphere.position.copy(quadtreeNode.position)
+        node.attach(sphere)
+    });
+
+  
+
+  }
+
+  insert(OBJECT3D,primative,node) {
+
+    let localToWorld = primative.localToWorld(new THREE.Vector3().copy(node.position)) 
+    var distance = localToWorld.distanceTo(OBJECT3D.position)
+     console.log('=========',primative.quadTreeController.config.minLevelSize)
+ 
+
+     if ( (distance) < (primative.quadTreeController.config.lodDistanceOffset * node.params.size) && node.params.size > primative.quadTreeController.config.minLevelSize ){
+
+      console.log('YOOOOOOOO')
+      console.log(node.params.metaData.direction)
+      console.log(node.params.metaData.index)
+      console.log(node.params.metaData.offset)
+      console.log('----------')
+
+
+      if (node._children.length === 0) {
+        node.subdivide(node);
+      }
+console.log(node._children)
+
+
+for (const child of node._children) { child.insert(OBJECT3D,primative,child); } 
+     }
+     return
+
+  }
+ 
+  }
+
+
+
+
 export class QuadTree {
 
-  constructor(){} 
+  constructor(){
+    this.rootNodes  = []
+  } 
 
-  insert(primative,node){
-    this.split(primative,node)
+
+  update(OBJECT3D,primative,node){
+    node.insert(OBJECT3D)
   }
 
-  split(primative,node){
-    setChildren ( primative, node )
-   
-    }
+  insert(OBJECT3D,primative,node){
+     
   }
 
-
-  export class QuadTreeNode extends THREE.Object3D{ 
-
-    constructor(params){ 
-      super(); 
-      this.params = params
-      this.neighbors = new Set()
-    }
+  split(OBJECT3D,primative,node){
     
-    plane(){
-      if (this.children[0] instanceof THREE.Mesh) // just to make sure
-        return this.children[0]
     }
-    
   }

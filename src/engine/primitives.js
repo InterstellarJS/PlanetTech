@@ -1,25 +1,13 @@
 import * as THREE from 'three/tsl'
-import { QuadTreeController,QuadTree,QuadTreeNode } from './quadtree.js'
+import { QuadTreeController,QuadTree } from './quadtree.js'
 import { QuadGeometry, NormalizedQuadGeometry } from './geometry.js'
 import { ThreadController } from './webWorker/threading.js'
 import { workersSRC } from './webWorker/workerThread.js'
+import { PrimitiveNode,QuadTreeNode } from './nodes.js'
 
-
-class Node extends THREE.Object3D{ 
-
-  constructor(params){ 
-    super(); 
-    this.params = params
-    this.neighbors = new Set()
-  }
-  
-  plane(){
-    if (this.children[0] instanceof THREE.Mesh) // just to make sure
-      return this.children[0]
-  }
-  
+function project( v, r, center ){
+	v.sub( center ).setLength( r ).add( center );
 }
-
 const defualtCallBack = node => {}
 
 export class Quad extends THREE.Object3D{
@@ -35,6 +23,10 @@ export class Quad extends THREE.Object3D{
 
     this.nodes = new Map()
     this.quadTreeController = new QuadTreeController()
+  }
+
+  update(OBJECT3D){
+    this.quadTree.update(OBJECT3D,this)
   }
 
   createQuadTree({ levels }){
@@ -179,29 +171,28 @@ export class Quad extends THREE.Object3D{
       matrixRotationData
     }
 
-    let quadtreeNode = new QuadTreeNode( {size, segments, metaData, quadTreeController}, (this instanceof Sphere))
+    let quadtreeNode = new QuadTreeNode( {size, segments, metaData, quadTreeController}, (this instanceof Sphere)) 
     this.add(quadtreeNode)
-    let bounds = this.localToWorld(new THREE.Vector3().copy(quadtreeNode.position))
-
+    quadtreeNode.setBounds()
     this.quadTree.rootNodes.push(quadtreeNode)
-     let node = new Node( {size, segments, bounds, metaData} )
+    let primitiveNode = new PrimitiveNode( {size, segments, metaData} )
 
-    node = this.createPlane({
+    primitiveNode = this.createPlane({
       material:material,
       size:size,
       resolution:segments,
       matrixRotationData: matrixRotationData,
       offset:offset,
       shardedData,
-      node,
+      node:primitiveNode,
       callBack,
       parent
     })
 
-    let boundsStr = `${bounds.x}_${bounds.y}_${quadtreeNode.params.size}`
-    this.addNode(boundsStr,node)
+    let boundsStr =  `${quadtreeNode.position.x}_${quadtreeNode.position.y}_${quadtreeNode.params.size}`
+    this.addNode(boundsStr,primitiveNode)
 
-    return node
+    return primitiveNode
   }
 
   createDimensions(callBack = defualtCallBack ){

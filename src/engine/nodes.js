@@ -38,6 +38,10 @@ const createLocations = ( size, offset, axis ) => {
  };
 
 
+ const isWithinBounds = (distance, primitive,size) => {
+   return ( (distance) < (primitive.quadTreeController.config.lodDistanceOffset * size) && size > primitive.quadTreeController.config.minLevelSize )
+  };
+
 class Node extends THREE.Object3D{ 
 
     constructor(params){ 
@@ -114,10 +118,10 @@ export class QuadTreeNode extends Node{
     }
 
     insert(OBJECT3D,primitive){
-        let localToWorld = primitive.localToWorld(new THREE.Vector3().copy(this.position)) 
+        let localToWorld = this.bounds
         var distance = localToWorld.distanceTo(OBJECT3D.position)
       
-        if ( (distance) < (primitive.quadTreeController.config.lodDistanceOffset * this.params.size) && this.params.size > primitive.quadTreeController.config.minLevelSize ){
+        if ( isWithinBounds(distance,primitive,this.params.size) ) {
       
             if (this._children.length === 0) { this.subdivide(primitive); }
      
@@ -158,6 +162,35 @@ export class QuadTreeNode extends Node{
             this.attach(sphere)
         });
     
+        }
+
+
+        visibleNodes(OBJECT3D,primitive){
+            const nodes = [];
+        
+            const _traverse = (node) => {
+                let localToWorld =node.bounds
+                var distance = localToWorld.distanceTo(OBJECT3D.position)
+
+                if(isWithinBounds(distance,primitive,node.params.size)){
+                    for (const child of node._children) {
+          
+                        _traverse(child);
+                    }
+
+                }else{
+                    for (const child of node.children ) {
+                          child.material.color = new THREE.Color(0,0,1)
+                          child.scale.multiplyScalar(.5)
+                      }
+                    nodes.push(node);
+
+                }
+      
+            };
+        
+            _traverse(this);
+            return nodes;
         }
 
 }

@@ -70,6 +70,8 @@ export class QuadTree {
   update(OBJECT3D,primative){
     this.rootNodes.forEach(quadtreeNode=>{
       quadtreeNode.insert(OBJECT3D,primative)
+      let visibleNodes = quadtreeNode.visibleNodes(OBJECT3D,primative)
+      console.log(visibleNodes)
     })
   }
 

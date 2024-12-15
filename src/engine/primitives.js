@@ -5,13 +5,10 @@ import { ThreadController } from './webWorker/threading.js'
 import { workersSRC } from './webWorker/workerThread.js'
 import { PrimitiveNode,QuadTreeNode } from './nodes.js'
 
-function project( v, r, center ){
-	v.sub( center ).setLength( r ).add( center );
-}
 const defualtCallBack = node => {}
 
-export class Quad extends THREE.Object3D{
 
+export class Primitive  extends THREE.Object3D{
   constructor({ size, resolution, dimension }){
     super()
 
@@ -48,6 +45,13 @@ export class Quad extends THREE.Object3D{
 
   thread(){
     this.threading = true
+  }
+}
+
+export class Quad extends Primitive{
+
+  constructor(params){
+    super(params)
   }
 
   createPlane({
@@ -155,7 +159,6 @@ export class Quad extends THREE.Object3D{
     }
   }
   
-
   createNewNode({ shardedData, matrixRotationData, offset, index, direction, callBack, parent = this }){
 
     const quadTreeController = this.quadTreeController
@@ -217,13 +220,9 @@ export class Quad extends THREE.Object3D{
       }
     }
   }
-
 }
 
-
-
-
-export class Cube extends Quad {
+export class Cube extends Quad{
 
   constructor({ size, resolution, dimension}){
     super({ size, resolution, dimension }) 
@@ -300,7 +299,6 @@ export class Cube extends Quad {
   }
 
 }
-
 
 export class Sphere extends Cube{
 

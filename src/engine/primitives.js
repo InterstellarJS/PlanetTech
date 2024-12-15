@@ -173,7 +173,7 @@ export class Quad extends THREE.Object3D{
 
     let quadtreeNode = new QuadTreeNode( {size, segments, metaData, quadTreeController}, (this instanceof Sphere)) 
     this.add(quadtreeNode)
-    quadtreeNode.setBounds()
+    quadtreeNode.setBounds(this)
     this.quadTree.rootNodes.push(quadtreeNode)
     let primitiveNode = new PrimitiveNode( {size, segments, metaData} )
 
@@ -189,7 +189,7 @@ export class Quad extends THREE.Object3D{
       parent
     })
 
-    let boundsStr =  `${quadtreeNode.position.x}_${quadtreeNode.position.y}_${quadtreeNode.params.size}`
+    let boundsStr =  `${quadtreeNode.bounds.x}_${quadtreeNode.bounds.y}_${quadtreeNode.params.size}`
     this.addNode(boundsStr,primitiveNode)
 
     return primitiveNode
@@ -205,7 +205,7 @@ export class Quad extends THREE.Object3D{
       var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
       for (var j = 0; j < d; j++) {
         var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
-        let _index = i * d + j;
+        let _index = String(i * d + j);
         let node = this.createNewNode({
           shardedData: shardedData,
           matrixRotationData: {propMehtod:'',input:undefined},
@@ -240,7 +240,7 @@ export class Cube extends Quad {
       var i_ = ((i*(w-1))+i)+((-(w/2))*(d-1))
       for (var j = 0; j < d; j++) {
         var j_ = ((j*(w-1))+j)+((-(w/2))*(d-1))
-        let _index = i * d + j;
+        let _index = String(i * d + j);
 
          this.createNewNode({ 
           shardedData: shardedData, 

@@ -1,11 +1,11 @@
 import * as THREE from 'three/tsl'
 import { Sphere } from './primitives.js'
 
-let project=( normalizedCenter, r, center )=>{
-    normalizedCenter.normalize()
+let project=( normalizedCenter, r, center,p )=>{
+    normalizedCenter.sub(p).normalize()
     center.copy(normalizedCenter)
     normalizedCenter.multiplyScalar(r)
-    normalizedCenter.add(center)
+    normalizedCenter.add(p).add(center)
 }
 
 const createLocations = ( size, offset, axis ) => {
@@ -77,7 +77,7 @@ export class QuadTreeNode extends Node{
         this.position.applyMatrix4(matrix)
     }
 
-    setBounds(){
+    setBounds(primitive){
         let size = this.params.size
         if(this.normalize){
             let M = new THREE.Vector3();
@@ -85,16 +85,31 @@ export class QuadTreeNode extends Node{
             let radius =  this.params.quadTreeController.config.radius
 
             const axis = this.params.metaData.direction.includes('z') ? 'z' : this.params.metaData.direction.includes('x') ? 'x' : 'y';
-            createLocations(size/2, this.position.toArray(), axis).forEach(e=>{
+            createLocations(size, this.params.metaData.offset, axis).forEach(e=>{
                 let k = new THREE.Vector3(...e)
-                project(k,radius,new THREE.Vector3())
+                var A = this.localToWorld(k )
+                project(A,radius,new THREE.Vector3(),new THREE.Vector3().copy(primitive.position))
                 M.add(k)
+
+                const geometry = new THREE.SphereGeometry(   .5, 32, 16 ); 
+                const material = new THREE.MeshStandardMaterial( { color: 'green' } ); 
+                const sphere   = new THREE.Mesh( geometry, material ); 
+                sphere.position.copy(A)
+                this.attach(sphere)
             })
 
             M.divideScalar(4);
             
-            project( M,radius,new THREE.Vector3() );
-            this.position.copy(M)
+            project( M,radius,new THREE.Vector3() ,new THREE.Vector3().copy(primitive.position));
+            //this.position.copy(M)
+
+            
+            const geometry = new THREE.SphereGeometry(     .5, 32, 16 ); 
+            const material = new THREE.MeshStandardMaterial( { color: 'red' } ); 
+            const sphere   = new THREE.Mesh( geometry, material ); 
+            sphere.position.copy(M)
+            this.attach(sphere)
+            this.bounds = M
         }
     }
 
@@ -118,11 +133,10 @@ export class QuadTreeNode extends Node{
         let  offset = metaData.offset
 
         let axis = direction.includes('z') ? 'z' : direction.includes('x') ? 'x' : 'y';
-        let locations = createLocations(Math.floor(size/4), offset, axis); 
-        console.log(Math.floor(size/2),size)
-        let segments = primitive.quadTreeController.config.arrybuffers[Math.floor(size/2)].geometryData.parameters.widthSegments
+         let segments = primitive.quadTreeController.config.arrybuffers[Math.floor(size/2)].geometryData.parameters.widthSegments
         let quadTreeController = primitive.quadTreeController
-        size = Math.floor(size/4)
+        size = Math.floor(size/2)
+        let locations = createLocations( (size/2 ), offset.map(v=> (v/2 )), axis); 
 
         locations.forEach((location,idx) => {
 
@@ -134,11 +148,11 @@ export class QuadTreeNode extends Node{
         
             let quadtreeNode = new QuadTreeNode( {size, segments , metaData , quadTreeController}, (primitive instanceof Sphere))
             this.add(quadtreeNode)
-            quadtreeNode.setBounds()
+            quadtreeNode.setBounds(primitive)
 
             this._children.push(quadtreeNode)
             const geometry = new THREE.SphereGeometry( 0.25, 32, 16 ); 
-            const material = new THREE.MeshStandardMaterial( { color: 'red' } ); 
+            const material = new THREE.MeshStandardMaterial( { color: 'white' } ); 
             const sphere   = new THREE.Mesh( geometry, material ); 
             sphere.position.copy(quadtreeNode.position)
             this.attach(sphere)

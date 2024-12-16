@@ -3,7 +3,7 @@ import { QuadTreeController,QuadTree } from './quadtree.js'
 import { QuadGeometry, NormalizedQuadGeometry } from './geometry.js'
 import { ThreadController } from './webWorker/threading.js'
 import { workersSRC } from './webWorker/workerThread.js'
-import { PrimitiveNode,QuadTreeNode } from './nodes.js'
+import { MeshNode,QuadTreeNode } from './nodes.js'
 
 const defualtCallBack = node => {}
 
@@ -178,24 +178,24 @@ export class Quad extends Primitive{
     this.add(quadtreeNode)
     quadtreeNode.setBounds(this)
     this.quadTree.rootNodes.push(quadtreeNode)
-    let primitiveNode = new PrimitiveNode( {size, segments, metaData} )
+    let meshNode = new MeshNode( {size, segments, metaData}, 'active' )
 
-    primitiveNode = this.createPlane({
+    meshNode = this.createPlane({
       material:material,
       size:size,
       resolution:segments,
       matrixRotationData: matrixRotationData,
       offset:offset,
       shardedData,
-      node:primitiveNode,
+      node:meshNode,
       callBack,
       parent
     })
 
     let boundsStr =  `${quadtreeNode.bounds.x}_${quadtreeNode.bounds.y}_${quadtreeNode.params.size}`
-    this.addNode(boundsStr,primitiveNode)
+    this.addNode(boundsStr,meshNode)
 
-    return primitiveNode
+    return meshNode
   }
 
   createDimensions(callBack = defualtCallBack ){

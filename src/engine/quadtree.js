@@ -1,5 +1,5 @@
 import * as THREE  from 'three/tsl';
-
+import { MeshNode } from './nodes.js';
  
 export class QuadTreeController {
 
@@ -67,15 +67,59 @@ export class QuadTree {
     this.rootNodes  = []
   } 
  
-  update(OBJECT3D,primative){
+  update(OBJECT3D,primitive){
     this.rootNodes.forEach(quadtreeNode=>{
-      quadtreeNode.insert(OBJECT3D,primative)
-      let visibleNodes = quadtreeNode.visibleNodes(OBJECT3D,primative)
-      console.log(visibleNodes)
+      quadtreeNode.insert(OBJECT3D,primitive)
+      let visibleNodes = quadtreeNode.visibleNodes(OBJECT3D,primitive)
+
+      const visibleMeshNodes = new Set();
+
+       for (const node of visibleNodes) {
+        const key = `${node.bounds.x}_${node.bounds.y}_${node.params.size}`;
+        if (primitive.nodes.has(key)) {
+          const meshNode = primitive.nodes.get(key);
+          meshNode.showMesh();
+          visibleMeshNodes.add(key);
+        } else {
+          const size     = node.params.size 
+          const segments = node.params.segments
+          const metaData = node.params.metaData
+          const offset   = node.params.metaData.offset 
+          const matrixRotationData = node.params.metaData.matrixRotationData
+          const shardedData = primitive.quadTreeController.config.arrybuffers[size];
+          let meshNode    = new MeshNode( {size, segments, metaData}, 'active' )
+
+
+          meshNode = primitive.createPlane({
+            material:new THREE.MeshBasicMaterial({color:new THREE.Color(
+              Math.random(),
+              Math.random(),
+              Math.random())}),
+            size:size,
+            resolution:segments,
+            matrixRotationData: matrixRotationData,
+            offset:offset,
+            shardedData,
+            node:meshNode,
+            callBack:()=>{},
+            parent:primitive
+          })
+          let boundsStr =  `${node.bounds.x}_${node.bounds.y}_${node.params.size}`
+          primitive.addNode(boundsStr,meshNode)
+         // const newChunk = this.createChunk(
+           // { x: node.bounds.x, y: node.bounds.y },
+           // node.bounds.size
+         // );
+         // this.chunks.set(key, newChunk);
+         // visibleChunks.add(key);
+        }
+
+       }
+
     })
   }
 
-  split(OBJECT3D,primative,node){
+  split(OBJECT3D,primitive,node){
     
     }
   }

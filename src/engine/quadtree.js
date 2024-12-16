@@ -28,8 +28,8 @@ export class QuadTreeController {
     for (let i = 0; i < numOflvls; i++) {
         levelsArray .push( value   )
         polyPerLevel.push( minPoly )
-        value   = Math.floor( value / 2   )
-        minPoly = Math.floor( minPoly * 2 )
+        value   =( value / 2   )
+        minPoly = ( minPoly * 2 )
     }
     this.config['levels'] = {numOflvls,levelsArray,polyPerLevel}
     this.config['maxPolyCount'] = polyPerLevel[polyPerLevel.length - 1]

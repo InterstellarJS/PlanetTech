@@ -114,9 +114,9 @@ export class QuadTreeNode extends Node{
         let  offset = metaData.offset
 
         let axis = direction.includes('z') ? 'z' : direction.includes('x') ? 'x' : 'y';
-        let segments = primitive.quadTreeController.config.arrybuffers[Math.floor(size/2)].geometryData.parameters.widthSegments
+        let segments = primitive.quadTreeController.config.arrybuffers[(size/2)].geometryData.parameters.widthSegments
         let quadTreeController = primitive.quadTreeController
-        size = Math.floor(size/2)
+        size =  (size/2)
         let locations = createLocations( (size/2 ), offset.map(v=> (v/1 )), axis) 
 
         locations.forEach((location) => {

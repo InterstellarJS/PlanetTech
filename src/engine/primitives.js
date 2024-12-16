@@ -29,7 +29,7 @@ export class Primitive  extends THREE.Object3D{
   createQuadTree({ levels }){
     Object.assign(this.quadTreeController.config,{
       maxLevelSize:  this.parameters.size,
-      minLevelSize:  Math.floor(this.parameters.size/Math.pow(2,levels-1)), // this create a vizual bug in the lower levels when size not a power of 2 
+      minLevelSize:  this.parameters.size/Math.pow(2,levels-1), 
       minPolyCount:  this.parameters.resolution,
       dimensions:    this.parameters.dimension,
       }

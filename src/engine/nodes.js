@@ -80,7 +80,7 @@ export class QuadTreeNode extends Node{
 
             this.bounds = M
         }else{
-          //  this.bounds = this.position //todo
+            this.bounds = this.position.add(new THREE.Vector3().copy(primitive.position)) //todo
         }
 
     }
@@ -124,7 +124,7 @@ export class QuadTreeNode extends Node{
         let quadtreeNode = new QuadTreeNode(params, isSphere(primitive))
 
         primitive.add(quadtreeNode)
-        
+
         quadtreeNode.setBounds(primitive)
 
         this._children.push(quadtreeNode)

@@ -1,11 +1,11 @@
+ import * as THREE from 'three/tsl'
 
-
-
-export const project=( normalizedCenter, r, center,p )=>{
-    normalizedCenter.sub(p).normalize()
-    center.copy(normalizedCenter)
-    normalizedCenter.multiplyScalar(r)
-    normalizedCenter.add(p).add(center)
+export const project=( normalizedCenter, radius, center )=>{
+    let W = new THREE.Vector3()
+    normalizedCenter.sub(center).normalize()
+    W.copy(normalizedCenter)
+    normalizedCenter.multiplyScalar(radius)
+    normalizedCenter.add(center).add(W)
 }
 
 export const createLocations = ( size, offset, axis ) => {
@@ -36,8 +36,11 @@ export const createLocations = ( size, offset, axis ) => {
        return [];
    }
  };
-
+ 
+ export const cordinate = (idx) => ['NE','NW','SE','SW'][idx]
 
  export const isWithinBounds = (distance, primitive,size) => {
    return ( (distance) < (primitive.quadTreeController.config.lodDistanceOffset * size) && size > primitive.quadTreeController.config.minLevelSize )
   };
+
+export const generateKey = node => `${node.params.index}_${node.params.direction}_${node.bounds.x}_${node.bounds.y}_${node.params.size}`

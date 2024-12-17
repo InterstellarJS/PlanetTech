@@ -1,6 +1,7 @@
 import * as THREE  from 'three/tsl';
 import { MeshNode } from './nodes.js';
- 
+import { generateKey } from './utils.js'
+
 export class QuadTreeController {
 
   constructor(config = {}) {
@@ -14,7 +15,10 @@ export class QuadTreeController {
       scale: 1,
       lodDistanceOffset: 1,
       displacmentScale:1,
-      material: new THREE.MeshBasicNodeMaterial({ color: "grey" }),
+      material: new THREE.MeshBasicMaterial({ color: "grey" }),
+      callBacks:{
+        onMeshCreation: node => undefined
+      }
     }
     this.config = Object.assign( shardedData, config )
   }
@@ -28,7 +32,7 @@ export class QuadTreeController {
     for (let i = 0; i < numOflvls; i++) {
         levelsArray .push( value   )
         polyPerLevel.push( minPoly )
-        value   =( value / 2   )
+        value   = ( value / 2   )
         minPoly = ( minPoly * 2 )
     }
     this.config['levels'] = {numOflvls,levelsArray,polyPerLevel}
@@ -54,72 +58,79 @@ export class QuadTreeController {
         }
       }
     }
-  }
-
+  } 
 }
 
 
+const quadTreeUpdate = async (OBJECT3D, primitive, quadtreeNode, visibleMeshNodes ) => {
+  quadtreeNode.insert(OBJECT3D, primitive);
+  const visibleNodes = quadtreeNode.visibleNodes(OBJECT3D, primitive);
+
+  for (const node of visibleNodes) {
+    const key = generateKey(node);
+
+    if (primitive.nodes.has(key)) {
+      const meshNode = primitive.threaded
+        ? await primitive.nodes.get(key)
+        : primitive.nodes.get(key);
+
+      meshNode.showMesh();
+      visibleMeshNodes.add(key);
+    } else {
+      const { size, segments, offset, matrixRotationData } = node.params;
+      const shardedData = primitive.quadTreeController.config.arrybuffers[size];
+      const material = primitive.quadTreeController.config.material;
+
+      let meshNode = new MeshNode(node.params, 'active');
+      meshNode = primitive.createPlane({
+        material,
+        size,
+        resolution: segments,
+        matrixRotationData,
+        offset,
+        shardedData,
+        node: meshNode,
+        parent: primitive,
+      });
+
+      primitive.addNode(key, meshNode);
+      visibleMeshNodes.add(key);
+    }
+  }
+};
 
 
 export class QuadTree {
-
-  constructor(){
-    this.rootNodes  = []
-  } 
- 
-  update(OBJECT3D,primitive){
-    this.rootNodes.forEach(quadtreeNode=>{
-      quadtreeNode.insert(OBJECT3D,primitive)
-      let visibleNodes = quadtreeNode.visibleNodes(OBJECT3D,primitive)
-
-      const visibleMeshNodes = new Set();
-
-       for (const node of visibleNodes) {
-        const key = `${node.bounds.x}_${node.bounds.y}_${node.params.size}`;
-        if (primitive.nodes.has(key)) {
-          const meshNode = primitive.nodes.get(key);
-          meshNode.showMesh();
-          visibleMeshNodes.add(key);
-        } else {
-          const size     = node.params.size 
-          const segments = node.params.segments
-          const metaData = node.params.metaData
-          const offset   = node.params.metaData.offset 
-          const matrixRotationData = node.params.metaData.matrixRotationData
-          const shardedData = primitive.quadTreeController.config.arrybuffers[size];
-          let meshNode    = new MeshNode( {size, segments, metaData}, 'active' )
-
-
-          meshNode = primitive.createPlane({
-            material:new THREE.MeshBasicMaterial({color:new THREE.Color(
-              Math.random(),
-              Math.random(),
-              Math.random())}),
-            size:size,
-            resolution:segments,
-            matrixRotationData: matrixRotationData,
-            offset:offset,
-            shardedData,
-            node:meshNode,
-            callBack:()=>{},
-            parent:primitive
-          })
-          let boundsStr =  `${node.bounds.x}_${node.bounds.y}_${node.params.size}`
-          primitive.addNode(boundsStr,meshNode)
-         // const newChunk = this.createChunk(
-           // { x: node.bounds.x, y: node.bounds.y },
-           // node.bounds.size
-         // );
-         // this.chunks.set(key, newChunk);
-         // visibleChunks.add(key);
-        }
-
-       }
-
-    })
+  constructor() {
+    this.rootNodes = [];
   }
 
-  split(OBJECT3D,primitive,node){
-    
+  async update(OBJECT3D, primitive) {
+    const visibleMeshNodes = new Set();
+
+    if (primitive.threaded) {
+      await Promise.all(
+        this.rootNodes.map((quadtreeNode) =>
+          quadTreeUpdate(OBJECT3D, primitive, quadtreeNode, visibleMeshNodes)
+        )
+      );
+
+      for (const [key, value] of primitive.nodes.entries()) {
+        if (!visibleMeshNodes.has(key)) {
+          const meshNode = await value;
+          meshNode.hideMesh();
+        }
+      }
+    } else {
+      this.rootNodes.forEach((quadtreeNode) => {
+        quadTreeUpdate(OBJECT3D, primitive, quadtreeNode, visibleMeshNodes);
+      });
+
+      for (const [key, meshNode] of primitive.nodes.entries()) {
+        if (!visibleMeshNodes.has(key)) {
+          meshNode.hideMesh();
+        }
+      }
     }
   }
+}

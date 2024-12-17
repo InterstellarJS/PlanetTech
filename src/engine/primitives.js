@@ -4,9 +4,9 @@ import { QuadGeometry, NormalizedQuadGeometry } from './geometry.js'
 import { ThreadController } from './webWorker/threading.js'
 import { workersSRC } from './webWorker/workerThread.js'
 import { MeshNode,QuadTreeNode } from './nodes.js'
-
-const defualtCallBack = node => {}
-
+import { generateKey } from './utils.js'
+ 
+export const isSphere = obj => obj instanceof Sphere
 
 export class Primitive  extends THREE.Object3D{
   constructor({ size, resolution, dimension }){
@@ -22,9 +22,11 @@ export class Primitive  extends THREE.Object3D{
     this.quadTreeController = new QuadTreeController()
   }
 
-  update(OBJECT3D){
-    this.quadTree.update(OBJECT3D,this)
-  }
+  update(OBJECT3D){ this.quadTree.update(OBJECT3D,this) }
+
+  addNode(bounds,node){ this.nodes.set(bounds,node) }
+
+  threading(){ this.threaded = true }
 
   createQuadTree({ levels }){
     Object.assign(this.quadTreeController.config,{
@@ -39,13 +41,7 @@ export class Primitive  extends THREE.Object3D{
     this.quadTree = new QuadTree()
   }  
 
-  addNode(bounds,node){
-    this.nodes.set(bounds,node)
-  }
 
-  thread(){
-    this.threading = true
-  }
 }
 
 export class Quad extends Primitive{
@@ -62,12 +58,11 @@ export class Quad extends Primitive{
     offset,
     shardedData,
     node,
-    callBack,
     parent,
     geometryClass = QuadGeometry, // Default to QuadGeometry for parent class
     additionalPayload = {}, // Additional data for child class
   }) {
-    if (this.threading) {
+    if (this.threaded) {
       // Initialize SharedArrayBuffers
       const sharedArrayUv       = new SharedArrayBuffer(shardedData.geometryData.byteLengthUv);
       const sharedArrayIndex    = new SharedArrayBuffer(shardedData.geometryData.byteLengthIndex);
@@ -128,7 +123,7 @@ export class Quad extends Primitive{
           const plane   = new THREE.Mesh(geometry, material);
           plane.position.set(...payload.data.centerdPosition);
           parent.add(node.add(plane));
-          callBack(node);
+          this.quadTreeController.config.callBacks.onMeshCreation(node);
           resolve(node);
         });
       });
@@ -154,51 +149,52 @@ export class Quad extends Primitive{
       plane.position.set(...centerdPosition);
       parent.add(node.add(plane));
       parent.add(node);
-      callBack(node);
+      this.quadTreeController.config.callBacks.onMeshCreation(node);
       return node;
     }
   }
   
-  createNewNode({ shardedData, matrixRotationData, offset, index, direction, callBack, parent = this }){
+  createNewNode({ shardedData, matrixRotationData, offset, index, direction,  parent = this }){
 
+    const depth    = 1
+    const size     = shardedData.geometryData.parameters.width
+    const segments = shardedData.geometryData.parameters.widthSegments
     const quadTreeController = this.quadTreeController
-    const size  = shardedData.geometryData.parameters.width
-    const segments  = shardedData.geometryData.parameters.widthSegments
+    const material = quadTreeController.config.material
 
-    let material = quadTreeController.config.material
-
-    let metaData = {   
+    let params = {   
       index,  
       offset,  
       direction,
-      matrixRotationData
-    }
+      depth,
+      matrixRotationData,
+      size,
+      segments,
+      quadTreeController
+     }
 
-    let quadtreeNode = new QuadTreeNode( {size, segments, metaData, quadTreeController}, (this instanceof Sphere)) 
-    this.add(quadtreeNode)
-    quadtreeNode.setBounds(this)
+    const quadtreeNode = new QuadTreeNode( params , isSphere(this) ) 
+    quadtreeNode.setBounds(this.add(quadtreeNode))
     this.quadTree.rootNodes.push(quadtreeNode)
-    let meshNode = new MeshNode( {size, segments, metaData}, 'active' )
+    let meshNode = new MeshNode( params, 'active' )
 
     meshNode = this.createPlane({
-      material:material,
-      size:size,
+      material,
+      size,
       resolution:segments,
       matrixRotationData: matrixRotationData,
       offset:offset,
       shardedData,
       node:meshNode,
-      callBack,
       parent
     })
 
-    let boundsStr =  `${quadtreeNode.bounds.x}_${quadtreeNode.bounds.y}_${quadtreeNode.params.size}`
-    this.addNode(boundsStr,meshNode)
+     this.addNode(generateKey(quadtreeNode),meshNode)
 
     return meshNode
   }
 
-  createDimensions(callBack = defualtCallBack ){
+  createDimensions(){
     const w = this.parameters.size
     const d = this.parameters.dimension
     const k = ((w/2)*d)
@@ -215,7 +211,6 @@ export class Quad extends Primitive{
           offset: [i_,-j_,k],
           index:_index,
           direction:'+z',
-          callBack:callBack
         })
       }
     }
@@ -228,7 +223,7 @@ export class Cube extends Quad{
     super({ size, resolution, dimension }) 
   }
 
-  createDimensions( callBack = defualtCallBack ){
+  createDimensions(){
 
     const w = this.parameters.size
     const d = this.parameters.dimension
@@ -247,7 +242,6 @@ export class Cube extends Quad{
           offset: [i_,-j_,k],
           index:_index,
           direction:'+z',
-          callBack
         })
  
          this.createNewNode({ 
@@ -256,7 +250,6 @@ export class Cube extends Quad{
           offset:  [i_,-j_,-k],
           index: _index,
           direction:'-z',
-          callBack   
         })
  
          this.createNewNode({ 
@@ -265,7 +258,6 @@ export class Cube extends Quad{
           offset: [k,-j_,-i_],
           index: _index,
           direction:'+x',
-          callBack      
         })
  
         this.createNewNode({ 
@@ -274,7 +266,6 @@ export class Cube extends Quad{
           offset: [-k,-j_,-i_],
           index: _index,
           direction:'-x',
-          callBack   
         })
  
         this.createNewNode({ 
@@ -283,7 +274,6 @@ export class Cube extends Quad{
           offset: [i_,k,j_],
           index: _index,
           direction:'+y',
-          callBack       
         })
 
         this.createNewNode({ 
@@ -292,7 +282,6 @@ export class Cube extends Quad{
           offset: [i_,-k,j_],
           index: _index,
           direction:'-y',
-          callBack      
         })
       }
     }
@@ -312,10 +301,6 @@ export class Sphere extends Cube{
       geometryClass: NormalizedQuadGeometry, 
       additionalPayload: { radius: this.quadTreeController.config.radius }
     }))
-  }
-
-  createDimensions(callBack = defualtCallBack){
-    return super.createDimensions(callBack)
   }
 }
 

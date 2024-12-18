@@ -1,7 +1,6 @@
 import * as THREE  from 'three/tsl';
-import { MeshNode } from './nodes.js';
-import { generateKey } from './utils.js'
-
+import { generateKey,isWithinBounds } from '../utils.js'
+ 
 export class QuadTreeController {
 
   constructor(config = {}) {
@@ -63,48 +62,25 @@ export class QuadTreeController {
 }
 
 
-const quadTreeUpdate = async (OBJECT3D, primitive, quadtreeNode, visibleMeshNodes ) => {
-  quadtreeNode.insert(OBJECT3D, primitive);
-  const visibleNodes = quadtreeNode.visibleNodes(OBJECT3D, primitive);
-
-  for (const node of visibleNodes) {
-    const key = generateKey(node);
-
-    if (primitive.nodes.has(key)) {
-      const meshNode = primitive.threaded
-        ? await primitive.nodes.get(key)
-        : primitive.nodes.get(key);
-
-      meshNode.showMesh();
-      visibleMeshNodes.add(key);
-    } else {
-      const { size, segments, offset, matrixRotationData } = node.params;
-      const shardedData = primitive.quadTreeController.config.arrybuffers[size];
-      const material = primitive.quadTreeController.config.material;
-
-      let meshNode = new MeshNode(node.params, 'active');
-      meshNode = primitive.createPlane({
-        material,
-        size,
-        resolution: segments,
-        matrixRotationData,
-        offset,
-        shardedData,
-        node: meshNode,
-        parent: primitive,
-      });
-
-      primitive.addNode(key, meshNode);
-      visibleMeshNodes.add(key);
-    }
-  }
-};
 
 
 export class QuadTree {
   constructor() {
     this.rootNodes = [];
   }
+  
+  insert(OBJECT3D,primitive,quadtreeNode){
+
+    var distance = quadtreeNode.bounds.distanceTo(OBJECT3D.position)
+  
+    if ( isWithinBounds(distance,primitive, quadtreeNode.params.size) ) {
+  
+        if (quadtreeNode._children.length === 0) { quadtreeNode.subdivide(primitive) }
+ 
+        for (const child of quadtreeNode._children) { this.insert(OBJECT3D,primitive,child) } 
+    }
+
+}
 
   async update(OBJECT3D, primitive) {
     const visibleMeshNodes = new Set();
@@ -112,7 +88,7 @@ export class QuadTree {
     if (primitive.threaded) {
       await Promise.all(
         this.rootNodes.map((quadtreeNode) =>
-          quadTreeUpdate(OBJECT3D, primitive, quadtreeNode, visibleMeshNodes)
+          this.#_update(OBJECT3D, primitive, quadtreeNode, visibleMeshNodes)
         )
       );
 
@@ -124,13 +100,38 @@ export class QuadTree {
       }
     } else {
       this.rootNodes.forEach((quadtreeNode) => {
-        quadTreeUpdate(OBJECT3D, primitive, quadtreeNode, visibleMeshNodes);
+        this.#_update(OBJECT3D, primitive, quadtreeNode, visibleMeshNodes);
       });
 
       for (const [key, meshNode] of primitive.nodes.entries()) {
         if (!visibleMeshNodes.has(key)) {
           meshNode.hideMesh();
         }
+      }
+    }
+  }
+
+
+  async #_update(OBJECT3D, primitive, quadtreeNode, visibleMeshNodes ) {
+    
+    this.insert(OBJECT3D, primitive,quadtreeNode);
+    const visibleNodes = quadtreeNode.visibleNodes(OBJECT3D, primitive);
+  
+    for (const node of visibleNodes) {
+      const key = generateKey(node);
+  
+      if (primitive.nodes.has(key)) {
+        const meshNode = primitive.threaded
+          ? await primitive.nodes.get(key)
+          : primitive.nodes.get(key);
+  
+        meshNode.showMesh();
+        visibleMeshNodes.add(key);
+      } else {
+   
+        primitive.createMeshNode({quadTreeNode:node})
+  
+        visibleMeshNodes.add(key);
       }
     }
   }

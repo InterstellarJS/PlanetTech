@@ -103,7 +103,7 @@ export class QuadTreeNode extends Node{
             
             const axis = this.params.direction.includes('z') ? 'z' : this.params.direction.includes('x') ? 'x' : 'y';
 
-            createLocations(size, this.params.offset.map(v=>v ), axis).forEach(e=>{
+            createLocations(size, this.params.offset, axis).forEach(e=>{
 
                 const A = this.localToWorld( new THREE.Vector3(...e) )
 
@@ -120,51 +120,27 @@ export class QuadTreeNode extends Node{
 
     }
 
-    insert(OBJECT3D,primitive){
-
-        var distance = this.bounds.distanceTo(OBJECT3D.position)
-      
-        if ( isWithinBounds(distance,primitive,this.params.size) ) {
-      
-            if (this._children.length === 0) { this.subdivide(primitive) }
-     
-            for (const child of this._children) { child.insert(OBJECT3D,primitive) } 
-        }
-
-    }
-
     subdivide(primitive){
+
         let { direction, matrixRotationData, size, offset,index } = this.params;
+
         let depth  = this.params.depth + 1
 
         let axis = direction.includes('z') ? 'z' : direction.includes('x') ? 'x' : 'y';
-        let segments = primitive.quadTreeController.config.arrybuffers[(size/2)].geometryData.parameters.widthSegments
-        let quadTreeController = primitive.quadTreeController
+
+        let resolution = primitive.quadTreeController.config.arrybuffers[(size/2)].geometryData.parameters.widthSegments
+         
         size = (size/2)
+
         let locations = createLocations( (size/2), offset, axis) 
 
         locations.forEach((location,idx) => {
 
-        let params={
-            index:`${index} -> ${cordinate(idx)}`, 
-            offset:location,  
-            direction,
-            depth,
-            segments,
-            quadTreeController,
-            size,
-            matrixRotationData
-        }  
+            index = `${index} -> ${cordinate(idx)}`
 
-        let quadtreeNode = new QuadTreeNode(params, isSphere(primitive))
-
-        primitive.add(quadtreeNode)
-
-        quadtreeNode.setBounds(primitive)
-
-        primitive.quadTreeController.config.callBacks.onQuadTreeNodeCreation(quadtreeNode)
-
-        this._children.push(quadtreeNode)
+            let quadtreeNode = primitive.createQuadtreeNode({ matrixRotationData, offset:location, index, direction, initializationData:{ size,resolution,depth}  })
+ 
+            this._children.push(quadtreeNode)
 
         });
     

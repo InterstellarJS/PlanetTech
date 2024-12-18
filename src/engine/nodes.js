@@ -50,18 +50,26 @@ export class MeshNode extends Node{
 export class QuadTreeNode extends Node{
 
     constructor(params, normalize){ 
+
         super(params) 
+
         this. boundingBox = new THREE.Box3();
+
         this.normalize = normalize
+
         let matrixRotationData = this.params.matrixRotationData
+
         let offset = this.params.offset
+
         let matrix = matrixRotationData.propMehtod ? new THREE.Matrix4()[[matrixRotationData.propMehtod]](matrixRotationData.input) : new THREE.Matrix4() 
+
         matrix.premultiply(new THREE.Matrix4().makeTranslation(...offset)) 
+        
         this.position.applyMatrix4(matrix)
     }
 
     setBounds(primitive){
-        
+
         let size = this.params.size
         
         if(this.normalize){
@@ -90,12 +98,24 @@ export class QuadTreeNode extends Node{
             this.bounds = M
 
         }else{
-            /*
-            todo 
-            rename bounds to normlizedCenterPoint,
-            calculate bounding box for none normilzed 
-            */
-            this.bounds = this.position.add(new THREE.Vector3().copy(primitive.position)) 
+
+            let M = new THREE.Vector3() 
+            
+            const axis = this.params.direction.includes('z') ? 'z' : this.params.direction.includes('x') ? 'x' : 'y';
+
+            createLocations(size, this.params.offset.map(v=>v ), axis).forEach(e=>{
+
+                const A = this.localToWorld( new THREE.Vector3(...e) )
+
+                this. boundingBox.expandByPoint(A.divideScalar(2))
+
+                M.add(A)
+            })
+
+            M.divideScalar(4) 
+
+            this.bounds = M.add(new THREE.Vector3().copy(primitive.position))  
+
         }
 
     }

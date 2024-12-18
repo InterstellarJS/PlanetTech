@@ -17,7 +17,8 @@ export class QuadTreeController {
       displacmentScale:1,
       material: new THREE.MeshBasicMaterial({ color: "grey" }),
       callBacks:{
-        onMeshCreation: node => undefined
+        onMeshCreation: node => undefined,
+        onQuadTreeNodeCreation: node => undefined
       }
     }
     this.config = Object.assign( shardedData, config )

@@ -51,6 +51,7 @@ export class QuadTreeNode extends Node{
 
     constructor(params, normalize){ 
         super(params) 
+        this. boundingBox = new THREE.Box3();
         this.normalize = normalize
         let matrixRotationData = this.params.matrixRotationData
         let offset = this.params.offset
@@ -60,17 +61,25 @@ export class QuadTreeNode extends Node{
     }
 
     setBounds(primitive){
+        
         let size = this.params.size
+        
         if(this.normalize){
-            let M = new THREE.Vector3() 
 
+            let M = new THREE.Vector3() 
+            
             let radius =  this.params.quadTreeController.config.radius
 
             const axis = this.params.direction.includes('z') ? 'z' : this.params.direction.includes('x') ? 'x' : 'y';
+
             createLocations(size, this.params.offset, axis).forEach(e=>{
-                let k = new THREE.Vector3(...e)
-                var A = this.localToWorld( k )
+
+                const A = this.localToWorld( new THREE.Vector3(...e) )
+
                 project(A,radius,new THREE.Vector3().copy(primitive.position))
+
+                this. boundingBox.expandByPoint(A)
+
                 M.add(A)
             })
 
@@ -79,8 +88,14 @@ export class QuadTreeNode extends Node{
             project( M,radius,new THREE.Vector3().copy(primitive.position)) 
 
             this.bounds = M
+
         }else{
-            this.bounds = this.position.add(new THREE.Vector3().copy(primitive.position)) //todo
+            /*
+            todo 
+            rename bounds to normlizedCenterPoint,
+            calculate bounding box for none normilzed 
+            */
+            this.bounds = this.position.add(new THREE.Vector3().copy(primitive.position)) 
         }
 
     }
@@ -126,6 +141,8 @@ export class QuadTreeNode extends Node{
         primitive.add(quadtreeNode)
 
         quadtreeNode.setBounds(primitive)
+
+        primitive.quadTreeController.config.callBacks.onQuadTreeNodeCreation(quadtreeNode)
 
         this._children.push(quadtreeNode)
 

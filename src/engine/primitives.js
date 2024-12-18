@@ -176,6 +176,9 @@ export class Quad extends Primitive{
     const quadtreeNode = new QuadTreeNode( params , isSphere(this) ) 
     quadtreeNode.setBounds(this.add(quadtreeNode))
     this.quadTree.rootNodes.push(quadtreeNode)
+
+    this.quadTreeController.config.callBacks.onQuadTreeNodeCreation(quadtreeNode)
+
     let meshNode = new MeshNode( params, 'active' )
 
     meshNode = this.createPlane({

@@ -95,7 +95,9 @@ export class QuadTreeNode extends Node{
             
             project( M,radius,new THREE.Vector3().copy(primitive.position)) 
 
-            this.bounds = M
+            this. boundingBox.expandByPoint(M)
+
+            this.position.copy(M)
 
         }else{
 
@@ -107,14 +109,18 @@ export class QuadTreeNode extends Node{
 
                 const A = this.localToWorld( new THREE.Vector3(...e) )
 
-                this. boundingBox.expandByPoint(A.divideScalar(2))
+                this.boundingBox.expandByPoint(A.divideScalar(2))
 
                 M.add(A)
             })
 
             M.divideScalar(4) 
 
-            this.bounds = M.add(new THREE.Vector3().copy(primitive.position))  
+            M.add(new THREE.Vector3().copy(primitive.position)) 
+
+            this. boundingBox.expandByPoint(M)
+
+            this.position.copy(M)
 
         }
 
@@ -153,16 +159,17 @@ export class QuadTreeNode extends Node{
     
         const traverse = ( node ) => {
             
-            var distance = node.bounds.distanceTo(OBJECT3D.position)
+            //let P = node.getWorldPosition(new THREE.Vector3().copy(primitive.position))
+
+            var distance = node.position.distanceTo(OBJECT3D.position)
 
             if( isWithinBounds( distance, primitive, node.params.size ) ){
 
                 for (const child of node._children) { traverse(child)  }
 
-            }else{
-
-                nodes.push(node);
-
+            }else{  
+                
+                nodes.push(node)  
             }
         }
     

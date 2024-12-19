@@ -128,7 +128,7 @@ export class Quad extends Primitive{
           const plane   = new THREE.Mesh(geometry, material);
           plane.position.set(...payload.data.centerdPosition);
           parent.add(meshNode.add(plane));
-          this.quadTreeController.config.callBacks.onMeshCreation(meshNode);
+          this.quadTreeController.config.callBacks.afterMeshNodeCreation(meshNode);
           resolve(meshNode);
         });
       });
@@ -154,7 +154,7 @@ export class Quad extends Primitive{
       plane.position.set(...centerdPosition);
       parent.add(meshNode.add(plane));
       parent.add(meshNode);
-      this.quadTreeController.config.callBacks.onMeshCreation(meshNode);
+      this.quadTreeController.config.callBacks.afterMeshNodeCreation(meshNode);
       return meshNode;
     }
   }
@@ -181,7 +181,7 @@ export class Quad extends Primitive{
 
     quadTreeNode.setBounds(this.add(quadTreeNode))
     
-    this.quadTreeController.config.callBacks.onQuadTreeNodeCreation(quadTreeNode)
+    this.quadTreeController.config.callBacks.afterQuadTreeNodeCreation(quadTreeNode)
 
     return quadTreeNode
   }

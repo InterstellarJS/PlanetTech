@@ -16,8 +16,8 @@ export class QuadTreeController {
       displacmentScale:1,
       material: new THREE.MeshBasicMaterial({ color: "grey" }),
       callBacks:{
-        onMeshCreation: node => undefined,
-        onQuadTreeNodeCreation: node => undefined
+        afterMeshNodeCreation: node => undefined,
+        afterQuadTreeNodeCreation: node => undefined
       }
     }
     this.config = Object.assign( shardedData, config )
@@ -65,13 +65,18 @@ export class QuadTreeController {
 
 
 export class QuadTree {
+
   constructor() {
+
     this.rootNodes = [];
+    
   }
   
   insert(OBJECT3D,primitive,quadtreeNode){
 
-    var distance = quadtreeNode.bounds.distanceTo(OBJECT3D.position)
+    //let P = quadtreeNode.getWorldPosition(new THREE.Vector3().copy(primitive.position))
+
+    let distance = quadtreeNode.position.distanceTo(OBJECT3D.position)
   
     if ( isWithinBounds(distance,primitive, quadtreeNode.params.size) ) {
   
@@ -115,18 +120,23 @@ export class QuadTree {
   async #_update(OBJECT3D, primitive, quadtreeNode, visibleMeshNodes ) {
     
     this.insert(OBJECT3D, primitive,quadtreeNode);
+
     const visibleNodes = quadtreeNode.visibleNodes(OBJECT3D, primitive);
   
     for (const node of visibleNodes) {
+
       const key = generateKey(node);
   
       if (primitive.nodes.has(key)) {
+
         const meshNode = primitive.threaded
           ? await primitive.nodes.get(key)
           : primitive.nodes.get(key);
   
         meshNode.showMesh();
+
         visibleMeshNodes.add(key);
+
       } else {
    
         primitive.createMeshNode({quadTreeNode:node})

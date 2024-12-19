@@ -43,4 +43,4 @@ export const createLocations = ( size, offset, axis ) => {
    return ( (distance) < (primitive.quadTreeController.config.lodDistanceOffset * size) && size > primitive.quadTreeController.config.minLevelSize )
   };
 
-export const generateKey = node => `${node.params.index}_${node.params.direction}_${node.bounds.x}_${node.bounds.y}_${node.params.size}`
+export const generateKey = node => `${node.params.index}_${node.params.direction}_${node.position.x}_${node.position.y}_${node.params.size}`

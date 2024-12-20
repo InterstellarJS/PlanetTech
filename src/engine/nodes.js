@@ -53,7 +53,9 @@ export class QuadTreeNode extends Node{
 
         super(params) 
 
-        this. boundingBox = new THREE.Box3();
+        this.boundingBox = new THREE.Box3();
+
+        this.boundingBox._boundingPoints = []
 
         this.normalize = normalize
 
@@ -88,6 +90,8 @@ export class QuadTreeNode extends Node{
 
                 this. boundingBox.expandByPoint(A)
 
+                this.boundingBox._boundingPoints.push(A.clone())
+
                 M.add(A)
             })
 
@@ -96,6 +100,8 @@ export class QuadTreeNode extends Node{
             project( M,radius,new THREE.Vector3().copy(primitive.position)) 
 
             this. boundingBox.expandByPoint(M)
+
+            this.boundingBox._boundingPoints.push(M.clone())
 
             this.position.copy(M)
 
@@ -111,6 +117,8 @@ export class QuadTreeNode extends Node{
 
                 this.boundingBox.expandByPoint(A.divideScalar(2))
 
+                this.boundingBox._boundingPoints.push(A.clone())
+
                 M.add(A)
             })
 
@@ -119,6 +127,8 @@ export class QuadTreeNode extends Node{
             M.add(new THREE.Vector3().copy(primitive.position)) 
 
             this. boundingBox.expandByPoint(M)
+
+            this.boundingBox._boundingPoints.push(M.clone())
 
             this.position.copy(M)
 
@@ -138,13 +148,13 @@ export class QuadTreeNode extends Node{
          
         size = (size/2)
 
-        let locations = createLocations( (size/2), offset, axis) 
+        let locations = createLocations((size/2), offset, axis) 
 
         locations.forEach((location,idx) => {
 
             index = `${index} -> ${cordinate(idx)}`
 
-            let quadtreeNode = primitive.createQuadtreeNode({ matrixRotationData, offset:location, index, direction, initializationData:{ size,resolution,depth}  })
+            let quadtreeNode = primitive.createQuadtreeNode({ matrixRotationData, offset:location, index, direction, initializationData:{ size, resolution, depth }})
  
             this._children.push(quadtreeNode)
 
@@ -159,8 +169,6 @@ export class QuadTreeNode extends Node{
     
         const traverse = ( node ) => {
             
-            //let P = node.getWorldPosition(new THREE.Vector3().copy(primitive.position))
-
             var distance = node.position.distanceTo(OBJECT3D.position)
 
             if( isWithinBounds( distance, primitive, node.params.size ) ){

@@ -74,8 +74,6 @@ export class QuadTree {
   
   insert(OBJECT3D,primitive,quadtreeNode){
 
-    //let P = quadtreeNode.getWorldPosition(new THREE.Vector3().copy(primitive.position))
-
     let distance = quadtreeNode.position.distanceTo(OBJECT3D.position)
   
     if ( isWithinBounds(distance,primitive, quadtreeNode.params.size) ) {

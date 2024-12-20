@@ -66,6 +66,7 @@ export class Quad extends Primitive{
     const offset = quadTreeNode.params.offset
     const resolution = quadTreeNode.params.segments
     const material = this.quadTreeController.config.material
+    const userDefinedPayload = this.quadTreeController.config.userDefinedPayload
 
     if (this.threaded) {
       // Initialize SharedArrayBuffers
@@ -105,6 +106,7 @@ export class Quad extends Primitive{
         size,
         resolution,
         ...additionalPayload, // Include additional child-class specific data
+        ...userDefinedPayload
       });
   
       const promise = new Promise((resolve) => {
@@ -118,13 +120,17 @@ export class Quad extends Primitive{
           };
   
           const geometry = new geometryClass(size, size, resolution, resolution, ...Object.values(additionalPayload));
-          geometry.setIndex(Array.from(buffers.indexBuffer));
-          geometry.setAttribute('position', new THREE.Float32BufferAttribute(buffers.positionBuffer, 3));
-          geometry.setAttribute('normal', new THREE.Float32BufferAttribute(buffers.normalBuffer, 3));
-          geometry.setAttribute('uv', new THREE.Float32BufferAttribute(buffers.uvBuffer, 2));
+          geometry.setIndex(Array.from( indexBuffer));
+          geometry.setAttribute('position', new THREE.Float32BufferAttribute( positionBuffer, 3));
+          geometry.setAttribute('normal', new THREE.Float32BufferAttribute( normalBuffer, 3));
+          geometry.setAttribute('uv', new THREE.Float32BufferAttribute(  uvBuffer, 2));
   
-          if (dirVectBuffer) { geometry.setAttribute('directionVectors', new THREE.Float32BufferAttribute(buffers.dirVectBuffer, 3)); }
+          if (dirVectBuffer) { geometry.setAttribute('directionVectors', new THREE.Float32BufferAttribute( dirVectBuffer, 3)); }
   
+           const map = new THREE.CanvasTexture()
+          map.image = payload.data.imageBitmapResult
+          map.needsUpdate = true
+          material.map = map
           const plane   = new THREE.Mesh(geometry, material);
           plane.position.set(...payload.data.centerdPosition);
           parent.add(meshNode.add(plane));

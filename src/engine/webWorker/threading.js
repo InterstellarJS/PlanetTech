@@ -5,7 +5,18 @@ export class ThreadController {
     }
     
     setPayload( payload ) {
-      this.worker.postMessage(payload)
+       
+      let transferable = []
+
+       if (payload.src.length !== 0){ 
+
+        payload.offscreenCanvas = new OffscreenCanvas(0,0)
+
+        transferable.push(payload.offscreenCanvas)
+       } 
+         
+       
+      this.worker.postMessage(payload,transferable)
     }
   
     getPayload( callBack ){

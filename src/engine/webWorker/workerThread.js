@@ -9,9 +9,39 @@ export function workersSRC(currentGeometry,params){
         return code.toString().replaceAll('three__WEBPACK_IMPORTED_MODULE_1__','THREE')
     }).join('\n')}
 
+    
+    async function imageReader(payload){
 
-    function init( payload ){
-     
+        // Load the image
+        const response = await fetch(payload.src);
+        const blob     = await response.blob();
+        const imageBitmap = await createImageBitmap(blob);
+
+        const canvas = payload.offscreenCanvas
+
+        canvas.width = imageBitmap.width;
+        canvas.height = imageBitmap.height;
+
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(imageBitmap,0,0);
+
+        const imageBitmapResult = canvas.transferToImageBitmap();
+
+        return imageBitmapResult
+
+    }
+
+
+    async function init( payload ){
+
+        let imageBitmapResult
+
+        if (payload.src) 
+            
+            imageBitmapResult = await imageReader(payload)
+
+
         const positionBuffer = new Float32Array(payload.sharedArrayPosition );
         const normalBuffer   = new Float32Array(payload.sharedArrayNormal   );
         const uvBuffer       = new Float32Array(payload.sharedArrayUv       );
@@ -50,14 +80,18 @@ export function workersSRC(currentGeometry,params){
             uvBuffer,
             indexBuffer,
             dirVectBuffer,
-            centerdPosition:centerdPosition.toArray()
+            centerdPosition:centerdPosition.toArray(),
+            imageBitmapResult
         }
     }
         
-    self.onmessage = function(msg) {
+    self.onmessage = async function(msg) {
         const payload = msg.data
-        let outputBuffers = init(payload)
-        self.postMessage({centerdPosition: outputBuffers.centerdPosition})
+        let outputBuffers = await init(payload)
+        self.postMessage({
+            centerdPosition: outputBuffers.centerdPosition,
+            imageBitmapResult: outputBuffers.imageBitmapResult
+        },[outputBuffers.imageBitmapResult])
     }
     `
 }

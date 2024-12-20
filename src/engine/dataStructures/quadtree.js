@@ -18,7 +18,8 @@ export class QuadTreeController {
       callBacks:{
         afterMeshNodeCreation: node => undefined,
         afterQuadTreeNodeCreation: node => undefined
-      }
+      },
+      userDefinedPayload:{}
     }
     this.config = Object.assign( shardedData, config )
   }
